@@ -21,10 +21,22 @@ class Test(Resource):
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         return Encryption.enc(str(result),key)
 
+class PTest(Resource):
+    def post(Self):
+	    conn = db_connect.connect()
+	    User = request.json['user']
+	    if 'Date' in dict.keys():
+	        Date = request.json['date']
+	    else:
+	        Date=datetime.datetime.now().strftime("%Y-%m-%d")
+	    query = conn.execute("select * from test where date=? and User_name=?",(Line,User,))
+	    result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+	    return Encryption.enc(str(result),key)
+
+
 class STest(Resource):
     def post(self):
         conn = db_connect.connect()
-        print(request.json)
         User = request.json['user']
         Line = request.json['line']
         Say = request.json['say']
@@ -38,6 +50,19 @@ class STest(Resource):
 class Singin(Resource):
     def get(self, user,pas):
         conn = db_connect.connect()
+        query = conn.execute("select * from account WHERE Name=?", (str(user),))
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        if not result['data']:
+            return {'status':'Ufail'}
+        if(check_password_hash(result['data'][0]['Password'],pas)):
+            return {'status':'success'}
+        return {'status':'Pfail'}
+
+class PSingin(Resource):
+    def get(self):
+        conn = db_connect.connect()
+        user = request.json['user']
+        pas = request.json['pas']
         query = conn.execute("select * from account WHERE Name=?", (str(user),))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
@@ -62,7 +87,9 @@ class singup(Resource):
 
 
 api.add_resource(Singin, '/singin/<user>/<pas>',methods={'POST','GET'})
+api.add_resource(PSingin, '/singin',methods={'POST','GET'})
 api.add_resource(Test, '/test/<user>/<Date>',methods={'POST','GET'})
+api.add_resource(PTest, '/test',methods={'POST','GET'})
 api.add_resource(STest, '/test',methods={'POST'})
 api.add_resource(singup, '/singup',methods={'POST'})
 
