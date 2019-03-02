@@ -13,7 +13,7 @@ api = Api(app)
 
 
 
-class Tast(Resource):
+class Test(Resource):
     def get(self,Date="date(now)"):
         conn = db_connect.connect()
         query = conn.execute("select * from tast where date=?",(Date,))
@@ -49,13 +49,16 @@ class Tast(Resource):
 class Singin(Resource):
     def get(self, user,pas):
         conn = db_connect.connect()
-        query = conn.execute("select * from account WHERE Name=? AND Password=?", (str(user),str(pas),))
+        query = conn.execute("select * from account WHERE Name=?", (str(user),))
+        print(query)
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        return Encryption.enc(str(result),"NEDD")
+        if not result['data']:
+           return Encryption.enc(str( {'status':'fail'}),"NEDD")
+        return Encryption.enc(str({'status':'success'}),"NEDD")
 
 
 api.add_resource(Singin, '/singin/<user>/<pas>') # Route_3
-api.add_resource(Tast, '/tast/<Date>') # Route_3
+api.add_resource(Test, '/test/<Date>') # Route_3
 
 
 
