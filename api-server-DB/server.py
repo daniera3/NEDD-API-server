@@ -5,60 +5,66 @@ from sqlalchemy import create_engine
 from json import dumps
 import Encryption
 from werkzeug.security import check_password_hash, generate_password_hash
+import datetime
 
 db_connect = create_engine('sqlite:///nedd.db')
 app = Flask(__name__)
 api = Api(app)
-
+key="NEDD"
 
 
 
 class Test(Resource):
-    def get(self,Date="date(now)"):
+    def get(self,Date,user):
         conn = db_connect.connect()
-        query = conn.execute("select * from tast where date=?",(Date,))
+        query = conn.execute("select * from test where date=? and User_name=?",(Date,user,))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        return Encryption.enc(str(result),"NEDD")
+        return Encryption.enc(str(result),key)
 
+class STest(Resource):
     def post(self):
         conn = db_connect.connect()
         print(request.json)
-        LastName = request.json['LastName']
-        FirstName = request.json['FirstName']
-        Title = request.json['Title']
-        ReportsTo = request.json['ReportsTo']
-        BirthDate = request.json['BirthDate']
-        HireDate = request.json['HireDate']
-        Address = request.json['Address']
-        City = request.json['City']
-        State = request.json['State']
-        Country = request.json['Country']
-        PostalCode = request.json['PostalCode']
-        Phone = request.json['Phone']
-        Fax = request.json['Fax']
-        Email = request.json['Email']
-        query = conn.execute("insert into employees values(null,'{0}','{1}','{2}','{3}', \
-                             '{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}','{12}', \
-                             '{13}')".format(LastName,FirstName,Title,
-                             ReportsTo, BirthDate, HireDate, Address,
-                             City, State, Country, PostalCode, Phone, Fax,
-                             Email))
+        User = request.json['user']
+        Line = request.json['line']
+        Say = request.json['say']
+        Date = datetime.datetime.now().strftime("%Y-%m-%d")
+        query = conn.execute("insert into test values('{0}',null,'{1}','{2}','{3}')".format(User,Line,Say,Date))
         return {'status':'success'}
+
+
 
 
 class Singin(Resource):
     def get(self, user,pas):
         conn = db_connect.connect()
         query = conn.execute("select * from account WHERE Name=?", (str(user),))
-        print(query)
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
-           return Encryption.enc(str( {'status':'fail'}),"NEDD")
-        return Encryption.enc(str({'status':'success'}),"NEDD")
+            return {'status':'Ufail'}
+        if(check_password_hash(result['data'][0]['Password'],pas)):
+            return {'status':'success'}
+        return {'status':'Pfail'}
+
+class singup(Resource):
+    def post(self):
+        conn = db_connect.connect()
+        Name = request.json['Name']
+        Password = request.json['Password']
+        if len(Name)<2 or len(Password)<8 or Name.count("select")!=0:
+            return {'status':'hacker'}
+        query = conn.execute("select * from account WHERE Name=?", (str(Name),))
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        if not result['data']:
+        	query = conn.execute("insert into account values('{0}','{1}')".format(Name,generate_password_hash(Password, method='pbkdf2:sha256', salt_length=8)))
+        	return {'status':'success'}
+        return {'status':'fail'}
 
 
-api.add_resource(Singin, '/singin/<user>/<pas>') # Route_3
-api.add_resource(Test, '/test/<Date>') # Route_3
+api.add_resource(Singin, '/singin/<user>/<pas>',methods={'POST','GET'})
+api.add_resource(Test, '/test/<user>/<Date>',methods={'POST','GET'})
+api.add_resource(STest, '/test',methods={'POST'})
+api.add_resource(singup, '/singup',methods={'POST'})
 
 
 
