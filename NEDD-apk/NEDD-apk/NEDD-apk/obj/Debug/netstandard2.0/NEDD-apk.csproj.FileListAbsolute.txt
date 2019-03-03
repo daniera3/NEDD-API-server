@@ -1,0 +1,9 @@
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\bin\Debug\netstandard2.0\NEDD-apk.deps.json
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\bin\Debug\netstandard2.0\NEDD-apk.dll
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\NEDD-apk.csprojAssemblyReference.cache
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\App.xaml.g.cs
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\View\MainPage.xaml.g.cs
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\View\MovieInfoDetaliPage.xaml.g.cs
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\NEDD-apk.csproj.CoreCompileInputs.cache
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\NEDD-apk.AssemblyInfoInputs.cache
+C:\Users\dani\Desktop\פרויקט\NEED-API-server\NEDD-apk\NEDD-apk\NEDD-apk\obj\Debug\netstandard2.0\NEDD-apk.AssemblyInfo.cs

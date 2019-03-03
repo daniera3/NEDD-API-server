@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MoviesApp.View.MovieInfoDetaliPage">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Image Source="{Binding ImageSource}" Aspect="Fill"/>
+        <StackLayout Grid.Row="1" Spacing="10" Padding="10">
+            <Label Text="{Binding Name}" Font="Bold" FontSize="Large" TextColor="Blue" HorizontalOptions="Center" />
+            <Label Text="{Binding ReleaseYear}" />
+            <Label Text="{Binding Description}" />
+        </StackLayout>
+    </Grid>
+</ContentPage>

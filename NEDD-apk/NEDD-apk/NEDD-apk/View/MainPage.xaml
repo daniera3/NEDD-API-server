@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MoviesApp"
+             x:Class="MoviesApp.MainPage">
+
+    <StackLayout Orientation="Vertical">
+        <!-- Place new controls here -->
+        <StackLayout Orientation="Horizontal">
+            <DatePicker DateSelected="ListView_Test" />
+            <Button Text="logoff" Clicked="logoffUser"/>
+            </StackLayout>
+        <Label Text="your tests:" Font="Bold" FontSize="Large"  Margin="0,10" HorizontalOptions="Center"/>
+        <ActivityIndicator  x:Name="loader"/>
+        <Frame Padding="10">
+        <ListView x:Name="listview" HasUnevenRows="True" SeparatorColor="Black" ItemSelected="Listview_ItemSelected"   >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell >
+                            <StackLayout Spacing="10" Orientation="Horizontal">
+                                <Label Text="{Binding line}" FontSize="Medium" VerticalOptions="End"/>
+                                <Label Text="{Binding say}" FontSize="Small" VerticalOptions="Center" />
+                                <Label Text="{Binding pass}" FontSize="Small" VerticalOptions="Center" />
+                            </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        </Frame>
+    </StackLayout>
+
+</ContentPage>
