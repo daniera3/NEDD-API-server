@@ -5,11 +5,11 @@ def dis(massge,Key):
     Cipmassge=""
     i=0
     for x in massge:
-	if x>='A' and x<='Z':
+	    if x>='A' and x<='Z':
         	Cipmassge=Cipmassge+chr((((ord(x)-ord('A'))-(ord(Key[i%LenKey])-ord('A')))%26)+ord('A'))
         	i=i+1
-	else:
-		Cipmassge=Cipmassge+x
+	    else:
+		    Cipmassge=Cipmassge+x
     return Cipmassge
 
 
