@@ -11,9 +11,9 @@ app = Flask(__name__)
 api = Api(app)
 key="NEDD"
 
-@app.route("/")
-def hello():
-    return "sdsd"
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 class Test(Resource):
     def get(self,User,Date=datetime.datetime.now().strftime("%Y-%m-%d")):
@@ -43,11 +43,11 @@ class STest(Resource):
         Line = request.json['line']
         Say = request.json['say']
         Date = datetime.datetime.now().strftime("%Y-%m-%d")
-        query = conn.execute("select * from Accounts WHERE User=? and Active='True'", (str(User),))
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
             return {'status':'Ufail'}
-        query = conn.execute("insert into SpeechTasks values(null,'{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
+        query = conn.execute("insert into SpeechTasks values(NULL,'{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
         return {'status':'success'}
 
 
@@ -56,7 +56,7 @@ class STest(Resource):
 class Singin(Resource):
     def get(self, user,pas):
         conn = db_connect.connect()
-        query = conn.execute("select * from Accounts WHERE User=? and Active='True'", (str(user),))
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
             return {'status':'Ufail'}
@@ -68,11 +68,11 @@ class Singin(Resource):
         conn = db_connect.connect()
         user = request.json['user']
         pas = request.json['pas']
-        query = conn.execute("select * from Accounts WHERE User=? and Active='True'", (str(user),))
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
             return {'status':'Ufail'}
-        if(check_password_hash(result['data'][0]['Password'],pas)):
+        if check_password_hash(result['data'][0]['Password'],pas):
             return {'status':'success'}
         return {'status':'Pfail'}
 
@@ -84,14 +84,14 @@ class singup(Resource):
         if 'perm' in request.json.keys():
             Perm = request.json['perm']
         else:
-            Perm='null'
+            Perm='NULL'
         if len(Name)<2 or len(Password)<6 or Name.count("select")!=0:
             return {'status':'hacker'}
         query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
-        	conn.execute("insert into Accounts values('{0}','{1}','{2}',null)".format(Name,generate_password_hash(Password, method='pbkdf2:sha256', salt_length=8),Perm))
-        	conn.execute("insert into LVL values('{0}',null)".format(Name))
+        	conn.execute("insert into Accounts values('{0}','{1}','{2}','{3}')".format(Name,Password,Perm,'True'))
+        	conn.execute("insert into LVL values('{0}','{1}')".format(Name,"1"))
         	return {'status':'success'}
         return {'status':'fail'}
 
