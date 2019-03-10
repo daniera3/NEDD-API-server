@@ -2,7 +2,7 @@ from flask import *
 import requests
 from json import *
 from os import urandom
-
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = urandom(16)
@@ -33,13 +33,10 @@ def login():
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
     session['username'] = request.form['username']
-    data = {'user': 'test','pas':'dani12'}
-    data_json = simplejson.dumps(data)
-    payload = {'json_payload': data_json}
-
-    response = requests.post(
-        'https://asqwzx1.pythonanywhere.com/singin', data=payload
-    )
+    header={ "Content-Type": "application/json"}
+    #data = {"user":request.form['username'],"pas":generate_password_hash(request.form['password'], method='pbkdf2:sha256', salt_length=8)}
+    data = '{"user":"sdsd", "pas":"sadasd"}'
+    response = requests.post('https://asqwzx1.pythonanywhere.com/singin', data=data, headers=header)
 
     session['response']=response.content
 
