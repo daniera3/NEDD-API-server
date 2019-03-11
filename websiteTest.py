@@ -24,23 +24,43 @@ def register():
 
 @app.route('/login')
 def login():
-
-
-
     return render_template('login.html')
 
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
-    session['username'] = request.form['username']
+    user=request.form['username']
+    password=request.form['password']
     header={ "Content-Type": "application/json"}
-    #data = {"user":request.form['username'],"pas":generate_password_hash(request.form['password'], method='pbkdf2:sha256', salt_length=8)}
-    data = '{"user":"sdsd", "pas":"sadasd"}'
-    response = requests.post('https://asqwzx1.pythonanywhere.com/singin', data=data, headers=header)
+    data = {"user":"", "pas":""}
+    data['user']=user
+    data['pas']=password
+    data=json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    if eval(response.content)["status"]=="success":
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
-    session['response']=response.content
 
-    return redirect(url_for('index'))
+@app.route('/Register_data', methods=['POST'])
+def Register_data():
+
+    user=request.form['username']
+    password=generate_password_hash(request.form['password'], method='pbkdf2:sha256', salt_length=8)
+    header={ "Content-Type": "application/json"}
+    data = {"User":"","Password":""}
+    data['User']=user
+    data['Password']=password
+    data=json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'),data=data, headers=header)
+    if eval(response.content)["status"]=="success":
+        session['username'] = request.form['username']
+        return redirect(url_for('index'))
+    return redirect(url_for('register'))
+
+
+
 
 @app.route('/logout')
 def logout():
