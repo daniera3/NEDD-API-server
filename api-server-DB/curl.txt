@@ -1,7 +1,0 @@
-curl --header "Content-Type: application/json"   --request POST   --data '{"Name":"","Password":""}'   http://localhost:5000/login
-
-curl --header "Content-Type: application/json"   --request POST   --data '{"user":"","line":"","say":""}'   http://localhost:5000/test
-
-https://asqwzx1.pythonanywhere.com/singin/test/dani
-
-https://asqwzx1.pythonanywhere.com/test/test/2019-03-02
