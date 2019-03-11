@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  <h1>{% block title %}Log In{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+﻿<form class="form-inline my-2 my-lg-0" method="post" action="{{ url_for('handle_data') }}">
+    <input class="form-control mr-sm-2" name="username" type="text" placeholder="Id" aria-label="Search">
+    <input class="form-control mr-sm-2" name="password" type="text" placeholder="password" aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">login</button>
+</form>
+{% endblock %}
