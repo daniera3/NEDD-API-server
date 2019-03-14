@@ -10,5 +10,13 @@
     <label for="password">Password</label>
     <input type="password" name="password" id="password" required>
     <input type="submit" value="Register">
-  </form>
+    <div class="input-group mb-3">
+    <div class="input-group-prepend">
+    <label class="input-group-text" for="inputGroupSelect01">type user</label>
+   </div>
+   <select class="custom-select" id="permissions" name="permissions">
+    <option value="Nurmal">Nurmal</option>
+    <option value="Manager">Manager</option>
+     </select>
+    </div>
 {% endblock %}

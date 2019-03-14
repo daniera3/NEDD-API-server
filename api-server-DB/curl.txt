@@ -1,0 +1,27 @@
+curl --header "Content-Type: application/json"   --request POST   --data '{"user":"test","pas":"dani12"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/singin
+
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"user":"test","line":"hey","say":"hi"}' -u asqwzx1:NEDD  https://asqwzx1.pythonanywhere.com/stest
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"user":"test","Date":"2019-03-02"}' -u asqwzx1:NEDD  https://asqwzx1.pythonanywhere.com/test
+curl --header "Content-Type: application/json"   --request POST   --data '{"user":"test"}' -u asqwzx1:NEDD  https://asqwzx1.pythonanywhere.com/test
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test1","Password":"123456"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/singup
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test2","Password":"dani12"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/singup
+
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test","UserUpdate":"test3","Permissions":"Admin"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/SetPermissions
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test","UserUpdate":"test3","Permissions":"manager"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/SetPermissions
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test","UserUpdate":"test4","Permissions":"Nurmal"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/SetPermissions
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test","UserUpdate":"test3"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/SetPermissions //this put Nurmal
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test","del":"test4"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/DeleteUser
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test","ReturnU":"test4"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/ReturnUser
+
+curl --header "Content-Type: application/json"   --request POST   --data '{"User":"test4","OldPassword":"dani12","Password":"123123"}' -u asqwzx1:NEDD   https://asqwzx1.pythonanywhere.com/ChangePassword
+
+
+https://asqwzx1.pythonanywhere.com/singin/test/dani
+
+https://asqwzx1.pythonanywhere.com/test/test/2019-03-02

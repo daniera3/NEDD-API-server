@@ -13,7 +13,19 @@ key="NEDD"
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "hi"
+
+
+class SubFunc():
+    def CheckAdmin(user):
+        conn = db_connect.connect()
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?""", (str(user),"True",))
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        if not result['data']:
+            return False
+        else:
+            if result['data'][0]['Permissions']=="Admin":
+                return True
 
 class Test(Resource):
     def get(self,User,Date=datetime.datetime.now().strftime("%Y-%m-%d")):
@@ -47,23 +59,13 @@ class STest(Resource):
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
             return {'status':'Ufail'}
-        query = conn.execute("insert into SpeechTasks values(NULL,'{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
+        query = conn.execute("insert into SpeechTasks values('','{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
         return {'status':'success'}
 
 
 
 
 class Singin(Resource):
-    def get(self, user,pas):
-        conn = db_connect.connect()
-        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-            return {'status':'Ufail'}
-        if(check_password_hash(result['data'][0]['Password'],pas)):
-            return {'status':'success'}
-        return {'status':'Pfail'}
-
     def post(self):
         conn = db_connect.connect()
         user = request.json['user']
@@ -71,21 +73,19 @@ class Singin(Resource):
         query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
-            return {'status':'Ufail'}
+            return Encryption.enc(str({'status':'Ufail'}),key)
         if check_password_hash(result['data'][0]['Password'],pas):
-            return {'status':'success'}
-        return {'status':'Pfail'}
+            result= {'status':'success','Permissions':result['data'][0]['Permissions']}
+            return Encryption.enc(str(result),key)
+        return  Encryption.enc(str({'status':'Pfail'}),key)
 
 class singup(Resource):
     def post(self):
         conn = db_connect.connect()
         Name = request.json['User']
         Password = request.json['Password']
-        if 'perm' in request.json.keys():
-            Perm = request.json['perm']
-        else:
-            Perm='NULL'
-        if len(Name)<2 or len(Password)<6 or Name.count("select")!=0:
+        Perm = request.json['perm']
+        if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0:
             return {'status':'hacker'}
         query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -112,16 +112,11 @@ class ChangePassword(Resource):
             return {'status':'success'}
         return {'status':'fail'}
 
-class SetPermissions(Resource):
+class SetPermissions(Resource,SubFunc):
     def post(self):
         conn = db_connect.connect()
         Name = request.json['User']
-        query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-            return {'status':'fail'}
-        else:
-            if result['data'][0]['Permissions']=="Admin":
+        if super.CheckAdmin(Name):
                 Name = request.json['UserUpdate']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),'True',))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
