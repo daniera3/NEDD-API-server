@@ -47,7 +47,7 @@ def handle_data():
     response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response=eval(Description.dis(str(eval(response.content)),key))
     if response["STATUS"]=="SUCCESS":
-        session['username'] = request.form['username']
+        session['username'] = request.form['inputIdMain']
         session['permissions']=response['PERMISSIONS']
         return redirect(url_for('index'))
     return redirect(url_for('login'))

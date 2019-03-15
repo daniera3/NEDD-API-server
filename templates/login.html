@@ -6,16 +6,19 @@
 
 {% block content %}
   <form method="post" action="{{ url_for('handle_data') }}">
-    <div class="container ">
+    <div  class="container ">
+        <div class="row justify-content-md-center" >
+               <div class="col-6">
+                    <label for="inputEmail" class="sr-only">Email address</label>
+                    <input type="text" name="inputIdMain" id="inputIdMain" class="form-control" placeholder="UserId" required autofocus>
+                    <label for="inputPassword" class="sr-only">Password</label>
+                    <input type="password" name="inputPasswordMain" id="inputPasswordMain" class="form-control" placeholder="Password" required>
+                    <br />
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                    <br />
+                </div>
 
-    <label for="inputEmail" class="sr-only">Email address</label>
-    <input type="text" name="inputIdMain" id="inputIdMain" class="form-control" placeholder="UserId" required autofocus>
-    <label for="inputPassword" class="sr-only">Password</label>
-    <input type="password" name="inputPasswordMain" id="inputPasswordMain" class="form-control" placeholder="Password" required>
-    <br />
-    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-    <br />
-
+        </div>
     </div>
   </form>
   <p style="color:red"> {{ massge }} </p>
