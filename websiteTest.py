@@ -36,14 +36,12 @@ def register():
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    data['user'] = session["username"]
+    data['User'] = session["username"]
+    data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    session['test'] = response.content
-    response = eval(response.content)
-
-    requs = list(response)
-
-    return render_template('AdminRequest.html', requests=requs)
+    response = eval(response.content)['data']
+    flash(response, category='erorr')
+    return render_template('AdminRequest.html', requests=response)
 
 
 @app.route('/login')
