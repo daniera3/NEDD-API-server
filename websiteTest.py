@@ -7,6 +7,7 @@ from json import dumps
 from werkzeug.security import  generate_password_hash
 import Description
 
+
 app = Flask(__name__)
 key="NEDD"
 
@@ -40,8 +41,34 @@ def AdminRequest():
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)['data']
-    flash(response, category='erorr')
     return render_template('AdminRequest.html', requests=response)
+
+@app.route('/Submit1', methods=['POST'])
+def Submit1():
+    #data=request.form['myData']
+    hello = request.form.getlist()
+    flash(hello, category='erorr')
+    #data={}
+    #header = {"Content-Type": "application/json"}
+    #data['insert'] = True
+    #data = json.dumps(data)
+    #response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    #response = eval(response.content)
+    #flash(response['status'], category='erorr')
+    return json.dumps(hello)
+
+
+@app.route('/Submit2', methods=['POST'])
+def Submit2():
+    data = request.form['req']
+    header = {"Content-Type": "application/json"}
+    data['insert'] = False
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
+    flash(response['status'], category='erorr')
+    return json.dumps(response)
+
 
 
 @app.route('/login')

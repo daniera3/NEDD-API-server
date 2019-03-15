@@ -5,9 +5,10 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="container">
-    <form>
-        <table class="table">
+    <form id="Add">
+        <table id="RequsetTable" class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
@@ -18,16 +19,17 @@
                 </tr>
             </thead>
             <tbody>
-            {% for request in requests %}
+            {% for req in requests %}
                 <tr>
 
-                    <td>{{request.requesting}}</td>
-                    <td>{{request.user}}</td>
-                    <td>{{request.reason}}</td>
+                     <td>{{req.IDrequest}}</td>
+                    <td>{{req.requesting}}</td>
+                    <td>{{req.user}}</td>
+                    <td>{{req.reason}}</td>
                      <td>
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-success">accept</button>
-                            <button type="button" class="btn btn-warning">deny</button>
+                            <button type="button" onclick="AdminAccept({{req}})" class="btn btn-success">accept</button>
+                            <button type="button" onclick="AdminDeny({{req}})" class="btn btn-warning">deny</button>
                         </div>
                     </td>
                 </tr>
@@ -36,6 +38,18 @@
         </table>
     </form>
 </div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function AdminAccept(req) {
+        $.post("/Submit1",  {"myData": req},test);
+    }
+        function AdminDeny(req) {
+        $.post("/Submit2",  {"myData": req},test);
 
+    }
+            function test() {
+        alert("we try")
 
+    }
+</script>
 {% endblock %}
