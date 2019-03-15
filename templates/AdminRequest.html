@@ -1,0 +1,41 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  <h1 align="center">{% block title %}Requset Center{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">user requesting</th>
+                    <th scope="col">for user</th>
+                    <th scope="col">reason</th>
+                    <th scope="col">response</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for request in requests %}
+                <tr>
+
+                    <td>{{request.requesting}}</td>
+                    <td>{{request.user}}</td>
+                    <td>{{request.reason}}</td>
+                     <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-success">accept</button>
+                            <button type="button" class="btn btn-warning">deny</button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+{% endblock %}

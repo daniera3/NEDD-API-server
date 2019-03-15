@@ -29,6 +29,11 @@ def index():
 def register():
     return render_template('register.html')
 
+@app.route('/AdminRequest')
+def AdminRequest():
+
+    return render_template('AdminRequest.html')
+
 
 @app.route('/login')
 def login():
