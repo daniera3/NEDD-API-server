@@ -1,6 +1,6 @@
 # A very simple Flask Hello World app for you to get started with...
 
-from flask import Flask,render_template,request,session,url_for,redirect,json,flash
+from flask import Flask, render_template, request, session, url_for, redirect, json, flash
 import requests
 from os import urandom
 from json import dumps
@@ -29,10 +29,21 @@ def index():
 def register():
     return render_template('register.html')
 
+
+
+
 @app.route('/AdminRequest')
 def AdminRequest():
+    header = {"Content-Type": "application/json"}
+    data = {"User": ""}
+    data['user'] = session["username"]
+    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    session['test'] = response.content
+    response = eval(response.content)
 
-    return render_template('AdminRequest.html')
+    requs = list(response)
+
+    return render_template('AdminRequest.html', requests=requs)
 
 
 @app.route('/login')
@@ -67,12 +78,12 @@ def Register_data():
     password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=8)
     header = { "Content-Type": "application/json"}
     data = {"User":"","Password":"","perm":""}
-    data['User']=user
-    data['Password']=password
-    data['perm']=permissions
-    data=json.dumps(data)
+    data['User'] = user
+    data['Password'] = password
+    data['perm'] = permissions
+    data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    if eval(response.content)["status"]=="success":
+    if eval(response.content)["status"] == "success":
         session['username'] = request.form['Register_New_User']
         session['permissions']=permissions.upper()
         return redirect(url_for('index'))
