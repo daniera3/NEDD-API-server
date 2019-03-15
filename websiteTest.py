@@ -55,18 +55,18 @@ def handle_data():
 
 @app.route('/Register_data', methods=['POST'])
 def Register_data():
-    user=request.form['username']
-    permissions=request.form['permissions']
-    password=generate_password_hash(request.form['password'], method='pbkdf2:sha256', salt_length=8)
-    header={ "Content-Type": "application/json"}
+    user = request.form['Register_New_User']
+    permissions = request.form['permissions']
+    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=8)
+    header = { "Content-Type": "application/json"}
     data = {"User":"","Password":"","perm":""}
     data['User']=user
     data['Password']=password
     data['perm']=permissions
     data=json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'),data=data, headers=header)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     if eval(response.content)["status"]=="success":
-        session['username'] = request.form['username']
+        session['username'] = request.form['Register_New_User']
         session['permissions']=permissions.upper()
         return redirect(url_for('index'))
     return redirect(url_for('register'))
