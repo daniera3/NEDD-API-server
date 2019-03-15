@@ -37,8 +37,8 @@ def login():
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
-    user=request.form['username']
-    password=request.form['password']
+    user=request.form['inputIdMain']
+    password=request.form['inputPasswordMain']
     header={ "Content-Type": "application/json"}
     data = {"user":"", "pas":""}
     data['user']=user
