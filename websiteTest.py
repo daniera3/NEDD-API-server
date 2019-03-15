@@ -1,10 +1,18 @@
-from flask import *
+# A very simple Flask Hello World app for you to get started with...
+
+from flask import Flask,render_template,request,session,url_for,redirect,json
 import requests
-from json import *
 from os import urandom
-from werkzeug.security import check_password_hash, generate_password_hash
+from json import dumps
+from werkzeug.security import  generate_password_hash
+import Description
 
 app = Flask(__name__)
+key="NEDD"
+
+
+
+
 app.secret_key = urandom(16)
 
 my_domain = 'asqwzx1.pythonanywhere.com/'
@@ -37,25 +45,29 @@ def handle_data():
     data['pas']=password
     data=json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    if eval(response.content)["status"]=="success":
+    response=eval(Description.dis(str(eval(response.content)),key))
+    if response["STATUS"]=="SUCCESS":
         session['username'] = request.form['username']
+        session['permissions']=response['PERMISSIONS']
         return redirect(url_for('index'))
     return redirect(url_for('login'))
 
 
 @app.route('/Register_data', methods=['POST'])
 def Register_data():
-
     user=request.form['username']
+    permissions=request.form['permissions']
     password=generate_password_hash(request.form['password'], method='pbkdf2:sha256', salt_length=8)
     header={ "Content-Type": "application/json"}
-    data = {"User":"","Password":""}
+    data = {"User":"","Password":"","perm":""}
     data['User']=user
     data['Password']=password
+    data['perm']=permissions
     data=json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'),data=data, headers=header)
     if eval(response.content)["status"]=="success":
         session['username'] = request.form['username']
+        session['permissions']=permissions.upper()
         return redirect(url_for('index'))
     return redirect(url_for('register'))
 
@@ -67,13 +79,9 @@ def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
     session.pop('response', None)
+    session.pop('permissions', None)
     return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
-     app.run(debug=True)
-
-
-
-
-
+    app.run()
