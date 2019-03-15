@@ -1,6 +1,6 @@
 # A very simple Flask Hello World app for you to get started with...
 
-from flask import Flask,render_template,request,session,url_for,redirect,json
+from flask import Flask,render_template,request,session,url_for,redirect,json,flash
 import requests
 from os import urandom
 from json import dumps
@@ -55,6 +55,8 @@ def handle_data():
         session['username'] = request.form['inputIdMain']
         session['permissions']=response['PERMISSIONS']
         return redirect(url_for('index'))
+    message="NEED WIRTE SOMTHING HER FOR ERORR"
+    flash(message, category='erorr')
     return redirect(url_for('login'))
 
 
@@ -74,6 +76,8 @@ def Register_data():
         session['username'] = request.form['Register_New_User']
         session['permissions']=permissions.upper()
         return redirect(url_for('index'))
+    message="NEED WIRTE SOMTHING HER FOR ERORR"
+    flash(message, category='erorr')
     return redirect(url_for('register'))
 
 
