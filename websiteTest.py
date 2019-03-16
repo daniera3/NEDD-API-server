@@ -19,8 +19,7 @@ app.secret_key = urandom(16)
 my_domain = 'asqwzx1.pythonanywhere.com/'
 username = 'asqwzx1'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
-login_manager = LoginManager()
-login_manager.init_app(app)
+
 
 @app.route('/')
 def index():
