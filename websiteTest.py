@@ -6,7 +6,7 @@ from os import urandom
 from json import dumps
 from werkzeug.security import  generate_password_hash
 import Description
-
+from flask_user import  login_required, roles_required, UserManager, UserMixin,
 
 app = Flask(__name__)
 key="NEDD"
@@ -19,7 +19,8 @@ app.secret_key = urandom(16)
 my_domain = 'asqwzx1.pythonanywhere.com/'
 username = 'asqwzx1'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
-
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 @app.route('/')
 def index():
@@ -34,6 +35,7 @@ def register():
 
 
 @app.route('/AdminRequest')
+@roles_required('Admin')
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
@@ -45,29 +47,27 @@ def AdminRequest():
 
 @app.route('/Submit1', methods=['POST'])
 def Submit1():
-    #data=request.form['myData']
-    hello = request.form.getlist()
-    flash(hello, category='erorr')
-    #data={}
-    #header = {"Content-Type": "application/json"}
-    #data['insert'] = True
-    #data = json.dumps(data)
-    #response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
-    #response = eval(response.content)
-    #flash(response['status'], category='erorr')
-    return json.dumps(hello)
-
-
-@app.route('/Submit2', methods=['POST'])
-def Submit2():
-    data = request.form['req']
+    data=request.form
+    data=dict(data)
     header = {"Content-Type": "application/json"}
-    data['insert'] = False
+    data['insert'] = True
+    data['User'] = session["username"]
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
-    flash(response['status'], category='erorr')
-    return json.dumps(response)
+    return response["status"]
+
+@app.route('/Submit2', methods=['POST'])
+def Submit2():
+    data=request.form
+    data=dict(data)
+    header = {"Content-Type": "application/json"}
+    data['insert'] = False
+    data['User'] = session["username"]
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
+    return response["status"]
 
 
 
@@ -90,6 +90,7 @@ def handle_data():
     if response["STATUS"]=="SUCCESS":
         session['username'] = request.form['inputIdMain']
         session['permissions']=response['PERMISSIONS']
+        login_user(response['PERMISSIONS'])
         return redirect(url_for('index'))
     message="NEED WIRTE SOMTHING HER FOR ERORR"
     flash(message, category='erorr')

@@ -41,14 +41,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     function AdminAccept(req) {
-        $.post("/Submit1",  {"myData": req},test);
+        $.post("/Submit1",req,test);
     }
         function AdminDeny(req) {
-        $.post("/Submit2",  {"myData": req},test);
+        $.post("/Submit2",req,test);
 
     }
-            function test() {
-        alert("we try")
+            function test(massge) {
+        alert(massge);
 
     }
 </script>
