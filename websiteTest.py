@@ -6,7 +6,7 @@ from os import urandom
 from json import dumps
 from werkzeug.security import  generate_password_hash
 import Description
-from flask_user import  login_required, roles_required, UserManager, UserMixin,
+
 
 app = Flask(__name__)
 key="NEDD"
@@ -35,7 +35,6 @@ def register():
 
 
 @app.route('/AdminRequest')
-@roles_required('Admin')
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
