@@ -22,11 +22,11 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 @app.route('/')
 def index():
     if session.get('username'):
-        if session['permissions'] == 'normal':
+        if session['permissions'] == 'Normal':
             return render_template('status/normal_login.html')
-        if session['permissions'] == 'parent':
+        if session['permissions'] == 'Maneger':
             return render_template('status/parent_login.html')
-        if session['permissions'] == 'admin':
+        if session['permissions'] == 'Admin':
             return render_template('status/admin_login.html')
     return render_template('promo.html')
 
@@ -105,7 +105,7 @@ def handle_data():
     if response["STATUS"]=="SUCCESS":
         session['username'] = request.form['inputIdMain']
         session['permissions']=response['PERMISSIONS']
-        return render_template('status/admin_login.html')
+        return redirect(url_for('login'))
     message="NEED WIRTE SOMTHING HER FOR ERORR"
     flash(message, category='erorr')
     return redirect(url_for('login'))
