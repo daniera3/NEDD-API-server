@@ -24,11 +24,11 @@ def index():
     if session.get('username'):
         if session['permissions'] == 'normal':
             return render_template('status/normal_login.html')
-        if session['permissions'] == 'normal':
+        if session['permissions'] == 'parent':
             return render_template('status/parent_login.html')
         if session['permissions'] == 'admin':
             return render_template('status/admin_login.html')
-    return render_template('status/promo.html')
+    return render_template('promo.html')
 
 
 @app.route('/register')
@@ -46,7 +46,7 @@ def AdminRequest():
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)['data']
-    return render_template('AdminRequest.html', requests=response)
+    return render_template('status/admin_features/AdminRequest.html', requests=response)
 
 
 @app.route('/GetRequestJson', methods=['POST'])
