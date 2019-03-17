@@ -4,13 +4,14 @@ from flask import Flask, render_template, request, session, url_for, redirect, j
 import requests
 from os import urandom
 from json import dumps
-from werkzeug.security import  generate_password_hash
+from werkzeug.security import  generate_password_hash,pbkdf2_hex
 import Description
+from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
 key="NEDD"
-
+db_connect = create_engine('sqlite:///nedd.db')
 
 
 
@@ -143,18 +144,24 @@ def handle_data():
     user=request.form['inputIdMain']
     password=request.form['inputPasswordMain']
     header={ "Content-Type": "application/json"}
-    data = {"user":"", "pas":""}
+    data = {}
     data['user']=user
-    data['pas']=password
+    conn = db_connect.connect()
+    query = conn.execute("select * from Accounts WHERE username=?", (user,))
+    result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+    if not result['data']:
+        password ='a'
+    else:
+        password= pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
+    data['pas']=str(password)
     data=json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response=eval(Description.dis(str(eval(response.content)),key))
     if response["STATUS"]=="SUCCESS":
-        session['username'] = request.form['inputIdMain']
+        session['username'] = user
         session['permissions']=response['PERMISSIONS']
         return redirect(url_for('index'))
-    message="NEED WIRTE SOMTHING HER FOR ERORR"
-    flash(message, category='erorr')
+    flash("incorrect password or/and user", category='erorr')
     return redirect(url_for('login'))
 
 
@@ -162,7 +169,8 @@ def handle_data():
 def Register_data():
     user = request.form['Register_New_User']
     permissions = request.form['permissions']
-    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=8)
+    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=50)
+    salt=password.split('$')[1]
     header = { "Content-Type": "application/json"}
     data = {"User":"","Password":"","perm":""}
     data['User'] = user
@@ -171,11 +179,15 @@ def Register_data():
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     if eval(Description.dis(str(eval(response.content)),key))["STATUS"]=="SUCCESS":
-        session['username'] = request.form['Register_New_User']
+        try:
+            conn = db_connect.connect()
+            conn.execute("insert into Accounts values('{0}','{1}')".format(user, salt))
+        except:
+            return redirect(url_for('register'))
+        session['username'] = user
         session['permissions']=permissions.upper()
         return redirect(url_for('index'))
-    message="NEED WIRTE SOMTHING HER FOR ERORR"
-    flash(message, category='erorr')
+    flash("cant register this user", category='erorr')
     return redirect(url_for('register'))
 
 
