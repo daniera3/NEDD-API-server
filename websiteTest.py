@@ -11,6 +11,7 @@ from sqlalchemy import create_engine
 
 app = Flask(__name__)
 key="NEDD"
+#db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
 
