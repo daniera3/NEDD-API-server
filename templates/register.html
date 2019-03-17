@@ -5,7 +5,7 @@
 <h1 align="center">{% block title %}Register{% endblock %}</h1>
 <div class="container">
     <div class="row justify-content-md-center" >
-        <form method="post" action="{{ url_for('Register_data') }}">
+        <form method="post" action="{{ url_for('handle_data') }}">
             <div class="container">
                 <input type="text" name="Register_New_User" id="Register_New_User" class="form-control" placeholder="User" required autofocus>
                 <input type="text" name="Register_New_Password" id="Register_New_Password" class="form-control" placeholder="Password" required autofocus>
@@ -16,6 +16,7 @@
                                 <option value="Manager">Manager</option>
                             </select>
                     </div>
+                <input type="hidden" name="type_form" class="form-control" value="register">
                 </div>
                 <div align="center">
                     <button  class="btn btn-success" type="submit">Register</button>

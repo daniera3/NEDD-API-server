@@ -1,15 +1,12 @@
-# A very simple Flask Hello World app for you to get started with...
-
 from flask import Flask, render_template, request, session, url_for, redirect, json, flash,jsonify
 import requests
 from os import urandom
-from json import dumps
-from werkzeug.security import  generate_password_hash
+from werkzeug.security import generate_password_hash
 import Description
 
 
 app = Flask(__name__)
-key="NEDD"
+key = "NEDD"
 
 
 app.secret_key = urandom(16)
@@ -85,30 +82,55 @@ def Submit2():
     return response["status"]
 
 
-
 @app.route('/login')
-def login():
+def login_page():
     return render_template('login.html')
+
+
+def sent_to_server(data, type_request):
+    data = json.dumps(data)
+    header = {"Content-Type": "application/json"}
+    response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
+                             data=data,
+                             headers=header)
+    return eval(Description.dis(str(eval(response.content)), key))
+
+
+def login(user_name, password):
+    data = {"user": user_name, "pas": password}
+    response = sent_to_server(data, 'singin')
+    if response["STATUS"] == "SUCCESS":
+        session['username'] = user_name
+        session['permissions'] = response['PERMISSIONS']
+        return index()
+    message = "there was an error please try again"
+    flash(message, category='erorr')
+    return redirect(url_for('login'))
+
+#TODO fix the registrate function
+def register(user_name, password, type_user):
+    password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
+    data = {"User": user_name, "Password": password, "perm": type_user}
+    response = sent_to_server(data, 'singup')
+    if response["STATUS"] == "SUCCESS":
+        session['username'] = request.form['Register_New_User']
+        session['permissions'] = type_user.upper()
+        return redirect(url_for('index'))
+    message = "NEED WIRTE SOMTHING HER FOR ERORR"
+    flash(message, category='erorr')
+    return redirect(url_for('register'))
+
+
+
 
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
-    user=request.form['inputIdMain']
-    password=request.form['inputPasswordMain']
-    header={ "Content-Type": "application/json"}
-    data = {"user":"", "pas":""}
-    data['user']=user
-    data['pas']=password
-    data=json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    response=eval(Description.dis(str(eval(response.content)),key))
-    if response["STATUS"]=="SUCCESS":
-        session['username'] = request.form['inputIdMain']
-        session['permissions']=response['PERMISSIONS']
-        return index()
-    message="NEED WIRTE SOMTHING HER FOR ERORR"
-    flash(message, category='erorr')
-    return redirect(url_for('login'))
+    if request.form['type_form'] == 'login':
+        return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
+    elif request.form['type_form'] == 'register':
+        return register(request.form['Register_New_User'], request.form['Register_New_Password'], request.form['permissions'])
+    return index()
 
 
 @app.route('/Register_data', methods=['POST'])
