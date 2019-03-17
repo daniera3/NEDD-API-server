@@ -1,5 +1,3 @@
-# A very simple Flask Hello World app for you to get started with...
-
 from flask import Flask, render_template, request, session, url_for, redirect, json, flash,jsonify
 import requests
 from os import urandom
@@ -14,8 +12,6 @@ key="NEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
-
-
 app.secret_key = urandom(16)
 
 my_domain = 'asqwzx1.pythonanywhere.com/'
@@ -25,11 +21,18 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if session.get('username'):
+        if session['permissions'] == 'NORMAL':
+            return render_template('status/normal_login.html')
+        if session['permissions'] == 'MANGER':
+            return render_template('status/parent_login.html')
+        if session['permissions'] == 'ADMIN':
+            return render_template('status/admin_login.html')
+    return render_template('login.html')
 
 
 @app.route('/register')
-def register():
+def register_page():
     return render_template('register.html')
 
 @app.route('/UserControler')
@@ -87,7 +90,7 @@ def AdminRequest():
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)['data']
-    return render_template('AdminRequest.html', requests=response)
+    return render_template('status/admin_features/AdminRequest.html', requests=response)
 
 
 @app.route('/GetRequestJson', methods=['POST'])
@@ -134,36 +137,31 @@ def Submit2():
     return response["status"]
 
 
-
 @app.route('/login')
-def login():
+def login_page():
     return render_template('login.html')
 
 
-@app.route('/handle_data', methods=['POST'])
-def handle_data():
-    user=request.form['inputIdMain']
-    password=request.form['inputPasswordMain']
-    header={ "Content-Type": "application/json"}
-    data = {}
-    data['user']=user
-    conn = db_connect.connect()
-    query = conn.execute("select * from Accounts WHERE username=?", (user,))
-    result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
-    if not result['data']:
-        password ='a'
-    else:
-        password= pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
-    data['pas']=str(password)
-    data=json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    response=eval(Description.dis(str(eval(response.content)),key))
-    if response["STATUS"]=="SUCCESS":
-        session['username'] = user
-        session['permissions']=response['PERMISSIONS']
-        return redirect(url_for('index'))
-    flash("incorrect password or/and user", category='erorr')
-    return redirect(url_for('login'))
+def sent_to_server(data, type_request):
+    data = json.dumps(data)
+    header = {"Content-Type": "application/json"}
+    response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
+                             data=data,
+                             headers=header)
+    return eval(Description.dis(str(eval(response.content)), key))
+
+
+def login(user_name, password):
+    data = {"user": user_name, "pas": password}
+    response = sent_to_server(data, 'singin')
+    session['eror']=response
+    if response["STATUS"] == "success":
+        session['username'] = user_name
+        session['permissions'] = response['PERMISSIONS']
+        return index()
+    message = "there was an error please try again"
+    flash(message, category='erorr')
+    return redirect(url_for('login_page'))
 
 
 @app.route('/Register_data', methods=['POST'])
@@ -192,6 +190,13 @@ def Register_data():
     return redirect(url_for('register'))
 
 
+@app.route('/handle_data', methods=['POST'])
+def handle_data():
+    if request.form['type_form'] == 'login':
+        return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
+    elif request.form['type_form'] == 'register':
+        return register(request.form['Register_New_User'], request.form['Register_New_Password'], request.form['permissions'])
+    return index()
 
 
 @app.route('/logout')

@@ -1,10 +1,7 @@
-{% extends 'index.html' %}
-
-{% block header %}
-  <h1 align="center">{% block title %}Log In{% endblock %}</h1>
-{% endblock %}
+{% extends 'promo.html' %}
 
 {% block content %}
+<h1 align="center">{% block title %}Log In{% endblock %}</h1>
   <form method="post" action="{{ url_for('handle_data') }}">
     <div  class="container ">
         <div class="row justify-content-md-center" >
@@ -16,11 +13,13 @@
                     <br />
                     <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
                     <br />
+                   <input type="hidden" name="type_form" class="form-control" value="login">
                 </div>
 
         </div>
     </div>
   </form>
+{{session['eror']}}
 {% endblock %}
 
 
