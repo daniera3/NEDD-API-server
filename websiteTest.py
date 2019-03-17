@@ -49,7 +49,7 @@ def GetRequestJson():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
     data['User'] = session["username"]
-    data1= json.dumps(data)
+    data= json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)
     return json.dumps(response)
