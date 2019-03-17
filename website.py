@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, url_for, redirect, json, flash,jsonify
 import requests
 from os import urandom
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash,pbkdf2_hex
 import Description
 
 from sqlalchemy import create_engine
@@ -48,7 +48,7 @@ def UserControler():
     deleteUsers = eval(response.content)['data']
     response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToReturn', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     returnUsers = eval(response.content)['data']
-    return render_template('UserControl.html', UserDelete=deleteUsers,UserReturn=returnUsers)
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers,UserReturn=returnUsers)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -152,10 +152,17 @@ def sent_to_server(data, type_request):
 
 
 def login(user_name, password):
-    data = {"user": user_name, "pas": password}
+    data = {"user": user_name}
+    conn = db_connect.connect()
+    query = conn.execute("select * from Accounts WHERE username=?", (user_name,))
+    result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+    if not result['data']:
+        password ='a'
+    else:
+        password= pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
+    data['pas'] = str(password)
     response = sent_to_server(data, 'singin')
-    session['eror']=response
-    if response["STATUS"] == "success":
+    if response["STATUS"] == "SUCCESS":
         session['username'] = user_name
         session['permissions'] = response['PERMISSIONS']
         return index()
@@ -164,30 +171,24 @@ def login(user_name, password):
     return redirect(url_for('login_page'))
 
 
-@app.route('/Register_data', methods=['POST'])
-def Register_data():
-    user = request.form['Register_New_User']
-    permissions = request.form['permissions']
-    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=50)
+def register(user,password,permissions):
     salt=password.split('$')[1]
-    header = { "Content-Type": "application/json"}
-    data = {"User":"","Password":"","perm":""}
+    data = {}
     data['User'] = user
     data['Password'] = password
     data['perm'] = permissions
-    data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    if eval(Description.dis(str(eval(response.content)),key))["STATUS"]=="SUCCESS":
+    response = sent_to_server(data, 'singup')
+    if response["STATUS"] == "SUCCESS":
         try:
             conn = db_connect.connect()
             conn.execute("insert into Accounts values('{0}','{1}')".format(user, salt))
         except:
-            return redirect(url_for('register'))
+            return redirect(url_for('register_page'))
         session['username'] = user
         session['permissions']=permissions.upper()
-        return redirect(url_for('index'))
+        return index()
     flash("cant register this user", category='erorr')
-    return redirect(url_for('register'))
+    return redirect(url_for('register_page'))
 
 
 @app.route('/handle_data', methods=['POST'])
@@ -195,7 +196,7 @@ def handle_data():
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], request.form['Register_New_Password'], request.form['permissions'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=50), request.form['permissions'])
     return index()
 
 

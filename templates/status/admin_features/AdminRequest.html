@@ -1,6 +1,8 @@
-{% extends 'index.html' %}
+{% extends 'status/admin_login.html' %}
 
-
+{% block header %}
+  <h1 align="center" style="color:dimgray">{% block title %}Admin Request{% endblock %}</h1>
+{% endblock %}
 
 {% block content %}
 <i id="messg" style="font-size:50px;color:gold"></i>
