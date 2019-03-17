@@ -62,7 +62,6 @@ def Submit1():
     data['insert'] = True
     data['User'] = session["username"]
     data = json.dumps(data)
-    flash(data, category='erorr')
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
     return response["status"]
