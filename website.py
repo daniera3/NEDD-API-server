@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, session, url_for, redirect, json, flash,jsonify
 import requests
 from os import urandom
-from json import dumps
-from werkzeug.security import  generate_password_hash,pbkdf2_hex
+from werkzeug.security import generate_password_hash
 import Description
+
 from sqlalchemy import create_engine
 
 
