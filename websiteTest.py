@@ -57,12 +57,12 @@ def GetRequestJson():
 @app.route('/Submit1', methods=['POST'])
 def Submit1():
     data=request.form
-
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = True
     data['User'] = session["username"]
     data = json.dumps(data)
+    flash(data, category='erorr')
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
     return response["status"]
@@ -70,9 +70,7 @@ def Submit1():
 @app.route('/Submit2', methods=['POST'])
 def Submit2():
     data=request.form
-
     data=dict(data)
-    flash(data,category='erorr')
     header = {"Content-Type": "application/json"}
     data['insert'] = False
     data['User'] = session["username"]
