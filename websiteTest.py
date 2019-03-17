@@ -30,14 +30,55 @@ def index():
 def register():
     return render_template('register.html')
 
+@app.route('/UserControler')
+def UserControler():
+    header = {"Content-Type": "application/json"}
+    data = {}
+    if 'username' in session:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToDelete', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    deleteUsers = eval(response.content)['data']
+    response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToReturn', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    returnUsers = eval(response.content)['data']
+    return render_template('UserControl.html', UserDelete=deleteUsers,UserReturn=returnUsers)
 
+
+@app.route('/DeleteUser', methods=['POST'])
+def DeleteUser():
+    data=dict(request.form)
+    header = {"Content-Type": "application/json"}
+    if 'username' in session:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/DeleteUser', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
+    return response["status"]
+
+
+@app.route('/userReturn', methods=['POST'])
+def userReturn():
+    data=dict(request.form)
+    header = {"Content-Type": "application/json"}
+    if 'username' in session:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/ReturnUser', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
+    return response["status"]
 
 
 @app.route('/AdminRequest')
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    if session["username"]:
+    if 'username' in session:
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -51,7 +92,7 @@ def AdminRequest():
 def GetRequestJson():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    if session["username"]:
+    if 'username' in session:
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -66,7 +107,7 @@ def Submit1():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = True
-    if session["username"]:
+    if 'username' in session:
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -81,7 +122,7 @@ def Submit2():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = False
-    if session["username"]:
+    if 'username' in session:
         data['User'] = session["username"]
     else:
         return render_template('index.html')

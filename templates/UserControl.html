@@ -1,0 +1,57 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  <h1 align="center">{% block title %}users controler{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form id="Add">
+        <table id="RequsetTable" class="table table-bordered">
+                <tr>
+                    <td>
+        <label>delete:</label>
+        <select id="user" name="user" width="600px">
+        <option SELECTED value='0'>Choose user for delete</option>
+        {% for x in UserDelete %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+      </select>
+                        <button type="button" onclick="DeleteUser()" class="btn btn-success">delete</button>
+                    </td>
+                    <td>
+
+        <label>return:</label>
+        <select id="userReturn" name="userReturn" width="600px">
+        <option SELECTED Rvalue='0'>Choose user for return</option>
+        {% for x in UserReturn %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+        </select>
+                         <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
+                    </td>
+                </tr>
+        </table>
+    </form>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    function DeleteUser() {
+        var option = document.getElementById("user").value
+        if (option!=0)
+            option={'del':option}
+        $.post("/DeleteUser", option, show);
+    }
+    function UserReturn() {
+        var option = document.getElementById("userReturn").value
+        if (option!=0)
+            option={'ReturnU':option}
+        $.post("/userReturn", option, show);
+
+    }
+    function show(massge) {
+        alert(massge);
+        location.reload();
+    }
+</script>
+{% endblock %}
