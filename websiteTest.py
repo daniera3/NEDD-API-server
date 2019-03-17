@@ -170,7 +170,7 @@ def Register_data():
     data['perm'] = permissions
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    if eval(response.content)["status"] == "success":
+    if eval(Description.dis(str(eval(response.content)),key))["STATUS"]=="SUCCESS":
         session['username'] = request.form['Register_New_User']
         session['permissions']=permissions.upper()
         return redirect(url_for('index'))
