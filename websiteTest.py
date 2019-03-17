@@ -1,6 +1,6 @@
 # A very simple Flask Hello World app for you to get started with...
 
-from flask import Flask, render_template, request, session, url_for, redirect, json, flash
+from flask import Flask, render_template, request, session, url_for, redirect, json, flash,jsonify
 import requests
 from os import urandom
 from json import dumps
@@ -43,9 +43,21 @@ def AdminRequest():
     response = eval(response.content)['data']
     return render_template('AdminRequest.html', requests=response)
 
+
+@app.route('/GetRequestJson', methods=['POST'])
+def GetRequestJson():
+    header = {"Content-Type": "application/json"}
+    data = {"User": ""}
+    data['User'] = session["username"]
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    response = eval(response.content)
+    return json.dumps(response)
+
 @app.route('/Submit1', methods=['POST'])
 def Submit1():
     data=request.form
+
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = True
@@ -58,7 +70,9 @@ def Submit1():
 @app.route('/Submit2', methods=['POST'])
 def Submit2():
     data=request.form
+
     data=dict(data)
+    flash(data,category='erorr')
     header = {"Content-Type": "application/json"}
     data['insert'] = False
     data['User'] = session["username"]
@@ -88,7 +102,6 @@ def handle_data():
     if response["STATUS"]=="SUCCESS":
         session['username'] = request.form['inputIdMain']
         session['permissions']=response['PERMISSIONS']
-        login_user(response['PERMISSIONS'])
         return redirect(url_for('index'))
     message="NEED WIRTE SOMTHING HER FOR ERORR"
     flash(message, category='erorr')
@@ -128,4 +141,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

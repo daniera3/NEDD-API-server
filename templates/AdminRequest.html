@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-
+<i id="messg" style="font-size:50px;color:gold"></i>
 <div class="container">
     <form id="Add">
         <table id="RequsetTable" class="table">
@@ -42,13 +42,36 @@
 <script>
     function AdminAccept(req) {
         $.post("/Submit1",req,test);
+        $.post("/GetRequestJson",null,FillTable)
     }
         function AdminDeny(req) {
         $.post("/Submit2",req,test);
+        $.post("/GetRequestJson",null,FillTable)
 
     }
             function test(massge) {
         alert(massge);
+
+    }
+        function FillTable(requests) {
+                $("#RequsetTable").find("tr:gt(0)").remove();
+                var tb1 = $("#RequsetTable");
+                obj = JSON.parse(requests).data;
+                for (k = 0; k < obj.length; k++){
+            var newRow = "<tr>" +
+                    "<td>"+obj[k].IDrequest+"</td>"+
+                    "<td>"+obj[k].requesting+"</td>"+
+                    "<td>"+obj[k].user+"</td>"+
+                    "<td>"+obj[k].reason+"</td>"+
+                     "<td>"+
+                        "<div class=\"btn-group\" role=\"group\">"+
+                            "<button type=\"button\" onclick=\"AdminAccept(obj[k])\" class=\"btn btn-success\">accept</button>"+
+                            "<button type=\"button\" onclick=\"AdminDeny(obj[k])\" class=\"btn btn-warning\">deny</button>"+
+                        "</div>"+
+                    "</td>"+
+                "</tr>";
+            tb1.append(newRow);
+        }
 
     }
 </script>
