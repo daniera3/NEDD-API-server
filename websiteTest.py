@@ -37,7 +37,10 @@ def register():
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    data['User'] = session["username"]
+    if session["username"]:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)['data']
@@ -48,7 +51,10 @@ def AdminRequest():
 def GetRequestJson():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    data['User'] = session["username"]
+    if session["username"]:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data= json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)
@@ -60,7 +66,10 @@ def Submit1():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = True
-    data['User'] = session["username"]
+    if session["username"]:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
@@ -72,7 +81,10 @@ def Submit2():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = False
-    data['User'] = session["username"]
+    if session["username"]:
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
