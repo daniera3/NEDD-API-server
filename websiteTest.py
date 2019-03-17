@@ -12,8 +12,6 @@ app = Flask(__name__)
 key="NEDD"
 
 
-
-
 app.secret_key = urandom(16)
 
 my_domain = 'asqwzx1.pythonanywhere.com/'
@@ -23,7 +21,14 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if session.get('username'):
+        if session['permissions'] == 'normal':
+            return render_template('status/normal_login.html')
+        if session['permissions'] == 'normal':
+            return render_template('status/parent_login.html')
+        if session['permissions'] == 'admin':
+            return render_template('status/admin_login.html')
+    return render_template('status/promo.html')
 
 
 @app.route('/register')
@@ -100,7 +105,7 @@ def handle_data():
     if response["STATUS"]=="SUCCESS":
         session['username'] = request.form['inputIdMain']
         session['permissions']=response['PERMISSIONS']
-        return redirect(url_for('index'))
+        return render_template('status/admin_login.html')
     message="NEED WIRTE SOMTHING HER FOR ERORR"
     flash(message, category='erorr')
     return redirect(url_for('login'))

@@ -14,6 +14,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
+{%block nev_bar %}
 
   <a class="navbar-brand" href="/">NEDD</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +27,8 @@
         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
       {% if session['permissions']  %}
+
+
       {% if session['permissions']=='NORMAL'%}
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -52,47 +55,28 @@
         </div>
       </li>
         {% endif %}
-              {% if session['permissions']=='ADMIN'  %}
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          admin
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{{ url_for('AdminRequest') }}">Requset Users</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-        {% endif %}
+
+     {% block options %}
+
+        {% endblock %}
+
+
          {% endif %}
     </ul>
     <ul class=" my-2 my-lg-0">
-        {% if session['username']  %}
-                <span class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle badge badge-pill badge-primary"  style="font-size:25px;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          {{ session['username'] }}
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">change password</a>
-          <a class="dropdown-item" href="#">update profile </a></div>
-      </span>
-        <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('logout') }}">logoff</a>
 
-    {% else %}
-        <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('login') }}">logIn</a>
-        <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('register') }}">register</a>
-{% endif %}
+        {% block profile %}
+
+
+          {% endblock %}
+
     </ul>
   </div>
 </nav>
+    {% endblock %}
 
 
 
-
-{% block header %}
-
-     {% endblock %}
   {% for message in get_flashed_messages() %}
     <div style="color:#ff0738" class="flash">{{ message }}</div>
   {% endfor %}
@@ -101,7 +85,8 @@
      {% endblock %}
 
 
-{% block scripts %}{% endblock %}
+{% block scripts %}
+    {% endblock %}
 
 </body>
 </html>
