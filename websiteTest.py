@@ -36,7 +36,7 @@ def register():
 def UserControler():
     header = {"Content-Type": "application/json"}
     data = {}
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -52,7 +52,7 @@ def UserControler():
 def DeleteUser():
     data=dict(request.form)
     header = {"Content-Type": "application/json"}
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -66,7 +66,7 @@ def DeleteUser():
 def userReturn():
     data=dict(request.form)
     header = {"Content-Type": "application/json"}
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -80,7 +80,7 @@ def userReturn():
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -94,7 +94,7 @@ def AdminRequest():
 def GetRequestJson():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -109,7 +109,7 @@ def Submit1():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = True
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -124,7 +124,7 @@ def Submit2():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = False
-    if 'username' in session:
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
