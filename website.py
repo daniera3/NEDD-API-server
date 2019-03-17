@@ -29,7 +29,7 @@ def index():
 
 
 @app.route('/register')
-def register():
+def register_page():
     return render_template('register.html')
 
 
@@ -107,21 +107,21 @@ def login(user_name, password):
     flash(message, category='erorr')
     return redirect(url_for('login'))
 
+
 #TODO fix the registrate function
+    #need to add encryption to server side
 def register(user_name, password, type_user):
     password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
     data = {"User": user_name, "Password": password, "perm": type_user}
     response = sent_to_server(data, 'singup')
-    if response["STATUS"] == "SUCCESS":
+
+    if response["status"] == "success":
         session['username'] = request.form['Register_New_User']
         session['permissions'] = type_user.upper()
         return redirect(url_for('index'))
-    message = "NEED WIRTE SOMTHING HER FOR ERORR"
+    message = "there was an error please try again"
     flash(message, category='erorr')
     return redirect(url_for('register'))
-
-
-
 
 
 @app.route('/handle_data', methods=['POST'])
@@ -131,29 +131,6 @@ def handle_data():
     elif request.form['type_form'] == 'register':
         return register(request.form['Register_New_User'], request.form['Register_New_Password'], request.form['permissions'])
     return index()
-
-
-@app.route('/Register_data', methods=['POST'])
-def Register_data():
-    user = request.form['Register_New_User']
-    permissions = request.form['permissions']
-    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=8)
-    header = { "Content-Type": "application/json"}
-    data = {"User":"","Password":"","perm":""}
-    data['User'] = user
-    data['Password'] = password
-    data['perm'] = permissions
-    data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    if eval(response.content)["status"] == "success":
-        session['username'] = request.form['Register_New_User']
-        session['permissions']=permissions.upper()
-        return redirect(url_for('index'))
-    message="NEED WIRTE SOMTHING HER FOR ERORR"
-    flash(message, category='erorr')
-    return redirect(url_for('register'))
-
-
 
 
 @app.route('/logout')
