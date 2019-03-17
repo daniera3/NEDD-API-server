@@ -99,13 +99,14 @@ def sent_to_server(data, type_request):
 def login(user_name, password):
     data = {"user": user_name, "pas": password}
     response = sent_to_server(data, 'singin')
-    if response["STATUS"] == "SUCCESS":
+    session['eror']=response
+    if response["STATUS"] == "success":
         session['username'] = user_name
         session['permissions'] = response['PERMISSIONS']
         return index()
     message = "there was an error please try again"
     flash(message, category='erorr')
-    return redirect(url_for('login'))
+    return redirect(url_for('login_page'))
 
 
 #TODO fix the registrate function
@@ -114,14 +115,14 @@ def register(user_name, password, type_user):
     password = generate_password_hash(password, method='pbkdf2:sha256', salt_length=8)
     data = {"User": user_name, "Password": password, "perm": type_user}
     response = sent_to_server(data, 'singup')
-
-    if response["status"] == "success":
+    session['eror'] = response
+    if response["STATUS"] == "success":
         session['username'] = request.form['Register_New_User']
         session['permissions'] = type_user.upper()
         return redirect(url_for('index'))
     message = "there was an error please try again"
     flash(message, category='erorr')
-    return redirect(url_for('register'))
+    return redirect(url_for('register_page'))
 
 
 @app.route('/handle_data', methods=['POST'])
