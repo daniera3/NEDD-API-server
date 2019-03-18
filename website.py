@@ -81,7 +81,7 @@ def userReturn():
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    if 'username' in session and session['permissions']=='ADMIN':
+    if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -119,25 +119,20 @@ def Submit1():
     response = eval(response.content)
     return response["status"]
 
-@app.route('/Submit2', methods=['POST'])
-def Submit2():
-    data=request.form
-    data=dict(data)
-    header = {"Content-Type": "application/json"}
+
+def Submit2(data):
+    flash("got hare","error")
     data['insert'] = False
-    if 'username' in session and session['permissions']=='ADMIN':
+    if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
-        return render_template('index.html')
-    data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
-    response = eval(response.content)
+        return index()
+    response = sent_to_server(data, 'AdminAnswers')
     return response["status"]
 
 
 @app.route('/login')
 def login_page():
-    app.logger.info('got index')
     return render_template('login.html')
 
 
@@ -156,26 +151,23 @@ def login(user_name, password):
     query = conn.execute("select * from Accounts WHERE username=?", (user_name,))
     result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
     if not result['data']:
-        password ='a'
+        password = 'a'
     else:
-        password= pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
+        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
     data['pas'] = str(password)
     response = sent_to_server(data, 'singin')
     if response["STATUS"] == "SUCCESS":
         session['username'] = user_name
         session['permissions'] = response['PERMISSIONS']
         return index()
-    message = "there was an error please try again"
-    flash(message, category='erorr')
-    return redirect(url_for('login_page'))
+    flash("there was an error please try again", category='error')
+    return login_page()
 
 
-def register(user,password,permissions):
-    salt=password.split('$')[1]
-    data = {}
-    data['User'] = user
-    data['Password'] = password
-    data['perm'] = permissions
+def register(user, password, permissions):
+    salt = password.split('$')[1]
+    password = password.split('$')[2]
+    data = {'User': user, 'Password': password, 'perm': permissions}
     response = sent_to_server(data, 'singup')
     if response["STATUS"] == "SUCCESS":
         try:
@@ -184,10 +176,10 @@ def register(user,password,permissions):
         except:
             return redirect(url_for('register_page'))
         session['username'] = user
-        session['permissions']=permissions.upper()
+        session['permissions'] = permissions.upper()
         return index()
-    flash("cant register this user", category='erorr')
-    return redirect(url_for('register_page'))
+    flash("can\"t register this user", category='error')
+    return register_page()
 
 
 @app.route('/handle_data', methods=['POST'])
@@ -198,6 +190,8 @@ def handle_data():
     elif request.form['type_form'] == 'register':
         return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],
                                                                                   method='pbkdf2:sha256', salt_length=50),request.form['permissions'])
+    elif request.form['type_form'] == 'admin_answer':
+        return Submit2(request.form)
     return index()
 
 

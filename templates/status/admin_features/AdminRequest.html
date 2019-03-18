@@ -36,6 +36,7 @@
             {% endfor %}
             </tbody>
         </table>
+        <input type="hidden" name="type_form" class="form-control" value="admin_answer">
     </form>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -45,7 +46,7 @@
         $.post("/GetRequestJson",null,FillTable)
     }
         function AdminDeny(req) {
-        $.post("/Submit2",req,test);
+        $.post("{{ url_for('handle_data') }}",req,test);
         $.post("/GetRequestJson",null,FillTable)
 
     }
