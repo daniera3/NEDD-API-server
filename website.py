@@ -1,9 +1,8 @@
-from flask import Flask, render_template, request, session, url_for, redirect, json, flash,jsonify
+from flask import Flask, render_template, request, session, url_for, redirect, json, flash
 import requests
 from os import urandom
-from werkzeug.security import generate_password_hash,pbkdf2_hex
+from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
-
 from sqlalchemy import create_engine
 
 
@@ -139,6 +138,7 @@ def Submit2():
 
 @app.route('/login')
 def login_page():
+    app.logger.info('got index')
     return render_template('login.html')
 
 
