@@ -5,9 +5,8 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
-
 app = Flask(__name__)
-key="NEDD"
+key = "NEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
@@ -193,20 +192,20 @@ def register(user,password,permissions):
 
 @app.route('/handle_data', methods=['POST'])
 def handle_data():
+    # redirect the date for the correct func
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=50), request.form['permissions'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],
+                                                                                  method='pbkdf2:sha256', salt_length=50),request.form['permissions'])
     return index()
 
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
-    session.pop('username', None)
-    session.pop('response', None)
-    session.pop('permissions', None)
-    return redirect(url_for('index'))
+    # clear the session for log out
+    session.clear()
+    return index()
 
 
 if __name__ == '__main__':
