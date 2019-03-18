@@ -26,6 +26,8 @@ def index():
             return render_template('status/parent_login.html')
         if session['permissions'] == 'ADMIN':
             return render_template('status/admin_login.html')
+        if 'permissions' in session:
+            return redirect(url_for('/'))
     return render_template('login.html')
 
 
@@ -200,6 +202,10 @@ def logout():
     # clear the session for log out
     session.clear()
     return index()
+
+@app.route('/changePassword')
+def changePassword_page():
+    return render_template('changePasswords.html')
 
 
 if __name__ == '__main__':
