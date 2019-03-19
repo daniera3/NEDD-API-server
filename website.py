@@ -205,7 +205,7 @@ def register(user, password, permissions):
             return redirect(url_for('register_page'))
         session['username'] = user
         session['permissions'] = permissions.upper()
-        return index()
+        return index() #TODO change to change profile for user enter hes email
     flash("can\"t register this user", category='error')
     return register_page()
 
