@@ -6,6 +6,7 @@ import Description
 from sqlalchemy import create_engine
 
 ''' user autoriert
+test
 from flask_login import login_manager
 
 from user_autorize import *
