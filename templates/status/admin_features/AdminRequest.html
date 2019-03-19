@@ -1,9 +1,11 @@
 {% extends 'status/admin_login.html' %}
 
-
+{% block header %}
+  <h1 align="center" style="color:dimgray">{% block title %}Admin Request{% endblock %}</h1>
+{% endblock %}
 
 {% block content %}
-<h1 align="center">{% block title %}Requset Center{% endblock %}</h1>
+<i id="messg" style="font-size:50px;color:gold"></i>
 <div class="container">
     <form id="Add">
         <table id="RequsetTable" class="table">
@@ -37,9 +39,6 @@
         <input type="hidden" name="type_form" class="form-control" value="admin_answer">
     </form>
 </div>
-{% endblock %}
-
-{% block scripts %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     function AdminAccept(req) {

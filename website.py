@@ -5,7 +5,8 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
-'''   user autoriert
+''' user autoriert
+test
 from flask_login import login_manager
 
 from user_autorize import *
@@ -48,7 +49,7 @@ def index():
             return render_template('status/admin_login.html')
         if 'permissions' in session:
             return redirect(url_for('/'))
-    return login_page()
+    return render_template('login.html')
 
 
 @app.route('/register')
@@ -205,7 +206,7 @@ def register(user, password, permissions):
             return redirect(url_for('register_page'))
         session['username'] = user
         session['permissions'] = permissions.upper()
-        return index()
+        return index() #TODO change to change profile
     flash("can\"t register this user", category='error')
     return register_page()
 
@@ -239,8 +240,11 @@ def changePassword_page():
 def changePassword(oldpassword,newpassword):
     response = Sub_login(session['username'], oldpassword)
     if response["STATUS"] == "SUCCESS":
-        response=sent_to_server({'new':GetPassword(session['username'], newpassword), 'user':session['username']}, 'ChangePassword')
-    flash(response["STATUS"], category='error')
+        data = {'new':GetPassword(session['username'], newpassword), 'user':session['username']}
+        sent_to_server(data, "ChangePassword")
+        return index()
+    else:
+        flash("Password Change Not Successful", category='error')
     return changePassword_page()
 
 

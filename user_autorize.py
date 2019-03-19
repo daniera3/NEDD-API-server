@@ -36,9 +36,3 @@ class UserRoles(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
-
-class Accunets(db.Model):
-    __tablename__ = 'Accuent'
-    user_name = db.Column(db.Integer(), db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
-    salt = db.Column(db.String(255), nullable=False, unique=True)
-
