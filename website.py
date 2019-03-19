@@ -169,9 +169,7 @@ def sent_to_server(data, type_request):
                              headers=header)
     return eval(Description.dis(str(eval(response.content)), key))
 
-
-def login(user_name, password):
-    data = {"user": user_name}
+def GetPassword(user_name,password):
     conn = db_connect.connect()
     query = conn.execute("select * from Accounts WHERE username=?", (user_name,))
     result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
@@ -179,8 +177,16 @@ def login(user_name, password):
         password = 'a'
     else:
         password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
-    data['pas'] = str(password)
+    return str(password)
+
+def Sub_login(user_name, password):
+    data={'pas':GetPassword(user_name,password),'user':user_name}
     response = sent_to_server(data, 'singin')
+    return response
+
+
+def login(user_name, password):
+    response = Sub_login(user_name, password)
     if response["STATUS"] == "SUCCESS":
         session['username'] = user_name
         session['permissions'] = response['PERMISSIONS']
@@ -217,6 +223,8 @@ def handle_data():
                                                                                   method='pbkdf2:sha256', salt_length=50),request.form['permissions'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
+    elif request.form['type_form'] == 'changePassword':
+        return changePassword(request.form['OldPassword'],request.form['Password'])
     return index()
 
 
@@ -229,6 +237,14 @@ def logout():
 @app.route('/changePassword')
 def changePassword_page():
     return render_template('changePasswords.html')
+
+
+def changePassword(oldpassword,newpassword):
+    response = Sub_login(session['username'], oldpassword)
+    if response["STATUS"] == "SUCCESS":
+        response=sent_to_server({'new':GetPassword(session['username'], newpassword), 'user':session['username']}, 'ChangePassword')
+    flash(response["STATUS"], category='error')
+    return changePassword_page()
 
 
 if __name__ == '__main__':
