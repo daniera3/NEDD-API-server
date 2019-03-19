@@ -37,7 +37,7 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
 @app.route('/')
-@roles_required("ADMIN")
+#@roles_required("ADMIN")
 def index():
     if session.get('username'):
         if session['permissions'] == 'NORMAL':
@@ -48,7 +48,7 @@ def index():
             return render_template('status/admin_login.html')
         if 'permissions' in session:
             return redirect(url_for('/'))
-    return render_template('login.html')
+    return login_page()
 
 
 @app.route('/register')
