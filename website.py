@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
+
 ''' user autoriert
 test
 from flask_login import login_manager
@@ -21,6 +22,7 @@ user1.roles = [admin_role]
 db.session.commit()
 
 login_manager = login_manager()
+blabla
 '''
 app = Flask(__name__)
 
