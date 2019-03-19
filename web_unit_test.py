@@ -2,6 +2,9 @@ from website import app
 import os
 import tempfile
 import pytest
+import random
+import string
+from sqlalchemy import create_engine
 
 
 @pytest.fixture
@@ -45,6 +48,7 @@ def test_admin_login_logout(client):
     app.config['PASSWORD'] = 'admin'
 
     rv = login(client, app.config['USERNAME'], app.config['PASSWORD'])
+    print(rv.data)
     assert b'Requset Users' in rv.data
 
     rv = logout(client)
@@ -63,6 +67,27 @@ def register(client, username, password, type_of_user):
         Register_New_Password=password,
         permissions=type_of_user,
         type_form='register'
-    ), follow_redirects=True)
+    ), follow_redirects=False)
 
 
+
+
+def randomString(stringLength=10):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))
+
+
+def test_register(client):
+    app.config['USERNAME'] = randomString(7)
+    app.config['PASSWORD'] = randomString(7)
+    rv = register(client, app.config['USERNAME'], app.config['PASSWORD'], 'Normal')
+    Del_register(app.config['USERNAME'])
+    assert b"{}".format(app.config['USERNAME']) in rv.data
+
+
+def Del_register(username):
+    app.sent_to_server({"user":username},"Testsingup")
+    db_connect = create_engine('sqlite:///nedd.db')
+    conn = db_connect.connect()
+    conn.execute("delete from Accounts where username=?",(username,))

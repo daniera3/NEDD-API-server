@@ -5,9 +5,7 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
-
-''' user autoriert
-test
+'''   user autoriert
 from flask_login import login_manager
 
 from user_autorize import *
@@ -22,7 +20,6 @@ user1.roles = [admin_role]
 db.session.commit()
 
 login_manager = login_manager()
-blabla
 '''
 app = Flask(__name__)
 
@@ -51,7 +48,7 @@ def index():
             return render_template('status/admin_login.html')
         if 'permissions' in session:
             return redirect(url_for('/'))
-    return render_template('login.html')
+    return login_page()
 
 
 @app.route('/register')
