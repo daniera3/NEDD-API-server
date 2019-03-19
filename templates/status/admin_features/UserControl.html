@@ -11,24 +11,29 @@
                 <tr>
                     <td>
         <label>delete:</label>
+        <input placeholder="filter" type="text" id="search" name="search" style="margin: 10px;width: 165px;" onkeyup="filter()">
+       <button type="button" onclick="DeleteUser()" class="btn btn-success">delete</button>
+                    </br>
         <select id="user" name="user" width="600px">
         <option SELECTED value='0'>Choose user for delete</option>
         {% for x in UserDelete %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
       </select>
-                        <button type="button" onclick="DeleteUser()" class="btn btn-success">delete</button>
                     </td>
                     <td>
 
         <label>return:</label>
+        <input placeholder="filter" type="text" id="search2" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
+                                                 </br>
         <select id="userReturn" name="userReturn" width="600px">
         <option SELECTED Rvalue='0'>Choose user for return</option>
         {% for x in UserReturn %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
-                         <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
+
                     </td>
                 </tr>
         </table>
@@ -53,5 +58,30 @@
         alert(massge);
         location.reload();
     }
+    function filter() {
+    var keyword = document.getElementById("search").value;
+    var select = document.getElementById("user");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+
+    function filter2() {
+    var keyword = document.getElementById("search2").value;
+    var select = document.getElementById("userReturn");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
 </script>
 {% endblock %}
