@@ -5,7 +5,26 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
+''' user autoriert
+from flask_login import login_manager
+
+from user_autorize import *
+db.create_all()
+
+admin_role =Role(name='ADMIN')
+db.session.commit()
+user1 = User(
+    username='test', email='admin@example.com', active=True,
+    password='test')
+user1.roles = [admin_role]
+db.session.commit()
+
+login_manager = login_manager()
+'''
 app = Flask(__name__)
+
+
+
 key = "NEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
@@ -18,6 +37,7 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
 @app.route('/')
+@roles_required("ADMIN")
 def index():
     if session.get('username'):
         if session['permissions'] == 'NORMAL':
