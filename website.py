@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
-''' user autoriert
+'''   user autoriert
 from flask_login import login_manager
 
 from user_autorize import *
