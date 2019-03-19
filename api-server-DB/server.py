@@ -26,6 +26,33 @@ class SubFunc():
         else:
             if result['data'][0]['Permissions']=="Admin":
                 return True
+            else:
+                return False
+
+    def CheckManager(user):
+        conn = db_connect.connect()
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?""", (str(user),"True",))
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        if not result['data']:
+            return False
+        else:
+            if result['data'][0]['Permissions']=="Manager":
+                return True
+            else:
+                return False
+
+    def CheckNormal(user):
+        conn = db_connect.connect()
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?""", (str(user),"True",))
+        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+        if not result['data']:
+            return False
+        else:
+            if result['data'][0]['Permissions']=="Normal":
+                return True
+            else:
+                return False
+
 
 class Test(Resource):
     def get(self,User,Date=datetime.datetime.now().strftime("%Y-%m-%d")):
@@ -55,11 +82,11 @@ class STest(Resource):
         Line = request.json['line']
         Say = request.json['say']
         Date = datetime.datetime.now().strftime("%Y-%m-%d")
-        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
+        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (User,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
             return {'status':'Ufail'}
-        query = conn.execute("insert into SpeechTasks values('','{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
+        conn.execute("insert into SpeechTasks values('','{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
         return {'status':'success'}
 
 
@@ -112,22 +139,60 @@ class ChangePassword(Resource):
             return {'status':'success'}
         return {'status':'fail'}
 
-class SetPermissions(Resource,SubFunc):
+class AdminRequest(Resource):
     def post(self):
         conn = db_connect.connect()
         Name = request.json['User']
-        if super.CheckAdmin(Name):
+        if SubFunc.CheckAdmin(Name):
+            query = conn.execute("select * from request")
+            result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+            return result
+        return {'data':[]}
+
+class AdminAnswersToRequests(Resource):
+    def post(self):
+        massge="deleted this request"
+        conn = db_connect.connect()
+        try:
+            Name = request.json['User']
+            if SubFunc.CheckAdmin(Name) and SubFunc.CheckManager(request.json['requesting']) and SubFunc.CheckNormal(request.json['user']) :
+                if request.json['insert']:
+                    try:
+                        query = conn.execute("select * from Guider where User=? AND GuideName=?",(request.json['user'],request.json['requesting'],))
+                        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                        if not result['data']:
+                            conn.execute("insert into Guider values('{0}','{1}','True')".format(request.json['user'],request.json['requesting']))
+                            massge=massge+" and saved"
+                        else:
+                            conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",request.json['user'],request.json['requesting'],))
+                            massge=massge+" and updata"
+                    except:
+                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+                        return {'status':'he can see hes info'}
+                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+                return {'status':massge}
+            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+            return {'status':"bad user Permissions"}
+        except:
+            return {'status':'fail'}
+
+
+class SetPermissions(Resource):
+    def post(self):
+        conn = db_connect.connect()
+        Name = request.json['User']
+        if SubFunc.CheckAdmin(Name):
                 Name = request.json['UserUpdate']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),'True',))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
                     return {'status':'NoFind'}
                 if 'Permissions' in request.json.keys():
-                    if request.json['Permissions']=='Admin' or request.json['Permissions']=='Manager' or request.json['Permissions']=='Nurmal':
+                    if request.json['Permissions']=='Admin' or request.json['Permissions']=='Manager' or request.json['Permissions']=='Normal':
                         conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", (request.json['Permissions'],str(Name),))
                     else:
                         return {'status':'fail'}
-                conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", ('Nurmal',str(Name),))
+                conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", ('Normal',str(Name),))
                 return {'status':'success'}
         return {'status':'fail'}
 
@@ -178,5 +243,8 @@ api.add_resource(DeleteUser, '/DeleteUser',methods={'POST'})
 api.add_resource(ReturnUser, '/ReturnUser',methods={'POST'})
 api.add_resource(SetPermissions, '/SetPermissions',methods={'POST'})
 api.add_resource(ChangePassword, '/ChangePassword',methods={'POST'})
+api.add_resource(AdminRequest, '/AdminRequest',methods={'POST'})
+api.add_resource(AdminAnswersToRequests, '/AdminAnswers',methods={'POST'})
+
 if __name__ == '__main__':
      app.run()

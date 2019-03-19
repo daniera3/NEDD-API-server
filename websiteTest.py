@@ -4,13 +4,15 @@ from flask import Flask, render_template, request, session, url_for, redirect, j
 import requests
 from os import urandom
 from json import dumps
-from werkzeug.security import  generate_password_hash
+from werkzeug.security import  generate_password_hash,pbkdf2_hex
 import Description
+from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
 key="NEDD"
-
+#db in site for salt
+db_connect = create_engine('sqlite:///nedd.db')
 
 app.secret_key = urandom(16)
 
@@ -35,14 +37,58 @@ def index():
 def register():
     return render_template('register.html')
 
+@app.route('/UserControler')
+def UserControler():
+    header = {"Content-Type": "application/json"}
+    data = {}
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToDelete', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    deleteUsers = eval(response.content)['data']
+    response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToReturn', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    returnUsers = eval(response.content)['data']
+    return render_template('UserControl.html', UserDelete=deleteUsers,UserReturn=returnUsers)
 
+
+@app.route('/DeleteUser', methods=['POST'])
+def DeleteUser():
+    data=dict(request.form)
+    header = {"Content-Type": "application/json"}
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/DeleteUser', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
+    return response["status"]
+
+
+@app.route('/userReturn', methods=['POST'])
+def userReturn():
+    data=dict(request.form)
+    header = {"Content-Type": "application/json"}
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/ReturnUser', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
+    return response["status"]
 
 
 @app.route('/AdminRequest')
 def AdminRequest():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    data['User'] = session["username"]
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)['data']
@@ -53,7 +99,10 @@ def AdminRequest():
 def GetRequestJson():
     header = {"Content-Type": "application/json"}
     data = {"User": ""}
-    data['User'] = session["username"]
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data= json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response = eval(response.content)
@@ -65,9 +114,11 @@ def Submit1():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = True
-    data['User'] = session["username"]
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data = json.dumps(data)
-    flash(data, category='erorr')
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
     return response["status"]
@@ -78,7 +129,10 @@ def Submit2():
     data=dict(data)
     header = {"Content-Type": "application/json"}
     data['insert'] = False
-    data['User'] = session["username"]
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
     response = eval(response.content)
@@ -96,18 +150,24 @@ def handle_data():
     user=request.form['inputIdMain']
     password=request.form['inputPasswordMain']
     header={ "Content-Type": "application/json"}
-    data = {"user":"", "pas":""}
+    data = {}
     data['user']=user
-    data['pas']=password
+    conn = db_connect.connect()
+    query = conn.execute("select * from Accounts WHERE username=?", (user,))
+    result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
+    if not result['data']:
+        password ='a'
+    else:
+        password= pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
+    data['pas']=str(password)
     data=json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singin', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     response=eval(Description.dis(str(eval(response.content)),key))
     if response["STATUS"]=="SUCCESS":
-        session['username'] = request.form['inputIdMain']
+        session['username'] = user
         session['permissions']=response['PERMISSIONS']
-        return redirect(url_for('login'))
-    message="NEED WIRTE SOMTHING HER FOR ERORR"
-    flash(message, category='erorr')
+        return redirect(url_for('index'))
+    flash("incorrect password or/and user", category='erorr')
     return redirect(url_for('login'))
 
 
@@ -115,7 +175,8 @@ def handle_data():
 def Register_data():
     user = request.form['Register_New_User']
     permissions = request.form['permissions']
-    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=8)
+    password = generate_password_hash(request.form['Register_New_Password'], method='pbkdf2:sha256', salt_length=50)
+    salt=password.split('$')[1]
     header = { "Content-Type": "application/json"}
     data = {"User":"","Password":"","perm":""}
     data['User'] = user
@@ -123,12 +184,16 @@ def Register_data():
     data['perm'] = permissions
     data = json.dumps(data)
     response = requests.post('https://asqwzx1.pythonanywhere.com/singup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
-    if eval(response.content)["status"] == "success":
-        session['username'] = request.form['Register_New_User']
+    if eval(Description.dis(str(eval(response.content)),key))["STATUS"]=="SUCCESS":
+        try:
+            conn = db_connect.connect()
+            conn.execute("insert into Accounts values('{0}','{1}')".format(user, salt))
+        except:
+            return redirect(url_for('register'))
+        session['username'] = user
         session['permissions']=permissions.upper()
         return redirect(url_for('index'))
-    message="NEED WIRTE SOMTHING HER FOR ERORR"
-    flash(message, category='erorr')
+    flash("cant register this user", category='erorr')
     return redirect(url_for('register'))
 
 
