@@ -37,7 +37,7 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
 @app.route('/')
-@roles_required("ADMIN")
+#@roles_required("ADMIN")
 def index():
     if session.get('username'):
         if session['permissions'] == 'NORMAL':
