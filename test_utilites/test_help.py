@@ -54,10 +54,3 @@ def update_permission_in_sql(username, authority):
 def logout(client):
     return client.get('/logout', follow_redirects=True)
 
-def login(client, username, password):
-    return client.post('/AdminRequest', data=dict(
-        inputIdMain=username,
-        inputPasswordMain=password,
-        type_form='login'
-
-    ), follow_redirects=True)
