@@ -47,8 +47,9 @@ def update_permission_in_sql(username, authority):
     data = {'UserUpdate': username, 'Permissions': authority, 'User': 'admin'}
     data = json.dumps(data)
     header = {"Content-Type": "application/json"}
-    requests.post('https://asqwzx1.pythonanywhere.com/SetPermissions', auth=('asqwzx1', 'NEDD'), data=data,
+    response = requests.post('https://asqwzx1.pythonanywhere.com/SetPermissions', auth=('asqwzx1', 'NEDD'), data=data,
                   headers=header)
+    return response
 
 
 def logout(client):

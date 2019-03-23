@@ -4,7 +4,8 @@ import os
 import tempfile
 import pytest
 import unittest
-from server_side.server import app as server_app
+import Description
+
 
 
 
@@ -18,19 +19,6 @@ def client():
 
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
-
-@pytest.fixture
-def server():
-    db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-    app.config['TESTING'] = True
-    server = server_app.test_client()
-
-    yield server
-
-    os.close(db_fd)
-    os.unlink(app.config['DATABASE'])
-
-
 
 
 def test_index(client):
@@ -54,10 +42,10 @@ class AdminRegister(unittest.TestCase):
         th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
 
     def test_admin(self):
-        th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
+        answer = th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
+        print(answer.content)
         rv = th.login(self.client, app.config['USERNAME'], app.config['PASSWORD'])
-        print("try to log in with new password")
-        assert b'{}'.format(app.config['USERNAME']) in rv.data
+        assert b'Requset Users' in rv.data
 
     @classmethod
     def tearDownClass(cls):
