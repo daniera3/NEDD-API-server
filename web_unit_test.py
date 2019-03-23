@@ -2,7 +2,7 @@ from website import app
 import test_utilites.test_help as th
 import os
 import tempfile
-import pytest
+import pytest, unittest
 
 
 @pytest.fixture
@@ -17,8 +17,7 @@ def client():
     os.unlink(app.config['DATABASE'])
 
 
-def logout(client):
-    return client.get('/logout', follow_redirects=True)
+
 
 
 def test_index(client):
@@ -31,42 +30,73 @@ def test_login_page(client):
     assert b'login' in response.data
 
 
-def login(client, username, password):
-    return client.post('/handle_data', data=dict(
-        inputIdMain=username,
-        inputPasswordMain=password,
-        type_form='login'
-
-    ), follow_redirects=True)
-
-
 # see if admin user can log in and log out
-def test_admin_login_logout(client):
-    app.config['USERNAME'] = 'admin'
-    app.config['PASSWORD'] = 'admin'
+class AdminRegister(unittest.TestCase):
+    client = app.test_client()
 
-    rv = login(client, app.config['USERNAME'], app.config['PASSWORD'])
-    assert b'Requset Users' in rv.data
+    @classmethod
+    def setUpClass(cls):
+        app.config['USERNAME'] = th.id_generator()
+        app.config['PASSWORD'] = th.id_generator()
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
 
-    rv = logout(client)
-    assert b'admin' not in rv.data
+    def test_admin(self):
+        th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
 
-    rv = login(client, app.config['USERNAME'] + 'X', app.config['PASSWORD'])
-    assert b'there was an error please try again' in rv.data
-
-    rv = login(client, app.config['USERNAME'], app.config['PASSWORD'] + 'X')
-    assert b'there was an error please try again' in rv.data
+    @classmethod
+    def tearDownClass(cls):
+        th.delete_from_sql(app.config['USERNAME'])
 
 
-def test_register_and_change_Password(client):
-    app.config['USERNAME'] = th.id_generator()
-    app.config['PASSWORD'] = th.id_generator()
-    app.config['NEWPASSWORD'] = th.id_generator()
+# try to register new user and then change his password
+class TestRegisterAndChangePassword(unittest.TestCase):
+    client = app.test_client()
 
-    rv = th.register(client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
-    assert b'{}'.format(app.config['USERNAME']) in rv.data
+    @classmethod
+    def setUpClass(cls):
+        app.config['USERNAME'] = th.id_generator()
+        app.config['PASSWORD'] = th.id_generator()
+        app.config['NEWPASSWORD'] = th.id_generator()
 
-    th.change_password(client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
-    logout(client)
-    rv = login(client, app.config['USERNAME'], app.config['NEWPASSWORD'])
-    assert b'{}'.format(app.config['USERNAME']) in rv.data
+    def test_change_password(self):
+        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        print("register new user")
+        assert b'{}'.format(app.config['USERNAME']) in rv.data
+        th.change_password(self.client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
+        th.logout(self.client)
+        rv = th.login(self.client, app.config['USERNAME'], app.config['NEWPASSWORD'])
+        print("try to log in with new password")
+        assert b'{}'.format(app.config['USERNAME']) in rv.data
+
+    @classmethod
+    def tearDownClass(cls):
+        th.delete_from_sql(app.config['USERNAME'])
+
+
+
+'''
+class TestReqeustAccesptAndDenide(unittest.TestCase):
+    client = app.test_client()
+
+    @classmethod
+    def setUpClass(cls):
+        app.config['USERNAME'] = th.id_generator()
+        app.config['PASSWORD'] = th.id_generator()
+        app.config['NEWPASSWORD'] = th.id_generator()
+
+    @pytest.mark.run(order=1)
+    def test_change_password(self):
+        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        print("register new user")
+        assert b'{}'.format(app.config['USERNAME']) in rv.data
+        th.change_password(self.client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
+        th.logout(self.client)
+        rv = th.login(self.client, app.config['USERNAME'], app.config['NEWPASSWORD'])
+        print("try to log in with new password")
+        assert b'{}'.format(app.config['USERNAME']) in rv.data
+
+    @classmethod
+    def tearDownClass(cls):
+        th.delete_from_sql(app.config['USERNAME'])
+
+'''
