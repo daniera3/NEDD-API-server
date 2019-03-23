@@ -49,6 +49,7 @@ class AdminRegister(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        th.logout(cls.client)
         th.delete_from_sql(app.config['USERNAME'])
 
 
@@ -74,33 +75,26 @@ class TestRegisterAndChangePassword(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        th.logout(cls.client)
         th.delete_from_sql(app.config['USERNAME'])
 
 
-
-'''
-class TestReqeustAccesptAndDenide(unittest.TestCase):
+class TestRequestAccesptAndDenide(unittest.TestCase):
     client = app.test_client()
 
     @classmethod
     def setUpClass(cls):
         app.config['USERNAME'] = th.id_generator()
         app.config['PASSWORD'] = th.id_generator()
-        app.config['NEWPASSWORD'] = th.id_generator()
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
 
     @pytest.mark.run(order=1)
-    def test_change_password(self):
-        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
-        print("register new user")
-        assert b'{}'.format(app.config['USERNAME']) in rv.data
-        th.change_password(self.client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
-        th.logout(self.client)
-        rv = th.login(self.client, app.config['USERNAME'], app.config['NEWPASSWORD'])
-        print("try to log in with new password")
-        assert b'{}'.format(app.config['USERNAME']) in rv.data
+    def test_deny_admin_request(self):
+
+        pass
 
     @classmethod
     def tearDownClass(cls):
         th.delete_from_sql(app.config['USERNAME'])
 
-'''
