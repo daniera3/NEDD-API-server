@@ -43,6 +43,7 @@ class AdminRegister(unittest.TestCase):
     def test_admin(self):
         th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
 
+
     @classmethod
     def tearDownClass(cls):
         th.delete_from_sql(app.config['USERNAME'])
