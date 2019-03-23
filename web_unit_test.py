@@ -2,7 +2,10 @@ from website import app
 import test_utilites.test_help as th
 import os
 import tempfile
-import pytest, unittest
+import pytest
+import unittest
+from server_side.server import app as server_app
+
 
 
 @pytest.fixture
@@ -16,6 +19,16 @@ def client():
     os.close(db_fd)
     os.unlink(app.config['DATABASE'])
 
+@pytest.fixture
+def server():
+    db_fd, app.config['DATABASE'] = tempfile.mkstemp()
+    app.config['TESTING'] = True
+    server = server_app.test_client()
+
+    yield server
+
+    os.close(db_fd)
+    os.unlink(app.config['DATABASE'])
 
 
 
@@ -42,7 +55,9 @@ class AdminRegister(unittest.TestCase):
 
     def test_admin(self):
         th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
-
+        rv = th.login(self.client, app.config['USERNAME'], app.config['PASSWORD'])
+        print("try to log in with new password")
+        assert b'{}'.format(app.config['USERNAME']) in rv.data
 
     @classmethod
     def tearDownClass(cls):
