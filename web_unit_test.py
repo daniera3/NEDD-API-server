@@ -1,4 +1,5 @@
 from website import app
+import test_utilites.test_help as th
 import os
 import tempfile
 import pytest
@@ -57,12 +58,15 @@ def test_admin_login_logout(client):
     assert b'there was an error please try again' in rv.data
 
 
-def register(client, username, password, type_of_user):
-    return client.post('/handle_data', data=dict(
-        Register_New_User=username,
-        Register_New_Password=password,
-        permissions=type_of_user,
-        type_form='register'
-    ), follow_redirects=True)
+def test_register_and_change_Password(client):
+    app.config['USERNAME'] = th.id_generator()
+    app.config['PASSWORD'] = th.id_generator()
+    app.config['NEWPASSWORD'] = th.id_generator()
 
+    rv = th.register(client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+    assert b'{}'.format(app.config['USERNAME']) in rv.data
 
+    th.change_password(client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
+    logout(client)
+    rv = login(client, app.config['USERNAME'], app.config['NEWPASSWORD'])
+    assert b'{}'.format(app.config['USERNAME']) in rv.data

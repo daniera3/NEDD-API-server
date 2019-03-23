@@ -221,7 +221,7 @@ def handle_data():
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'changePassword':
-        return changePassword(request.form['OldPassword'],request.form['Password'])
+        return changePassword(request.form['OldPassword'], request.form['Password'])
     return index()
 
 
@@ -236,10 +236,10 @@ def changePassword_page():
     return render_template('changePasswords.html')
 
 
-def changePassword(oldpassword,newpassword):
+def changePassword(oldpassword, newpassword):
     response = Sub_login(session['username'], oldpassword)
     if response["STATUS"] == "SUCCESS":
-        data = {'new':GetPassword(session['username'], newpassword), 'user':session['username']}
+        data = {'new': GetPassword(session['username'], newpassword), 'user':session['username']}
         sent_to_server(data, "ChangePassword")
         return index()
     else:
