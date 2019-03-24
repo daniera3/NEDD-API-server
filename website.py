@@ -238,7 +238,9 @@ def logout():
     session.clear()
     return index()
 
-
+@app.route('/UpdateProfile')
+def updateprofile_page():
+    return render_template('/status/normal_features/UpdateProfile.html')
 
 
 @app.route('/changePassword')
