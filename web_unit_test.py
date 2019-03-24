@@ -66,12 +66,12 @@ class TestRegisterAndChangePassword(unittest.TestCase):
     def test_change_password(self):
         rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
         print("register new user")
-        assert b'{}'.format(app.config['USERNAME']) in rv.data
+        assert b'{}',(app.config['USERNAME'],) in rv.data
         th.change_password(self.client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
         th.logout(self.client)
         rv = th.login(self.client, app.config['USERNAME'], app.config['NEWPASSWORD'])
         print("try to log in with new password")
-        assert b'{}'.format(app.config['USERNAME']) in rv.data
+        assert b'{}',(app.config['USERNAME'],) in rv.data
 
     @classmethod
     def tearDownClass(cls):
