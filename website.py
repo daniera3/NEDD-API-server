@@ -264,6 +264,14 @@ def free_speaking():
         flash("must log in", category='error')
         return index()
 
+@app.route('/speech_game')
+def speech_game():
+    if session['username']:
+        return render_template('/status/normal_features/speech_game.html', permission=session['permissions'])
+    else:
+        flash("must log in", category='error')
+        return index()
+
 
 if __name__ == '__main__':
     app.run(debug=True)
