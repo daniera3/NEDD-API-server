@@ -1,4 +1,11 @@
-{% extends 'status/normal_login.html' %}
+{% if permission == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif permission == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
 
 {% block content %}
 

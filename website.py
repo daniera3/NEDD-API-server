@@ -38,7 +38,6 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
 @app.route('/')
-#@roles_required("ADMIN")
 def index():
     if session.get('username'):
         if session['permissions'] == 'NORMAL':
@@ -69,7 +68,7 @@ def UserControler():
     deleteUsers = eval(response.content)['data']
     response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToReturn', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     returnUsers = eval(response.content)['data']
-    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers,UserReturn=returnUsers)
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -243,7 +242,7 @@ def logout():
 
 @app.route('/changePassword')
 def changePassword_page():
-    return render_template('/status/normal_features/changePasswords.html')
+    return render_template('/status/normal_features/changePasswords.html', permission=session['permissions'])
 
 
 def changePassword(oldpassword, newpassword):
@@ -260,7 +259,7 @@ def changePassword(oldpassword, newpassword):
 @app.route('/free_speaking')
 def free_speaking():
     if session['username']:
-        return render_template('/status/normal_features/free_speaking.html')
+        return render_template('/status/normal_features/free_speaking.html', permission=session['permissions'])
     else:
         flash("must log in", category='error')
         return index()
