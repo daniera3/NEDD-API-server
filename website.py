@@ -229,7 +229,7 @@ def handle_data():
     elif request.form['type_form'] == 'changePassword':
         return changePassword(request.form['OldPassword'], request.form['Password'])
     elif request.form['type_form'] == 'UpdateProfile':
-        return changePassword(request.form['OldPassword'], request.form['Password'])
+        return UpdateProfile(request.form['Email'], request.form['tel'], request.form['address'],request.form['password'])
     return index()
 
 
@@ -242,6 +242,17 @@ def logout():
 @app.route('/UpdateProfile')
 def Updateprofile_page():
     return render_template('/status/normal_features/UpdateProfile.html')
+
+def UpdateProfile(email, tel,address,password):
+    response = Sub_login(session['username'], password)
+    if response["STATUS"] == "SUCCESS":
+        data = {'email': email, 'tel':tel, 'user':session['username'],'address':address}
+        sent_to_server(data, "UpdateProfile")
+        return index()
+    else:
+        flash("Password Change Not Successful", category='error')
+    return Updateprofile_page()
+
 
 
 @app.route('/changePassword')
