@@ -1,7 +1,10 @@
 from website import app
+import test_utilites.test_help as th
 import os
 import tempfile
 import pytest
+import unittest
+
 
 
 @pytest.fixture
@@ -16,10 +19,6 @@ def client():
     os.unlink(app.config['DATABASE'])
 
 
-def logout(client):
-    return client.get('/logout', follow_redirects=True)
-
-
 def test_index(client):
     response = client.get('/')
     assert b'login' in response.data
@@ -30,39 +29,70 @@ def test_login_page(client):
     assert b'login' in response.data
 
 
-def login(client, username, password):
-    return client.post('/handle_data', data=dict(
-        inputIdMain=username,
-        inputPasswordMain=password,
-        type_form='login'
-
-    ), follow_redirects=True)
-
-
 # see if admin user can log in and log out
-def test_admin_login_logout(client):
-    app.config['USERNAME'] = 'admin'
-    app.config['PASSWORD'] = 'admin'
+class AdminRegister(unittest.TestCase):
+    client = app.test_client()
 
-    rv = login(client, app.config['USERNAME'], app.config['PASSWORD'])
-    assert b'Requset Users' in rv.data
+    @classmethod
+    def setUpClass(cls):
+        app.config['USERNAME'] = th.id_generator()
+        app.config['PASSWORD'] = th.id_generator()
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
 
-    rv = logout(client)
-    assert b'admin' not in rv.data
+    def test_admin(self):
+        answer = th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
+        print(answer.content)
+        rv = th.login(self.client, app.config['USERNAME'], app.config['PASSWORD'])
+        assert b'Requset Users' in rv.data
 
-    rv = login(client, app.config['USERNAME'] + 'X', app.config['PASSWORD'])
-    assert b'there was an error please try again' in rv.data
+    @classmethod
+    def tearDownClass(cls):
+        th.logout(cls.client)
+        th.delete_from_sql(app.config['USERNAME'])
 
-    rv = login(client, app.config['USERNAME'], app.config['PASSWORD'] + 'X')
-    assert b'there was an error please try again' in rv.data
+
+# try to register new user and then change his password
+class TestRegisterAndChangePassword(unittest.TestCase):
+    client = app.test_client()
+
+    @classmethod
+    def setUpClass(cls):
+        app.config['USERNAME'] = th.id_generator()
+        app.config['PASSWORD'] = th.id_generator()
+        app.config['NEWPASSWORD'] = th.id_generator()
+
+    def test_change_password(self):
+        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        print("register new user")
+        assert b'{}',(app.config['USERNAME'],) in rv.data
+        th.change_password(self.client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
+        th.logout(self.client)
+        rv = th.login(self.client, app.config['USERNAME'], app.config['NEWPASSWORD'])
+        print("try to log in with new password")
+        assert b'{}',(app.config['USERNAME'],) in rv.data
+
+    @classmethod
+    def tearDownClass(cls):
+        th.logout(cls.client)
+        th.delete_from_sql(app.config['USERNAME'])
 
 
-def register(client, username, password, type_of_user):
-    return client.post('/handle_data', data=dict(
-        Register_New_User=username,
-        Register_New_Password=password,
-        permissions=type_of_user,
-        type_form='register'
-    ), follow_redirects=True)
+class TestRequestAccesptAndDenide(unittest.TestCase):
+    client = app.test_client()
 
+    @classmethod
+    def setUpClass(cls):
+        app.config['USERNAME'] = th.id_generator()
+        app.config['PASSWORD'] = th.id_generator()
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
+
+    @pytest.mark.run(order=1)
+    def test_deny_admin_request(self):
+
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        th.delete_from_sql(app.config['USERNAME'])
 

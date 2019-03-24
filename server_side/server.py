@@ -94,50 +94,49 @@ class STest(Resource):
 
 class Singin(Resource):
     def post(self):
-        conn = db_connect.connect()
-        user = request.json['user']
-        pas = request.json['pas']
-        query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-            return Encryption.enc(str({'status':'Ufail'}),key)
-        if check_password_hash(result['data'][0]['Password'],pas):
-            result= {'status':'success','Permissions':result['data'][0]['Permissions']}
-            return Encryption.enc(str(result),key)
-        return  Encryption.enc(str({'status':'Pfail'}),key)
+        try:
+            conn = db_connect.connect()
+            user = request.json['user']
+            pas = request.json['pas']
+            query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
+            result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+            if not result['data']:
+                return Encryption.enc(str({'status':'Ufail'}),key)
+            password=result['data'][0]['Password']
+            if password==pas:
+                result= {'status':'success','Permissions':result['data'][0]['Permissions']}
+                return Encryption.enc(str(result),key)
+            return  Encryption.enc(str({'status':'Pfail'}),key)
+        except:
+            return Encryption.enc(str({'status':'fail'}),key)
 
 class singup(Resource):
     def post(self):
         conn = db_connect.connect()
-        Name = request.json['User']
-        Password = request.json['Password']
-        Perm = request.json['perm']
-        if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0:
-            return {'status':'hacker'}
-        query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-        	conn.execute("insert into Accounts values('{0}','{1}','{2}','{3}')".format(Name,Password,Perm,'True'))
-        	conn.execute("insert into LVL values('{0}','{1}')".format(Name,"1"))
-        	return {'status':'success'}
-        return {'status':'fail'}
+        try:
+            Name = request.json['User']
+            Password = request.json['Password']
+            Perm = request.json['perm']
+            if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0:
+                return Encryption.enc(str({'status':'hacker'}),key)
+            query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
+            result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+            if not result['data']:
+        	    conn.execute("insert into Accounts values('{0}','{1}','{2}','{3}')".format(Name,Password,Perm,'True'))
+        	    conn.execute("insert into LVL values('{0}','{1}')".format(Name,"1"))
+        	    return Encryption.enc(str({'status':'success'}),key)
+            return Encryption.enc(str({'status':'fail'}),key)
+        except:
+            return Encryption.enc(str({'status':'fail'}),key)
 
 class ChangePassword(Resource):
     def post(self):
-        conn = db_connect.connect()
-        Name = request.json['User']
-        OldPassword = request.json['OldPassword']
-        Password = request.json['Password']
-        if len(Name)<2 or len(Password)<6 or len(OldPassword)<6  or Name.count("select")!=0:
-            return {'status':'hacker'}
-        query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-            return {'status':'Ufail'}
-        if(check_password_hash(result['data'][0]['Password'],OldPassword)):
-            conn.execute(" UPDATE Accounts SET Password =? WHERE User=?", (Password,str(Name),))
-            return {'status':'success'}
-        return {'status':'fail'}
+        try:
+            conn = db_connect.connect()
+            conn.execute(" UPDATE Accounts SET Password =? WHERE User=?", (request.json['new'],str(request.json['user']),))
+            return  Encryption.enc(str({'status':'change password'}),key)
+        except:
+            return Encryption.enc(str({'status':'fail ,sorry cant do this'}),key)
 
 class AdminRequest(Resource):
     def post(self):
@@ -174,6 +173,10 @@ class AdminAnswersToRequests(Resource):
             conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
             return {'status':"bad user Permissions"}
         except:
+            try:
+                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+            except:
+                return {'status':'sorry some thing happend send report bug'}
             return {'status':'fail'}
 
 
@@ -196,16 +199,41 @@ class SetPermissions(Resource):
                 return {'status':'success'}
         return {'status':'fail'}
 
+class GetUsersToReturn(Resource):
+    def post(self):
+        conn = db_connect.connect()
+        try:
+            Name = request.json['User']
+            if SubFunc.CheckAdmin(Name):
+                query = conn.execute("select User from Accounts WHERE User<>? and Active=? ORDER BY Permissions ASC;", (str(Name),"False",))
+                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                return result
+            return {'status':'haven\'t Permissions'}
+        except:
+            return {'status':'fail'}
+
+class GetUsersToDelete(Resource):
+    def post(self):
+        conn = db_connect.connect()
+        try:
+            Name = request.json['User']
+            if SubFunc.CheckAdmin(Name):
+                query = conn.execute("select User from Accounts WHERE User<>? and Active=? ORDER BY Permissions ASC;", (str(Name),"True",))
+                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                return result
+            return {'status':'haven\'t Permissions'}
+        except:
+            return {'status':'fail'}
+
+
+
+
 class ReturnUser(Resource):
     def post(self):
         conn = db_connect.connect()
-        Name = request.json['User']
-        query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-            return {'status':'fail'}
-        else:
-            if result['data'][0]['Permissions']=='Admin':
+        try:
+            Name = request.json['User']
+            if SubFunc.CheckAdmin(Name):
                 Name = request.json['ReturnU']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),"False",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -213,18 +241,16 @@ class ReturnUser(Resource):
                     return {'status':'NoFind'}
                 conn.execute(" UPDATE Accounts SET Active =? WHERE User=?", ('True',str(Name),))
                 return {'status':'success'}
-        return {'status':'fail'}
+            return {'status':'fail'}
+        except:
+            return {'status':'fail'}
 
 class DeleteUser(Resource):
     def post(self):
         conn = db_connect.connect()
-        Name = request.json['User']
-        query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-        if not result['data']:
-            return {'status':'fail'}
-        else:
-            if result['data'][0]['Permissions']=='Admin':
+        try:
+            Name = request.json['User']
+            if SubFunc.CheckAdmin(Name):
                 Name = request.json['del']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),"True",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -232,7 +258,20 @@ class DeleteUser(Resource):
                     return {'status':'NoFind'}
                 conn.execute(" UPDATE Accounts SET Active =? WHERE User=?", ('False',str(Name),))
                 return {'status':'success'}
-        return {'status':'fail'}
+            return {'status':'fail'}
+        except:
+            return {'status':'fail'}
+
+class DeleteUserTast(Resource):
+    def post(self):
+        conn = db_connect.connect()
+        try:
+            conn.execute("DELETE FROM Accounts WHERE User = ?;",(request.json['user'],))
+            conn.execute("DELETE FROM LVL WHERE User = ?;",(request.json['user'],))
+            return {'status':'success'}
+        except:
+            return {'status':'fail'}
+
 
 
 api.add_resource(Singin,  '/singin','/singin/<user>/<pas>',methods={'POST','GET'})
@@ -245,6 +284,9 @@ api.add_resource(SetPermissions, '/SetPermissions',methods={'POST'})
 api.add_resource(ChangePassword, '/ChangePassword',methods={'POST'})
 api.add_resource(AdminRequest, '/AdminRequest',methods={'POST'})
 api.add_resource(AdminAnswersToRequests, '/AdminAnswers',methods={'POST'})
+api.add_resource(GetUsersToReturn, '/GetUsersToReturn',methods={'POST'})
+api.add_resource(GetUsersToDelete, '/GetUsersToDelete',methods={'POST'})
+api.add_resource(DeleteUserTast, '/Testsingup',methods={'POST'})
 
 if __name__ == '__main__':
      app.run()

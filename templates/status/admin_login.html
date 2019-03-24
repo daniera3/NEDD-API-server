@@ -1,9 +1,9 @@
-{% extends 'index.html' %}
+{% extends 'status/parent_login.html' %}
 
 
 
 {% block options %}
-
+    {{super()}}
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           admin
@@ -11,12 +11,18 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{{ url_for('AdminRequest') }}"> Requset Users</a>
           <a class="dropdown-item" href="{{ url_for('UserControler') }}">User Controler</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
         </div>
     </li>
 
 {% endblock %}
+
+
+{% block profile %}
+{{super()}}
+
+
+{% endblock %}
+
 
 
 {% block header %}

@@ -1,0 +1,154 @@
+{% extends 'status/normal_login.html' %}
+{% block content %}
+<body>
+<form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">
+    <div class="row justify-content-md-center" >
+        <div class="col-2">
+
+    <fieldset>
+        <legend>user profile</legend>
+        <input type="Email" aria-describedby="emailHelp" placeholder="Email" id="Email" name="Email"  required>
+        <legend>Confirm Email</legend>
+        <input type="Email" placeholder="Confirm Email" id="confirm_Email" required>
+        <legend>tel</legend>
+        <input type="tel" placeholder="tel" id="tel" name="tel" minlength="10" maxlength="10" >
+        <legend>address</legend>
+        <input type="text" placeholder="address" id="address" name="address" >
+
+</br></br>
+        <button class="btn btn-outline-info" id="myBtn" disabled>update</button>
+          <div id="myModal"  class="modal  content-section">
+                    <div class="col-md-3 panel panel-default " style="border-radius:18px;">
+                    <form method="POST">
+                        <div  class="h-100 row align-items-center">
+                            <a class="bg-danger text-white" aria-label="Close" id="cols" style=" background-color: rgba(255,25,100,0.8);"  >close</a>
+                            </br></br>
+                            <input type="password" placeholder="password" id="password" name="password"  required>
+                            </br>
+                        </br>
+             <button class="btn btn-outline-info" id="submit" type="submit">submit</button>
+                            </div>
+                    </form>
+                </div>
+                </div>
+        <input type="hidden" name="type_form" class="form-control" value="UpdateProfile">
+    </fieldset>
+    </div>
+        </div>
+</form>
+</body>
+
+{% endblock %}
+
+
+
+
+{% block scripts %}
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementById("cols");
+
+var Email = document.getElementById("Email")
+  , confirm_Email = document.getElementById("confirm_Email");
+
+function validateEmail(){
+  if(Email.value != confirm_Email.value ) {
+    confirm_Email.setCustomValidity("Email Don't Match");
+    btn.disabled=true;
+
+  } else {
+    confirm_Email.setCustomValidity('');
+    btn.disabled=false;
+  }
+  if(Email.value=='' )
+      btn.disabled=true;
+  if(Email.valid)
+      btn.disabled=false;
+  else
+      btn.disabled=true;
+}
+
+Email.onchange = validateEmail;
+confirm_Email.onkeyup = validateEmail;
+
+
+
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+
+
+</script>
+
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+
+
+.panel{
+
+  position: fixed; /* Stay in place */
+  z-index: 0; /* Sit on top */
+  padding-top: -200px; /* Location of the box */
+  padding-left:-20px;
+  width: 230px; /* Full width */
+  height: 110px; /* Full height */
+  margin:50px;
+  background-color: rgba(1,25,100,0.5); /* Black w/ opacity */
+}
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  padding-left:600px;
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+</style>
+{% endblock %}

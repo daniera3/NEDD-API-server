@@ -5,8 +5,7 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 
-''' user autoriert
-test
+'''   user autoriert
 from flask_login import login_manager
 
 from user_autorize import *
@@ -37,8 +36,8 @@ username = 'asqwzx1'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
+
 @app.route('/')
-#@roles_required("ADMIN")
 def index():
     if session.get('username'):
         if session['permissions'] == 'NORMAL':
@@ -49,7 +48,7 @@ def index():
             return render_template('status/admin_login.html')
         if 'permissions' in session:
             return redirect(url_for('/'))
-    return render_template('login.html')
+    return login_page()
 
 
 @app.route('/register')
@@ -69,7 +68,7 @@ def UserControler():
     deleteUsers = eval(response.content)['data']
     response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToReturn', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
     returnUsers = eval(response.content)['data']
-    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers,UserReturn=returnUsers)
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -142,15 +141,19 @@ def Submit1():
     response = eval(response.content)
     return response["status"]
 
-
+@app.route('/Submit2', methods=['POST'])
 def Submit2(data):
-    flash("got hare","error")
+    data=request.form
+    data=dict(data)
+    header = {"Content-Type": "application/json"}
     data['insert'] = False
-    if 'username' in session and session['permissions'] == 'ADMIN':
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
-        return index()
-    response = sent_to_server(data, 'AdminAnswers')
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
     return response["status"]
 
 
@@ -167,9 +170,7 @@ def sent_to_server(data, type_request):
                              headers=header)
     return eval(Description.dis(str(eval(response.content)), key))
 
-
-def login(user_name, password):
-    data = {"user": user_name}
+def GetPassword(user_name,password):
     conn = db_connect.connect()
     query = conn.execute("select * from Accounts WHERE username=?", (user_name,))
     result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
@@ -177,8 +178,16 @@ def login(user_name, password):
         password = 'a'
     else:
         password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
-    data['pas'] = str(password)
+    return str(password)
+
+def Sub_login(user_name, password):
+    data={'pas':GetPassword(user_name,password),'user':user_name}
     response = sent_to_server(data, 'singin')
+    return response
+
+
+def login(user_name, password):
+    response = Sub_login(user_name, password)
     if response["STATUS"] == "SUCCESS":
         session['username'] = user_name
         session['permissions'] = response['PERMISSIONS']
@@ -200,7 +209,7 @@ def register(user, password, permissions):
             return redirect(url_for('register_page'))
         session['username'] = user
         session['permissions'] = permissions.upper()
-        return index()
+        return index() #TODO change to change profile
     flash("can\"t register this user", category='error')
     return register_page()
 
@@ -215,6 +224,12 @@ def handle_data():
                                                                                   method='pbkdf2:sha256', salt_length=50),request.form['permissions'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
+    elif request.form['type_form'] == 'admin_answer1':
+        return Submit1(request.form)
+    elif request.form['type_form'] == 'changePassword':
+        return changePassword(request.form['OldPassword'], request.form['Password'])
+    elif request.form['type_form'] == 'UpdateProfile':
+        return UpdateProfile(request.form['Email'], request.form['tel'], request.form['address'],request.form['password'])
     return index()
 
 
@@ -224,9 +239,45 @@ def logout():
     session.clear()
     return index()
 
+@app.route('/UpdateProfile')
+def Updateprofile_page():
+    return render_template('/status/normal_features/UpdateProfile.html')
+
+def UpdateProfile(email, tel,address,password):
+    response = Sub_login(session['username'], password)
+    if response["STATUS"] == "SUCCESS":
+        data = {'email': email, 'tel':tel, 'user':session['username'],'address':address}
+        sent_to_server(data, "UpdateProfile")
+        return index()
+    else:
+        flash("Password Change Not Successful", category='error')
+    return Updateprofile_page()
+
+
+
 @app.route('/changePassword')
 def changePassword_page():
-    return render_template('changePasswords.html')
+    return render_template('/status/normal_features/changePasswords.html', permission=session['permissions'])
+
+
+def changePassword(oldpassword, newpassword):
+    response = Sub_login(session['username'], oldpassword)
+    if response["STATUS"] == "SUCCESS":
+        data = {'new': GetPassword(session['username'], newpassword), 'user':session['username']}
+        sent_to_server(data, "ChangePassword")
+        return index()
+    else:
+        flash("Password Change Not Successful", category='error')
+    return changePassword_page()
+
+
+@app.route('/free_speaking')
+def free_speaking():
+    if session['username']:
+        return render_template('/status/normal_features/free_speaking.html', permission=session['permissions'])
+    else:
+        flash("must log in", category='error')
+        return index()
 
 
 if __name__ == '__main__':

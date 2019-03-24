@@ -1,17 +1,38 @@
 {% extends 'index.html' %}
 {% block options %}
+{{super()}}
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          user
+          user menu
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="#">Action</a>
-            <a class="dropdown-item" href="#">Another action</a>
-            <div class="dropdown-divider"></div>
-                 <a class="dropdown-item" href="#">Something else here</a>
-            </div>
+            <a class="dropdown-item" href="{{ url_for('free_speaking') }}">free speaking</a>
+            <a class="dropdown-item" href="#">speech game</a>
+        </div>
     </li>
 {% endblock %}
 
+
+{% block profile %}
+{{super()}}
+<div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        {{ session['username'] }}
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+        <li> <a class="dropdown-item" href="{{ url_for('changePassword_page') }}">change password</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('Updateprofile_page') }}">update profile </a></li>
+    </ul>
+    <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('logout') }}">logoff</a>
+</div>
+
+{% endblock %}
+
+
+
 {% block content %}
+     {% endblock %}
+
+{% block scripts %}
      {% endblock %}
