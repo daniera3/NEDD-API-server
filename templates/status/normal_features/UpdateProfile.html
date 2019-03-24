@@ -2,7 +2,8 @@
 {% block content %}
 <body>
 <form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">
-    <div  class="container ">
+    <div class="row justify-content-md-center" >
+        <div class="col-2">
 
     <fieldset>
         <legend>user profile</legend>
@@ -10,7 +11,10 @@
         <legend>Confirm Email</legend>
         <input type="Email" placeholder="Confirm Email" id="confirm_Email" required>
         <legend>tel</legend>
-        <input type="tel" placeholder="tel" id="tel" name="tel" >
+        <input type="tel" placeholder="tel" id="tel" name="tel" minlength="10" maxlength="10" >
+        <legend>address</legend>
+        <input type="text" placeholder="address" id="address" name="address" >
+
 </br></br>
         <button class="btn btn-outline-info" id="myBtn" disabled>update</button>
           <div id="myModal"  class="modal  content-section">
@@ -30,6 +34,7 @@
         <input type="hidden" name="type_form" class="form-control" value="UpdateProfile">
     </fieldset>
     </div>
+        </div>
 </form>
 </body>
 
@@ -53,7 +58,7 @@ var Email = document.getElementById("Email")
   , confirm_Email = document.getElementById("confirm_Email");
 
 function validateEmail(){
-  if(Email.value != confirm_Email.value && Email.value=="" ) {
+  if(Email.value != confirm_Email.value ) {
     confirm_Email.setCustomValidity("Email Don't Match");
     btn.disabled=true;
 
@@ -61,6 +66,12 @@ function validateEmail(){
     confirm_Email.setCustomValidity('');
     btn.disabled=false;
   }
+  if(Email.value=='' )
+      btn.disabled=true;
+  if(Email.valid)
+      btn.disabled=false;
+  else
+      btn.disabled=true;
 }
 
 Email.onchange = validateEmail;

@@ -228,6 +228,8 @@ def handle_data():
         return Submit1(request.form)
     elif request.form['type_form'] == 'changePassword':
         return changePassword(request.form['OldPassword'], request.form['Password'])
+    elif request.form['type_form'] == 'UpdateProfile':
+        return changePassword(request.form['OldPassword'], request.form['Password'])
     return index()
 
 
@@ -238,7 +240,7 @@ def logout():
     return index()
 
 @app.route('/UpdateProfile')
-def updateprofile_page():
+def Updateprofile_page():
     return render_template('/status/normal_features/UpdateProfile.html')
 
 
