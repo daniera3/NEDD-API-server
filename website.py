@@ -254,5 +254,14 @@ def changePassword(oldpassword, newpassword):
     return changePassword_page()
 
 
+@app.route('/free_speaking')
+def free_speaking():
+    if session['username']:
+        return render_template('/status/normal_features/free_speaking.html')
+    else:
+        flash("must log in", category='error')
+        return index()
+
+
 if __name__ == '__main__':
     app.run(debug=True)
