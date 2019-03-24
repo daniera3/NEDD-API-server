@@ -238,9 +238,12 @@ def logout():
     session.clear()
     return index()
 
+
+
+
 @app.route('/changePassword')
 def changePassword_page():
-    return render_template('changePasswords.html')
+    return render_template('/status/normal_features/changePasswords.html')
 
 
 def changePassword(oldpassword, newpassword):
