@@ -36,6 +36,7 @@ username = 'asqwzx1'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
+
 @app.route('/')
 #@roles_required("ADMIN")
 def index():
@@ -141,15 +142,19 @@ def Submit1():
     response = eval(response.content)
     return response["status"]
 
-
+@app.route('/Submit2', methods=['POST'])
 def Submit2(data):
-    flash("got hare","error")
+    data=request.form
+    data=dict(data)
+    header = {"Content-Type": "application/json"}
     data['insert'] = False
-    if 'username' in session and session['permissions'] == 'ADMIN':
+    if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
-        return index()
-    response = sent_to_server(data, 'AdminAnswers')
+        return render_template('index.html')
+    data = json.dumps(data)
+    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response = eval(response.content)
     return response["status"]
 
 
@@ -220,6 +225,8 @@ def handle_data():
                                                                                   method='pbkdf2:sha256', salt_length=50),request.form['permissions'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
+    elif request.form['type_form'] == 'admin_answer1':
+        return Submit1(request.form)
     elif request.form['type_form'] == 'changePassword':
         return changePassword(request.form['OldPassword'], request.form['Password'])
     return index()
