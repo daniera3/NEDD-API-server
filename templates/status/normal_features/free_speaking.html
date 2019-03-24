@@ -26,7 +26,18 @@
         <p class="output">...diagnostic messages</p>
     </div>
 
-    <script >
+
+  </body>
+</html>
+
+
+     {% endblock %}
+
+
+
+{% block scripts %}
+
+<script >
         var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
         var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
         var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
@@ -160,7 +171,7 @@
 
 html {
   height: 100%;
-  background-color: green;
+  background-color: rgba(156,120,255,0.9);
 }
 
 body {
@@ -180,7 +191,6 @@ div p {
 
 div {
   overflow: auto;
-  position: absolute;
   bottom: 0;
   right: 0;
   left: 0;
@@ -211,16 +221,5 @@ button {
   font-style: italic;
 }
     </style>
-  </body>
-</html>
-
-
-     {% endblock %}
-
-
-
-{% block scripts %}
-
-
 
      {% endblock %}
