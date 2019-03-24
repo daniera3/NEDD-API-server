@@ -68,10 +68,6 @@ function validateEmail(){
   }
   if(Email.value=='' )
       btn.disabled=true;
-  if(Email.valid)
-      btn.disabled=false;
-  else
-      btn.disabled=true;
 }
 
 Email.onchange = validateEmail;

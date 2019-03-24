@@ -4,6 +4,8 @@ from os import urandom
 from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
+from flask_mail import Mail, Message
+import os
 
 '''   user autoriert
 from flask_login import login_manager
@@ -29,13 +31,36 @@ key = "NEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
-app.secret_key = urandom(16)
+
 
 my_domain = 'asqwzx1.pythonanywhere.com/'
 username = 'asqwzx1'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 
+
+app = Flask(__name__)
+
+mail=Mail(app)
+
+app.config['MAIL_SERVER']='smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'danirabinocivh123@gmail.com'
+app.config['MAIL_PASSWORD'] = 'dani1212'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
+app.secret_key = urandom(16)
+
+
+def sendmail(header,email,massge):
+    try:
+        msg = Message(header, sender = 'danirabinocivh123@gmail.com', recipients = [email])
+        msg.body = massge
+        mail.send(msg)
+        return "send"
+    except:
+        return "fill"
 
 @app.route('/')
 def index():
@@ -247,10 +272,15 @@ def UpdateProfile(email, tel,address,password):
     response = Sub_login(session['username'], password)
     if response["STATUS"] == "SUCCESS":
         data = {'email': email, 'tel':tel, 'user':session['username'],'address':address}
-        sent_to_server(data, "UpdateProfile")
-        return index()
+        response=sent_to_server(data, "UpdateProfile")
+        if response["STATUS"] == "SUCCESS":
+            flash("save change", category='error')
+            return index()
+        else:
+            flash("cant update profile", category='error')
+        return Updateprofile_page()
     else:
-        flash("Password Change Not Successful", category='error')
+        flash("incorect password", category='error')
     return Updateprofile_page()
 
 
