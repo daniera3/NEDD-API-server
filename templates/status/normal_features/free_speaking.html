@@ -26,7 +26,18 @@
         <p class="output">...diagnostic messages</p>
     </div>
 
-    <script >
+
+  </body>
+</html>
+
+
+     {% endblock %}
+
+
+
+{% block scripts %}
+
+<script >
         var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
         var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
         var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
@@ -211,16 +222,5 @@ button {
   font-style: italic;
 }
     </style>
-  </body>
-</html>
-
-
-     {% endblock %}
-
-
-
-{% block scripts %}
-
-
 
      {% endblock %}
