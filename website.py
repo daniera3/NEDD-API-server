@@ -48,8 +48,8 @@ mail=Mail(app)
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'danirabinocivh123@gmail.com'
-app.config['MAIL_PASSWORD'] = 'dani1212'
+app.config['MAIL_USERNAME'] = 'neddproject@gmail.com'
+app.config['MAIL_PASSWORD'] = 'nedd123456'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
@@ -58,7 +58,7 @@ app.secret_key = urandom(16)
 
 def sendmail(header,email,massge):
     try:
-        msg = Message(header, sender = 'danirabinocivh123@gmail.com', recipients = [email])
+        msg = Message(header, sender = 'neddproject@gmail.com', recipients = [email])
         msg.body = massge
         mail.send(msg)
         return "send"
