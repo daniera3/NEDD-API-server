@@ -17,9 +17,9 @@
     <button id="mainbutton">Start new test</button>
 
     <div>
-        <p class="phrase"></p>
-        <p class="result"></p>
-        <p class="output"></p>
+        <p class="phrase">Phrase...</p>
+        <p class="result">Right or wrong?</p>
+        <p class="output">...diagnostic messages</p>
     </div>
                    </div>
             </div>
@@ -41,7 +41,14 @@
         var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
 
         var phrases = [
-            ''
+            'I love to sing because it\'s fun',
+            'where are you going',
+            'can I call you tomorrow',
+            'why did you talk while I was talking',
+            'she enjoys reading books and playing games',
+            'where are you going',
+            'have a great day',
+            'she sells seashells on the seashore'
         ];
 
         var phrasePara = document.querySelector('.phrase');
@@ -65,9 +72,9 @@
             // To ensure case consistency while checking with the returned output text
             phrase = phrase.toLowerCase();
             phrasePara.textContent = phrase;
-            resultPara.textContent = '';
+            resultPara.textContent = 'Right or wrong?';
             resultPara.style.background = 'rgba(0,0,0,0.2)';
-            diagnosticPara.textContent = 'Say what ever you want!';
+            diagnosticPara.textContent = '...diagnostic messages';
 
             var grammar = '#JSGF V1.0; grammar phrase; public <phrase> = ' + phrase + ';';
             var recognition = new SpeechRecognition();
@@ -91,7 +98,13 @@
                 // We then return the transcript property of the SpeechRecognitionAlternative object
                 var speechResult = event.results[0][0].transcript.toLowerCase();
                 diagnosticPara.textContent = 'Speech received: ' + speechResult + '.';
-
+                if (speechResult === phrase) {
+                    resultPara.textContent = 'I heard the correct phrase!';
+                    resultPara.style.background = 'lime';
+                } else {
+                    resultPara.textContent = 'That didn\'t sound right.';
+                    resultPara.style.background = 'red';
+                }
 
                 console.log('Confidence: ' + event.results[0][0].confidence);
             }
