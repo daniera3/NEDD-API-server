@@ -63,7 +63,7 @@ def sendmail(header,email,massge):
         mail.send(msg)
         return "send"
     except:
-        return "fill"
+        return "fail"
 
 
 @app.route('/')
@@ -245,7 +245,7 @@ def enterkey(user,permissions):
     status=sendmail(header,str(email),massge)
     data={'user':user,'permissions':permissions,'key':Key}
     sent_to_server(data, 'trylogin')
-    if status=='fill':
+    if status=='fail':
         return login_page()
     return render_template('login_key.html',User=user)
 
@@ -276,7 +276,7 @@ def handle_data():
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],                                                                            method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'admin_answer1':

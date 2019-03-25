@@ -37,13 +37,13 @@ class AdminRegister(unittest.TestCase):
     def setUpClass(cls):
         app.config['USERNAME'] = th.id_generator()
         app.config['PASSWORD'] = th.id_generator()
-        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"dani@gmail.com")
 
     def test_admin(self):
         answer = th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
         print(answer.content)
         rv = th.login(self.client, app.config['USERNAME'], app.config['PASSWORD'])
-        assert b'Requset Users' in rv.data
+        assert b'enter key sender to your email' in rv.data
 
     @classmethod
     def tearDownClass(cls):
@@ -62,7 +62,7 @@ class TestRegisterAndChangePassword(unittest.TestCase):
         app.config['NEWPASSWORD'] = th.id_generator()
 
     def test_change_password(self):
-        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"dani@gmail.com")
         print("register new user")
         assert b'{}',(app.config['USERNAME'],) in rv.data
         th.change_password(self.client, app.config['PASSWORD'], app.config['NEWPASSWORD'])
@@ -84,7 +84,7 @@ class TestRequestAccesptAndDenide(unittest.TestCase):
     def setUpClass(cls):
         app.config['USERNAME'] = th.id_generator()
         app.config['PASSWORD'] = th.id_generator()
-        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal')
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"dani@gmail.com")
         th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
 
     @pytest.mark.run(order=1)

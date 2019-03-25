@@ -10,11 +10,12 @@ def id_generator(size=7, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def register(client, username, password, type_of_user):
+def register(client, username, password, type_of_user,Email):
     return client.post('/handle_data', data=dict(
         Register_New_User=username,
         Register_New_Password=password,
         permissions=type_of_user,
+        Email=Email,
         type_form='register'
     ), follow_redirects=True)
 
