@@ -68,15 +68,13 @@ def sendmail(header,email,massge):
 
 @app.route('/')
 def index():
-    if session.get('username'):
+    if 'permissions' in session:
         if session['permissions'] == 'NORMAL':
             return render_template('status/normal_login.html')
-        if session['permissions'] == 'MANGER':
+        if session['permissions'] == 'MANAGER':
             return render_template('status/parent_login.html')
         if session['permissions'] == 'ADMIN':
             return render_template('status/admin_login.html')
-        if 'permissions' in session:
-            return redirect(url_for('/'))
     return login_page()
 
 
@@ -295,7 +293,7 @@ def handle_data():
 def Endlogin(user,Key):
     data={'user':user,'Key':Key}
     response=sent_to_server_no_safe(data,'login')
-    if response["status"] == "success":
+    if response["status"] == "success" :
         session['username']=user
         session['permissions']=response['permissions'].upper()
         return index()
