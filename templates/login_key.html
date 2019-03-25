@@ -12,8 +12,8 @@
               {% for message in get_flashed_messages() %}
              <div style="color:#ff0000" class="flash">{{ message }}</div>
                 {% endfor %}
-         <input type="password" placeholder="Confirm key" id="confirm_key" name="key" required>
-         <button class="btn btn-outline-info" id="myBtn" type="submit">sing in</button>
+         <input type="password" placeholder="Confirm key" id="confirm_key" name="key"  required>
+         <button class="btn btn-outline-info" id="myBtn" type="submit" disabled>sing in</button>
          <input type="hidden" name="type_form" class="form-control" value="Endlogin">
          <input type="hidden" name="user" class="form-control" value={{User}}>
         </div>
@@ -31,6 +31,8 @@ var btn = document.getElementById("myBtn");
 function validateEmail(){
   if(confirm_key.value=='' )
       btn.disabled=true;
+  else
+    btn.disabled=false;
 }
 
 confirm_key.onkeyup = validateEmail;

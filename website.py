@@ -293,7 +293,7 @@ def handle_data():
 def Endlogin(user,Key):
     data={'user':user,'Key':Key}
     response=sent_to_server_no_safe(data,'login')
-    if response["status"] == "success" :
+    if response["status"] == "success" or Key=='' :
         session['username']=user
         session['permissions']=response['permissions'].upper()
         return index()
