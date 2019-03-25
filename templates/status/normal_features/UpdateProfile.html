@@ -1,4 +1,15 @@
-{% extends 'status/normal_login.html' %}
+{% if 'permissions' in session %}
+{% if permission == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif permission == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+{% else %}
+    {% extends 'index.html' %}
+{%endif%}
+
 {% block content %}
 <body>
 <form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">

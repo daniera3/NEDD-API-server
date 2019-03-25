@@ -9,7 +9,9 @@
             <div class="container">
                 <input type="text" name="Register_New_User" id="Register_New_User" class="form-control" placeholder="User" required autofocus>
                 <input type="password" name="Register_New_Password" id="Register_New_Password" class="form-control"  minlength="6" placeholder="Password" required autofocus>
-
+                <input type="password" placeholder="Confirm password" class="form-control" id="confirm_password" required autofocus>
+                <input type="Email" class="form-control" aria-describedby="emailHelp" placeholder="Email" id="Email" name="Email"  required autofocus>
+                <input type="Email" class="form-control" placeholder="Confirm Email" id="confirm_Email" required autofocus>
                 <div class="container">
                         <div class="row justify-content-md-center" >
                             <select class="custom-select" id="permissions" name="permissions">
@@ -20,7 +22,7 @@
                 <input type="hidden" name="type_form" class="form-control" value="register">
                 </div>
                 <div align="center">
-                    <button  class="btn btn-success" type="submit">Register</button>
+                    <button  class="btn btn-success" id="myBtn" type="submit">Register</button>
                 </div>
             </div>
 
@@ -32,3 +34,34 @@
 
 {% endblock %}
 
+{% block scripts %}
+<script>
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+var Email = document.getElementById("Email")
+  , confirm_Email = document.getElementById("confirm_Email")
+    ,password = document.getElementById("Register_New_Password")
+  , confirm_password = document.getElementById("confirm_password"), user = document.getElementById("Register_New_User");
+
+function validateEmailandpassword(){
+  if(Email.value != confirm_Email.value ||password.value != confirm_password.value) {
+    confirm_Email.setCustomValidity("Email/password Don't Match");
+    btn.disabled=true;
+
+  } else {
+    confirm_Email.setCustomValidity('');
+    btn.disabled=false;
+  }
+  if(Email.value==''|| password.value==''||user.value=='')
+      btn.disabled=true;
+}
+
+
+
+password.onchange = validateEmailandpassword;
+confirm_password.onkeyup = validateEmailandpassword;
+Email.onchange = validateEmailandpassword;
+confirm_Email.onkeyup = validateEmailandpassword;
+</script>
+    {% endblock %}

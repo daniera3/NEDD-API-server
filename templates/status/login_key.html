@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="row justify-content-md-center" >
+        <div class="col-2">
+        <input type="password" placeholder="Confirm key" id="confirm_key" required>
+        <a href="/" class="btn btn-outline-info" id="myBtn" disabled>sing in</a>
+        </div>
+    </div>
+</body>
+<script>
+// Get the modal
+var confirm_key = document.getElementById('confirm_key');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+
+function validateEmail(){
+  if( {{key}} != confirm_key.value ) {
+    confirm_Email.setCustomValidity("key Don't Match");
+    btn.disabled=true;
+
+  } else {
+    confirm_Email.setCustomValidity('');
+    btn.disabled=false;
+  }
+  if(confirm_key.value=='' )
+      btn.disabled=true;
+}
+
+confirm_key.onkeyup = validateEmail;
+</script>
+
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+.body{
+
+  position: fixed; /* Stay in place */
+  z-index: 0; /* Sit on top */
+  padding-top: -200px; /* Location of the box */
+  padding-left:-20px;
+  width: 230px; /* Full width */
+  height: 110px; /* Full height */
+  margin:50px;
+  background-color: rgba(1,25,100,0.5); /* Black w/ opacity */
+}
+</style>
+</html>

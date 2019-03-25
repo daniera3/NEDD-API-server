@@ -27,6 +27,7 @@ app = Flask(__name__)
 
 
 
+
 key = "NEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
@@ -61,6 +62,7 @@ def sendmail(header,email,massge):
         return "send"
     except:
         return "fill"
+
 
 @app.route('/')
 def index():
@@ -186,6 +188,13 @@ def Submit2(data):
 def login_page():
     return render_template('login.html')
 
+def sent_to_server_no_safe(data, type_request):
+    data = json.dumps(data)
+    header = {"Content-Type": "application/json"}
+    response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
+                             data=data,
+                             headers=header)
+    return eval(response.content)
 
 def sent_to_server(data, type_request):
     data = json.dumps(data)
@@ -216,15 +225,39 @@ def login(user_name, password):
     if response["STATUS"] == "SUCCESS":
         session['username'] = user_name
         session['permissions'] = response['PERMISSIONS']
-        return index()
+        return enterkey()
     flash("there was an error please try again", category='error')
     return login_page()
 
 
-def register(user, password, permissions):
+def getprofile():
+    if 'username' in session:
+        data = {'User': session['username']}
+        response = sent_to_server_no_safe(data, 'ReturnProfile')
+        if 'status' in response:
+            return {'email': '', 'Tel': '', 'adress': ''}
+        return response
+    else:
+        return {'email':'','Tel':'','adress':''}
+
+
+def enterkey():
+    Key=urandom(16)
+    email=getprofile()
+    flash(str(email), category='error')
+    email=email['data'][0]['email']
+    header='login key'
+    massge="you key for login to NEDD site is: ?",(Key,)
+    sendmail(header,email,massge)
+    return render_template('login_key.html', key=Key)
+
+
+
+
+def register(user, password, permissions,Email):
     salt = password.split('$')[1]
     password = password.split('$')[2]
-    data = {'User': user, 'Password': password, 'perm': permissions}
+    data = {'User': user, 'Password': password, 'perm': permissions,'Email':Email}
     response = sent_to_server(data, 'singup')
     if response["STATUS"] == "SUCCESS":
         try:
@@ -246,7 +279,7 @@ def handle_data():
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
         return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],
-                                                                                  method='pbkdf2:sha256', salt_length=50),request.form['permissions'])
+                                                                                  method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'admin_answer1':
