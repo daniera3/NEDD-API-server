@@ -5,6 +5,8 @@ from werkzeug.security import generate_password_hash, pbkdf2_hex
 import Description
 from sqlalchemy import create_engine
 from flask_mail import Mail, Message
+import random
+import datetime
 import os
 
 '''   user autoriert
@@ -223,33 +225,31 @@ def Sub_login(user_name, password):
 def login(user_name, password):
     response = Sub_login(user_name, password)
     if response["STATUS"] == "SUCCESS":
-        session['username'] = user_name
-        session['permissions'] = response['PERMISSIONS']
-        return enterkey()
+        return enterkey(user_name,response['PERMISSIONS'])
     flash("there was an error please try again", category='error')
     return login_page()
 
 
-def getprofile():
-    if 'username' in session:
-        data = {'User': session['username']}
-        response = sent_to_server_no_safe(data, 'ReturnProfile')
-        if 'status' in response:
-            return {'email': '', 'Tel': '', 'adress': ''}
-        return response
-    else:
-        return {'email':'','Tel':'','adress':''}
+def getprofile(user):
+    data = {'User': user}
+    response = sent_to_server_no_safe(data, 'ReturnProfile')
+    if 'status' in response:
+        return {'email': '', 'Tel': '', 'adress': ''}
+    return response
 
 
-def enterkey():
-    Key=urandom(16)
-    email=getprofile()
-    flash(str(email), category='error')
+def enterkey(user,permissions):
+    Key=random.randint(10000000,100000000)
+    email=getprofile(user)
     email=email['data'][0]['email']
     header='login key'
-    massge="you key for login to NEDD site is: ?",(Key,)
-    sendmail(header,email,massge)
-    return render_template('login_key.html', key=Key)
+    massge="you key for login to NEDD site is:'{0}'".format(Key)
+    status=sendmail(header,str(email),massge)
+    data={'user':user,'permissions':permissions,'key':Key}
+    sent_to_server(data, 'trylogin')
+    if status=='fill':
+        return login_page()
+    return render_template('login_key.html',User=user)
 
 
 
@@ -278,17 +278,31 @@ def handle_data():
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],
-                                                                                  method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],                                                                            method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'admin_answer1':
         return Submit1(request.form)
+    elif request.form['type_form'] == 'Endlogin':
+        return Endlogin(request.form['user'],request.form['key'])
     elif request.form['type_form'] == 'changePassword':
         return changePassword(request.form['OldPassword'], request.form['Password'])
     elif request.form['type_form'] == 'UpdateProfile':
         return UpdateProfile(request.form['Email'], request.form['tel'], request.form['address'],request.form['password'])
     return index()
+
+
+def Endlogin(user,Key):
+    data={'user':user,'Key':Key}
+    response=sent_to_server_no_safe(data,'login')
+    if response["status"] == "success":
+        session['username']=user
+        session['permissions']=response['permissions'].upper()
+        return index()
+    else:
+        flash("bad key", category='error')
+        return render_template('login_key.html', User=user)
+
 
 
 @app.route('/logout')

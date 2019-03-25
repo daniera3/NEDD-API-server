@@ -5,12 +5,20 @@
     <title>Title</title>
 </head>
 <body>
+
+    <form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">
     <div class="row justify-content-md-center" >
         <div class="col-2">
-        <input type="password" placeholder="Confirm key" id="confirm_key" required>
-        <a href="/" class="btn btn-outline-info" id="myBtn" disabled>sing in</a>
+              {% for message in get_flashed_messages() %}
+             <div style="color:#ff0000" class="flash">{{ message }}</div>
+                {% endfor %}
+         <input type="password" placeholder="Confirm key" id="confirm_key" name="key" required>
+         <button class="btn btn-outline-info" id="myBtn" type="submit">sing in</button>
+         <input type="hidden" name="type_form" class="form-control" value="Endlogin">
+         <input type="hidden" name="user" class="form-control" value={{User}}>
         </div>
     </div>
+    </form>
 </body>
 <script>
 // Get the modal
@@ -21,14 +29,6 @@ var btn = document.getElementById("myBtn");
 
 
 function validateEmail(){
-  if( {{key}} != confirm_key.value ) {
-    confirm_Email.setCustomValidity("key Don't Match");
-    btn.disabled=true;
-
-  } else {
-    confirm_Email.setCustomValidity('');
-    btn.disabled=false;
-  }
   if(confirm_key.value=='' )
       btn.disabled=true;
 }
