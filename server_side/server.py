@@ -84,9 +84,9 @@ class STest(Resource):
         query = conn.execute("select * from Accounts WHERE User=? and Active=?", (User,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
-            return {'status':'Ufail'}
+            return  crypto2.des(str({'status':'Ufail'}),key)
         conn.execute("insert into SpeechTasks values('','{0}','{1}','{2}','{3}')".format(User,Line,Say,Date))
-        return {'status':'success'}
+        return crypto2.des(str({'status':'success'}),key)
 
 
 
@@ -145,8 +145,8 @@ class AdminRequest(Resource):
         if SubFunc.CheckAdmin(Name):
             query = conn.execute("select * from request")
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-            return result
-        return {'data':[]}
+            return crypto2.des(str(result),key)
+        return crypto2.des(str({'data':[]}),key)
 
 class AdminAnswersToRequests(Resource):
     def post(self):
@@ -167,17 +167,17 @@ class AdminAnswersToRequests(Resource):
                             massge=massge+" and update"
                     except:
                         conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
-                        return {'status':'he can see hes info'}
+                        return crypto2.des(str({'status':'he can see hes info'}),key)
                 conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
-                return {'status':massge}
+                return  crypto2.des(str({'status':massge}),key)
             conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
-            return {'status':"bad user Permissions"}
+            return  crypto2.des(str({'status':"bad user Permissions"}),key)
         except:
             try:
                 conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
             except:
-                return {'status':'sorry some thing happend send report bug'}
-            return {'status':'fail'}
+                return crypto2.des(str({'status':'sorry some thing happend send report bug'}),key)
+            return crypto2.des(str({'status':'fail'}),key)
 
 
 class SetPermissions(Resource):
@@ -307,7 +307,7 @@ class ReturnProfile(Resource):
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             if not result['data']:
                 return {'status':'NoFind'}
-            return result
+            return crypto2.des(str(result),key)
         except:
             return {'status':'fail'}
 

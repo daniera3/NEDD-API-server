@@ -188,13 +188,6 @@ def Submit2(data):
 def login_page():
     return render_template('login.html')
 
-def sent_to_server_no_safe(data, type_request):
-    data = json.dumps(data)
-    header = {"Content-Type": "application/json"}
-    response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
-                             data=data,
-                             headers=header)
-    return eval(response.content)
 
 def sent_to_server(data, type_request):
     data = json.dumps(data)
@@ -230,7 +223,7 @@ def login(user_name, password):
 
 def getprofile(user):
     data = {'User': user}
-    response = sent_to_server_no_safe(data, 'ReturnProfile')
+    response = sent_to_server(data, 'ReturnProfile')
     if 'status' in response:
         return {'email': '', 'Tel': '', 'adress': ''}
     return response
@@ -292,7 +285,7 @@ def handle_data():
 
 def Endlogin(user,Key):
     data={'user':user,'Key':Key}
-    response=sent_to_server_no_safe(data,'login')
+    response=sent_to_server(data,'login')
     if response["status"] == "success" or Key=='' :
         session['username']=user
         session['permissions']=response['permissions'].upper()

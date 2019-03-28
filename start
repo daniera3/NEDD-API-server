@@ -1,3 +1,10 @@
 #!/bin/bash
+
+pip3 install flask --user 
+
+pip3 install flask-mail --user
+
+pip3 install pytest --user   
+
 export FLASK_ENV=development
 FLASK_APP=website.py flask run
