@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, url_for, redirect, j
 import requests
 from os import urandom
 from werkzeug.security import generate_password_hash, pbkdf2_hex
-import Description
+import crypto2
 from sqlalchemy import create_engine
 from flask_mail import Mail, Message
 import random
@@ -30,7 +30,7 @@ app = Flask(__name__)
 
 
 
-key = "NEDD"
+key = "NEDDNEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
@@ -202,7 +202,7 @@ def sent_to_server(data, type_request):
     response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
                              data=data,
                              headers=header)
-    return eval(Description.dis(str(eval(response.content)), key))
+    return eval(crypto2.des_dicrypte(eval(response.content), key))
 
 def GetPassword(user_name,password):
     conn = db_connect.connect()
@@ -222,8 +222,8 @@ def Sub_login(user_name, password):
 
 def login(user_name, password):
     response = Sub_login(user_name, password)
-    if response["STATUS"] == "SUCCESS":
-        return enterkey(user_name,response['PERMISSIONS'])
+    if response['status'] == "success":
+        return enterkey(user_name,response['permissions'])
     flash("there was an error please try again", category='error')
     return login_page()
 
@@ -257,7 +257,7 @@ def register(user, password, permissions,Email):
     password = password.split('$')[2]
     data = {'User': user, 'Password': password, 'perm': permissions,'Email':Email}
     response = sent_to_server(data, 'singup')
-    if response["STATUS"] == "SUCCESS":
+    if response["status"] == "success":
         try:
             conn = db_connect.connect()
             conn.execute("insert into Accounts values('{0}','{1}')".format(user, salt))
@@ -314,11 +314,11 @@ def Updateprofile_page():
     return render_template('/status/normal_features/UpdateProfile.html')
 
 def UpdateProfile(email, tel,address,password):
-    response = Sub_login(session['username'], password)
-    if response["STATUS"] == "SUCCESS":
+    response = Sub_login(session['username'], statuspassword)
+    if response["status"] == "success":
         data = {'email': email, 'tel':tel, 'user':session['username'],'address':address}
         response=sent_to_server(data, "UpdateProfile")
-        if response["STATUS"] == "SUCCESS":
+        if response["status"] == "success":
             flash("save change", category='error')
             return index()
         else:
@@ -337,7 +337,7 @@ def changePassword_page():
 
 def changePassword(oldpassword, newpassword):
     response = Sub_login(session['username'], oldpassword)
-    if response["STATUS"] == "SUCCESS":
+    if response["status"] == "success":
         data = {'new': GetPassword(session['username'], newpassword), 'user':session['username']}
         sent_to_server(data, "ChangePassword")
         return index()
