@@ -173,9 +173,9 @@ def S_Boxes(string):
 
 
 def the_f(string,key):
-    # בלוק שמאל
+
     left_block = string[0:32]
-    # בלוק ימין
+
     right_block = string[32:64]
     extnsion=E.copy()
     new_left_block= right_block # this new left
