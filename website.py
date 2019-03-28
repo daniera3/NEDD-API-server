@@ -160,12 +160,14 @@ def login_page():
 
 
 def sent_to_server(data, type_request):
-    data = json.dumps(data)
+    data = crypto2.des(json.dumps(data), key)
     header = {"Content-Type": "application/json"}
     response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
                              data=data,
                              headers=header)
-    print(response)
+
+    flash(response.content, "error")
+
     return eval(crypto2.des_dicrypte(eval(response.content), key))
 
 
