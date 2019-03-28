@@ -6,45 +6,20 @@ import crypto2
 from sqlalchemy import create_engine
 from flask_mail import Mail, Message
 import random
-import datetime
-import os
 
-'''   user autoriert
-from flask_login import login_manager
-
-from user_autorize import *
-db.create_all()
-
-admin_role =Role(name='ADMIN')
-db.session.commit()
-user1 = User(
-    username='test', email='admin@example.com', active=True,
-    password='test')
-user1.roles = [admin_role]
-db.session.commit()
-
-login_manager = login_manager()
-'''
 app = Flask(__name__)
-
-
-
 
 key = "NEDDNEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
-
-
 my_domain = 'asqwzx1.pythonanywhere.com/'
 username = 'asqwzx1'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
-
-
 app = Flask(__name__)
 
-mail=Mail(app)
+mail = Mail(app)
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -53,10 +28,11 @@ app.config['MAIL_PASSWORD'] = 'nedd123456'
 app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 mail = Mail(app)
+
 app.secret_key = urandom(16)
 
 
-def sendmail(header,email,massge):
+def sendmail(header, email, massge):
     try:
         msg = Message(header, sender = 'neddproject@gmail.com', recipients = [email])
         msg.body = massge
@@ -91,9 +67,9 @@ def UserControler():
     else:
         return render_template('index.html')
     data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToDelete', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    response=sent_to_server(data,"GetUsersToDelete")
     deleteUsers = eval(response.content)['data']
-    response = requests.post('https://asqwzx1.pythonanywhere.com/GetUsersToReturn', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    response=sent_to_server(data,"GetUsersToReturn")
     returnUsers = eval(response.content)['data']
     return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers)
 
@@ -101,13 +77,12 @@ def UserControler():
 @app.route('/DeleteUser', methods=['POST'])
 def DeleteUser():
     data=dict(request.form)
-    header = {"Content-Type": "application/json"}
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
     data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/DeleteUser', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response=sent_to_server(data, "DeleteUser")
     response = eval(response.content)
     return response["status"]
 
@@ -115,41 +90,38 @@ def DeleteUser():
 @app.route('/userReturn', methods=['POST'])
 def userReturn():
     data=dict(request.form)
-    header = {"Content-Type": "application/json"}
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
     data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/ReturnUser', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response=sent_to_server(data,"ReturnUser")
     response = eval(response.content)
     return response["status"]
 
 
 @app.route('/AdminRequest')
 def AdminRequest():
-    header = {"Content-Type": "application/json"}
     data = {"User": ""}
     if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
     data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    response=sent_to_server(data,"AdminRequest")
     response = eval(response.content)['data']
     return render_template('status/admin_features/AdminRequest.html', requests=response)
 
 
 @app.route('/GetRequestJson', methods=['POST'])
 def GetRequestJson():
-    header = {"Content-Type": "application/json"}
     data = {"User": ""}
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
     data= json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminRequest', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    response=sent_to_server(data,"AdminRequest")
     response = eval(response.content)
     return json.dumps(response)
 
@@ -157,14 +129,13 @@ def GetRequestJson():
 def Submit1():
     data=request.form
     data=dict(data)
-    header = {"Content-Type": "application/json"}
     data['insert'] = True
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
     data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response=sent_to_server(data,"AdminAnswers")
     response = eval(response.content)
     return response["status"]
 
@@ -172,14 +143,13 @@ def Submit1():
 def Submit2(data):
     data=request.form
     data=dict(data)
-    header = {"Content-Type": "application/json"}
     data['insert'] = False
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
     data = json.dumps(data)
-    response = requests.post('https://asqwzx1.pythonanywhere.com/AdminAnswers', auth=('asqwzx1', 'NEDD'), data=data,headers=header)
+    response=sent_to_server(data,"AdminAnswers")
     response = eval(response.content)
     return response["status"]
 
@@ -195,9 +165,11 @@ def sent_to_server(data, type_request):
     response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
                              data=data,
                              headers=header)
+    print(response)
     return eval(crypto2.des_dicrypte(eval(response.content), key))
 
-def GetPassword(user_name,password):
+
+def GetPassword(user_name, password):
     conn = db_connect.connect()
     query = conn.execute("select * from Accounts WHERE username=?", (user_name,))
     result = {'data': [dict(zip(tuple(query.keys()), i)) for i in query.cursor]}
@@ -206,6 +178,7 @@ def GetPassword(user_name,password):
     else:
         password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
     return str(password)
+
 
 def Sub_login(user_name, password):
     data={'pas':GetPassword(user_name,password),'user':user_name}
