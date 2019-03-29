@@ -1,6 +1,7 @@
 import random
 import string
 import json,requests
+from website import sent_to_server
 
 
 key = "NEDD"
@@ -30,9 +31,8 @@ def change_password(client, oldpassword, newpassword):
 
 def delete_from_sql(username):
     data = {'user': username}
-    data = json.dumps(data)
-    header = {"Content-Type": "application/json"}
-    requests.post('https://asqwzx1.pythonanywhere.com/Testsingup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    sent_to_server(data,"Testsingup")
+
 
 
 def login(client, username, password):
@@ -46,11 +46,8 @@ def login(client, username, password):
 
 def update_permission_in_sql(username, authority):
     data = {'UserUpdate': username, 'Permissions': authority, 'User': 'admin'}
-    data = json.dumps(data)
-    header = {"Content-Type": "application/json"}
-    response = requests.post('https://asqwzx1.pythonanywhere.com/SetPermissions', auth=('asqwzx1', 'NEDD'), data=data,
-                  headers=header)
-    return response
+    return sent_to_server(data, "SetPermissions")
+
 
 
 def logout(client):

@@ -55,6 +55,7 @@ class SubFunc():
 
 class Test(Resource):
     def get(self,User,Date=datetime.datetime.now().strftime("%Y-%m-%d")):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
         query = conn.execute("select * from SpeechTasks where Date=? and User=? ",(Date,User,))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -63,10 +64,12 @@ class Test(Resource):
 
 
     def post(Self):
+
 	    conn = db_connect.connect()
-	    User = request.json['user']
-	    if 'Date' in request.json.keys():
-	        Date = request.json['Date']
+	    DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+	    User = DATA['user']
+	    if 'Date' in DATA.keys():
+	        Date = DATA['Date']
 	    else:
 	        Date=datetime.datetime.now().strftime("%Y-%m-%d")
 	    query = conn.execute("select * from SpeechTasks where Date=? and User=?",(Date,User,))
@@ -76,10 +79,11 @@ class Test(Resource):
 
 class STest(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
         conn = db_connect.connect()
-        User = request.json['user']
-        Line = request.json['line']
-        Say = request.json['say']
+        User = DATA['user']
+        Line = DATA['line']
+        Say = DATA['say']
         Date = datetime.datetime.now().strftime("%Y-%m-%d")
         query = conn.execute("select * from Accounts WHERE User=? and Active=?", (User,"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -93,10 +97,11 @@ class STest(Resource):
 
 class Singin(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
         try:
             conn = db_connect.connect()
-            user = request.json['user']
-            pas = request.json['pas']
+            user = DATA['user']
+            pas = DATA['pas']
             query = conn.execute("select * from Accounts WHERE User=? and Active=?", (user,"True",))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             if not result['data']:
@@ -111,11 +116,12 @@ class Singin(Resource):
 
 class singup(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
         try:
-            Name = request.json['User']
-            Password = request.json['Password']
-            Perm = request.json['perm']
+            Name = DATA['User']
+            Password = DATA['Password']
+            Perm = DATA['perm']
             if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0:
                 return crypto2.des(str({'status':'hacker'}),key)
             query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
@@ -123,7 +129,7 @@ class singup(Resource):
             if not result['data']:
         	    conn.execute("insert into Accounts values('{0}','{1}','{2}','{3}')".format(Name,Password,Perm,'True'))
         	    conn.execute("insert into LVL values('{0}','{1}')".format(Name,"1"))
-        	    conn.execute("insert into Profile values('{0}','{1}','{2}','{3}')".format(Name,request.json['Email'],'',''))
+        	    conn.execute("insert into Profile values('{0}','{1}','{2}','{3}')".format(Name,DATA['Email'],'',''))
         	    return crypto2.des(str({'status':'success'}),key)
             return crypto2.des(str({'status':'fail'}),key)
         except:
@@ -131,17 +137,19 @@ class singup(Resource):
 
 class ChangePassword(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         try:
             conn = db_connect.connect()
-            conn.execute(" UPDATE Accounts SET Password =? WHERE User=?", (request.json['new'],str(request.json['user']),))
+            conn.execute(" UPDATE Accounts SET Password =? WHERE User=?", (DATA['new'],str(DATA['user']),))
             return  crypto2.des(str({'status':'change password'}),key)
         except:
             return crypto2.des(str({'status':'fail ,sorry cant do this'}),key)
 
 class AdminRequest(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
-        Name = request.json['User']
+        Name = DATA['User']
         if SubFunc.CheckAdmin(Name):
             query = conn.execute("select * from request")
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -150,31 +158,32 @@ class AdminRequest(Resource):
 
 class AdminAnswersToRequests(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         massge="deleted this request"
         conn = db_connect.connect()
         try:
-            Name = request.json['User']
-            if SubFunc.CheckAdmin(Name) and SubFunc.CheckManager(request.json['requesting']) and SubFunc.CheckNormal(request.json['user']) :
-                if request.json['insert']:
+            Name = DATA['User']
+            if SubFunc.CheckAdmin(Name) and SubFunc.CheckManager(DATA['requesting']) and SubFunc.CheckNormal(DATA['user']) :
+                if DATA['insert']:
                     try:
-                        query = conn.execute("select * from Guider where User=? AND GuideName=?",(request.json['user'],request.json['requesting'],))
+                        query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
                         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                         if not result['data']:
-                            conn.execute("insert into Guider values('{0}','{1}','True')".format(request.json['user'],request.json['requesting']))
+                            conn.execute("insert into Guider values('{0}','{1}','True')".format(DATA['user'],DATA['requesting']))
                             massge=massge+" and saved"
                         else:
-                            conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",request.json['user'],request.json['requesting'],))
+                            conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
                             massge=massge+" and update"
                     except:
-                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                         return crypto2.des(str({'status':'he can see hes info'}),key)
-                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                 return  crypto2.des(str({'status':massge}),key)
-            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
             return  crypto2.des(str({'status':"bad user Permissions"}),key)
         except:
             try:
-                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(request.json['IDrequest'],))
+                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
             except:
                 return crypto2.des(str({'status':'sorry some thing happend send report bug'}),key)
             return crypto2.des(str({'status':'fail'}),key)
@@ -182,117 +191,125 @@ class AdminAnswersToRequests(Resource):
 
 class SetPermissions(Resource):
     def post(self):
+
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
-        Name = request.json['User']
+        Name = DATA['User']
         if SubFunc.CheckAdmin(Name):
-                Name = request.json['UserUpdate']
+                Name = DATA['UserUpdate']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),'True',))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
-                    return {'status':'fail','reason':'cannot find user'}
-                if 'Permissions' in request.json.keys():
-                    if request.json['Permissions']=='Admin' or request.json['Permissions']=='Manager' or request.json['Permissions']=='Normal':
-                        conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", (request.json['Permissions'],str(Name),))
-                        return {'status':'sussess'}
+                    return crypto2.des(str({'status':'fail','reason':'cannot find user'}),key)
+                if 'Permissions' in DATA.keys():
+                    if DATA['Permissions']=='Admin' or DATA['Permissions']=='Manager' or DATA['Permissions']=='Normal':
+                        conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", (DATA['Permissions'],str(Name),))
+                        return crypto2.des(str({'status':'sussess'}),key)
                     else:
-                        return {'status':'fail'}
+                        return crypto2.des(str({'status':'fail'}),key)
                 conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", ('Normal',str(Name),))
-                return {'status':'fail','reason':'return regular user'}
-        return {'status':'fail','reason':'dont have Permissions'}
+                return crypto2.des(str( {'status':'fail','reason':'return regular user'}),key)
+        return  crypto2.des(str( {'status':'fail','reason':'dont have Permissions'}),key)
 
 class GetUsersToReturn(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
         try:
-            Name = request.json['User']
+            Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
                 query = conn.execute("select User from Accounts WHERE User<>? and Active=? ORDER BY Permissions ASC;", (str(Name),"False",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-                return result
-            return {'status':'haven\'t Permissions'}
+                return crypto2.des(str(result),key)
+            return crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
-            return {'status':'fail'}
+            return crypto2.des(str({'status':'fail'}),key)
 
 class GetUsersToDelete(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
         try:
-            Name = request.json['User']
+            Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
                 query = conn.execute("select User from Accounts WHERE User<>? and Active=? ORDER BY Permissions ASC;", (str(Name),"True",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-                return result
-            return {'status':'haven\'t Permissions'}
+                return crypto2.des(str(result),key)
+            return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
-            return {'status':'fail'}
+            return  crypto2.des(str({'status':'fail'}),key)
 
 
 
 
 class ReturnUser(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         conn = db_connect.connect()
         try:
-            Name = request.json['User']
+            Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
-                Name = request.json['ReturnU']
+                Name = DATA['ReturnU']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),"False",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
-                    return {'status':'NoFind'}
+                    return crypto2.des(str({'status':'NoFind'}),key)
                 conn.execute(" UPDATE Accounts SET Active =? WHERE User=?", ('True',str(Name),))
-                return {'status':'success'}
-            return {'status':'fail'}
+                return crypto2.des(str({'status':'success'}),key)
+            return crypto2.des(str({'status':'fail'}),key)
         except:
-            return {'status':'fail'}
+            return  crypto2.des(str({'status':'fail'}),key)
 
 class DeleteUser(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
         conn = db_connect.connect()
         try:
-            Name = request.json['User']
+            Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
-                Name = request.json['del']
+                Name = DATA['del']
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),"True",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
-                    return {'status':'NoFind'}
+                    return crypto2.des(str({'status':'NoFind'}),key)
                 conn.execute(" UPDATE Accounts SET Active =? WHERE User=?", ('False',str(Name),))
-                return {'status':'success'}
-            return {'status':'fail'}
+                return  crypto2.des(str({'status':'success'}),key)
+            return crypto2.des(str({'status':'fail'}),key)
         except:
-            return {'status':'fail'}
+            return crypto2.des(str({'status':'fail'}),key)
 
 class DeleteUserTast(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
         conn = db_connect.connect()
         try:
-            conn.execute("DELETE FROM Accounts WHERE User = ?;",(request.json['user'],))
-            conn.execute("DELETE FROM LVL WHERE User = ?;",(request.json['user'],))
-            return {'status':'success'}
+            conn.execute("DELETE FROM Accounts WHERE User = ?;",(DATA['user'],))
+            conn.execute("DELETE FROM LVL WHERE User = ?;",(DATA['user'],))
+            return crypto2.des(str({'status':'success'}),key)
         except:
-            return {'status':'fail'}
+            return crypto2.des(str({'status':'fail'}),key)
 
 
 class UpdateProfile(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
         try:
             conn = db_connect.connect()
-            query = conn.execute("select * from Profile WHERE UserName=?", (request.json['user'],))
+            query = conn.execute("select * from Profile WHERE UserName=?", (DATA['user'],))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             if not result['data']:
                 try:
-                    conn.execute("insert into Profile values('{0}','{1}','{2}','{3}')".format(request.json['user'],request.json['email'],request.json['tel'],request.json['address']))
+                    conn.execute("insert into Profile values('{0}','{1}','{2}','{3}')".format(DATA['user'],DATA['email'],DATA['tel'],DATA['address']))
                     return crypto2.des(str({'status':'success','res':'new'}),key)
                 except:
                     return crypto2.des(str({'status':'fail'}),key)
             else:
-                if request.json['email']!='':
-                    conn.execute(" UPDATE Profile SET email =?  WHERE UserName=?", (request.json['email'],request.json['user'],))
-                if request.json['tel']!='':
-                    conn.execute(" UPDATE Profile SET Tel =?  WHERE UserName=?", (request.json['tel'],request.json['user'],))
-                if request.json['address']!='':
-                    conn.execute(" UPDATE Profile SET address =?  WHERE UserName=?", (request.json['address'],request.json['user'],))
+                if DATA['email']!='':
+                    conn.execute(" UPDATE Profile SET email =?  WHERE UserName=?", (DATA['email'],DATA['user'],))
+                if DATA['tel']!='':
+                    conn.execute(" UPDATE Profile SET Tel =?  WHERE UserName=?", (DATA['tel'],DATA['user'],))
+                if DATA['address']!='':
+                    conn.execute(" UPDATE Profile SET address =?  WHERE UserName=?", (DATA['address'],DATA['user'],))
                 return crypto2.des(str({'status':'success','res':'update'}),key)
         except:
             return crypto2.des(str({'status':'bug'}),key)
@@ -300,30 +317,32 @@ class UpdateProfile(Resource):
 
 class ReturnProfile(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         try:
             conn = db_connect.connect()
-            Name = request.json['User']
+            Name = DATA['User']
             query = conn.execute("select * from Profile WHERE UserName=?", (str(Name),))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             if not result['data']:
-                return {'status':'NoFind'}
+                return  crypto2.des(str({'status':'NoFind'}),key)
             return crypto2.des(str(result),key)
         except:
-            return {'status':'fail'}
+            return  crypto2.des(str({'status':'fail'}),key)
 
 class trylogin(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         try:
             conn = db_connect.connect()
-            Name = request.json['user']
+            Name = DATA['user']
             query = conn.execute("select * from Trylogin WHERE user=?", (Name,))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             date=datetime.datetime.now()
             if not result['data']:
-                conn.execute("insert into Trylogin values('{0}','{1}','{2}','{3}')".format(request.json['user'],request.json['permissions'],request.json['key'],date))
+                conn.execute("insert into Trylogin values('{0}','{1}','{2}','{3}')".format(DATA['user'],DATA['permissions'],DATA['key'],date))
                 return crypto2.des(str({'status':'success','res':'new'}),key)
             else:
-                conn.execute(" UPDATE Trylogin SET permissions=?,key=?,date=?  WHERE user=?", (request.json['permissions'],request.json['key'],date,Name,))
+                conn.execute(" UPDATE Trylogin SET permissions=?,key=?,date=?  WHERE user=?", (DATA['permissions'],DATA['key'],date,Name,))
                 return crypto2.des(str({'status':'success','res':'update'}),key)
         except:
             return crypto2.des(str({'status':'fail','res':'bug'}),key)
@@ -331,30 +350,31 @@ class trylogin(Resource):
 
 class login(Resource):
     def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         try:
             conn = db_connect.connect()
-            query = conn.execute("select * from Trylogin WHERE user=? and key=? ",(request.json['user'],request.json['Key'],))
+            query = conn.execute("select * from Trylogin WHERE user=? and key=? ",(DATA['user'],DATA['Key'],))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             date=datetime.datetime.now()
             if not result['data']:
-                return {'status':'fail','res':'Not find'}
+                return crypto2.des(str({'status':'fail','res':'Not find'}),key)
             else:
                 try:
                     if(str(date).split(' ')[0]==result['data'][0]['date'].split(' ')[0]):
                         if(str(date).split(' ')[1].split(':')[0]==result['data'][0]['date'].split(' ')[1].split(':')[0]):
                             if((int(str(date).split(' ')[1].split(':')[1]) - int(result['data'][0]['date'].split(' ')[1].split(':')[1]))<10):
                                 result['data'][0]['status']='success'
-                                return result['data'][0]
+                                return crypto2.des(str(result['data'][0]),key)
                             else:
-                                return {'status':'fail','res':'time over'}
+                                return crypto2.des(str({'status':'fail','res':'time over'}),key)
                         else:
-                            return {'status':'fail','res':'not some houer'}
+                            return crypto2.des(str({'status':'fail','res':'not some houer'}),key)
                     else:
-                        return {'status':'fail','res':'not some day'}
+                        return crypto2.des(str({'status':'fail','res':'not some day'}),key)
                 except:
-                    return {'status':'fail','res':'date bug'}
+                    return crypto2.des(str({'status':'fail','res':'date bug'}),key)
         except:
-            return {'status':'fail','res':'bug'}
+            return crypto2.des(str({'status':'fail','res':'bug'}),key)
 
 
 api.add_resource(Singin,  '/singin','/singin/<user>/<pas>',methods={'POST','GET'})
