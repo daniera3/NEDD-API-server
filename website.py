@@ -162,12 +162,11 @@ def login_page():
 def sent_to_server(data, type_request):
     temp = {"data": crypto2.des(str(data), key)}
     data = json.dumps(temp)
-    flash(data)
     header = {"Content-Type": "application/json"}
     response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
                              data=data,
                              headers=header)
-    return eval(crypto2.des_dicrypte(eval(response.content), key))
+    return eval(crypto2.des_dicrypte(str(eval(response.content)), key))
 
 
 def GetPassword(user_name, password):
@@ -281,7 +280,9 @@ def Updateprofile_page():
     return render_template('/status/normal_features/UpdateProfile.html')
 
 def UpdateProfile(email, tel,address,password):
-    response = Sub_login(session['username'], statuspassword)
+    if 'username' not in session:
+        return login_page()
+    response = Sub_login(session['username'], password)
     if response["status"] == "success":
         data = {'email': email, 'tel':tel, 'user':session['username'],'address':address}
         response=sent_to_server(data, "UpdateProfile")
@@ -303,6 +304,8 @@ def changePassword_page():
 
 
 def changePassword(oldpassword, newpassword):
+    if 'username' not in session:
+        return login_page()
     response = Sub_login(session['username'], oldpassword)
     if response["status"] == "success":
         data = {'new': GetPassword(session['username'], newpassword), 'user':session['username']}
