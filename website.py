@@ -10,6 +10,8 @@ import random
 app = Flask(__name__)
 
 key = "NEDDNEDD"
+
+
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
@@ -176,12 +178,14 @@ def GetPassword(user_name, password):
     if not result['data']:
         password = 'a'
     else:
-        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
+        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=150000, keylen=None, hashfunc="sha512")
     return str(password)
 
 
 def Sub_login(user_name, password):
+    flash(password, category='error')
     data={'pas':GetPassword(user_name,password),'user':user_name}
+    flash(data, category='error')
     response = sent_to_server(data, 'singin')
     return response
 
@@ -219,6 +223,7 @@ def enterkey(user,permissions):
 
 
 def register(user, password, permissions,Email):
+    flash(password, category='error')
     salt = password.split('$')[1]
     password = password.split('$')[2]
     data = {'User': user, 'Password': password, 'perm': permissions,'Email':Email}
@@ -228,6 +233,8 @@ def register(user, password, permissions,Email):
             conn = db_connect.connect()
             conn.execute("insert into Accounts values('{0}','{1}')".format(user, salt))
         except:
+            data = {'user': user}
+            sent_to_server(data, "Testsingup")
             return redirect(url_for('register_page'))
         session['username'] = user
         session['permissions'] = permissions.upper()
@@ -242,7 +249,7 @@ def handle_data():
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha512', salt_length=50),request.form['permissions'],request.form['Email'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'admin_answer1':

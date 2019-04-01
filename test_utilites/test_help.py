@@ -1,10 +1,8 @@
 import random
 import string
 import json,requests
-from website import sent_to_server
+from website import sent_to_server,db_connect,GetPassword
 
-
-key = "NEDD"
 
 
 def id_generator(size=7, chars=string.ascii_uppercase + string.digits):
@@ -30,12 +28,18 @@ def change_password(client, oldpassword, newpassword):
 
 
 def delete_from_sql(username):
-    data = {'user': username}
-    sent_to_server(data,"Testsingup")
+    try:
+        data = {'user': username}
+        sent_to_server(data,"Testsingup")
+        conn = db_connect.connect()
+        conn.execute("DELETE FROM Accounts WHERE username = ?;", (username,))
+    except:
+        print("cant delete")
 
 
 
 def login(client, username, password):
+    print(username,password,GetPassword(username,password))
     return client.post('/handle_data', data=dict(
         inputIdMain=username,
         inputPasswordMain=password,

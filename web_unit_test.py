@@ -49,7 +49,7 @@ class AdminRegister(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         th.logout(cls.client)
-        #th.delete_from_sql(app.config['USERNAME'])
+        th.delete_from_sql(app.config['USERNAME'])
 
 
 # try to register new user and then change his password
@@ -71,7 +71,7 @@ class TestRegisterAndChangePassword(unittest.TestCase):
         th.logout(self.client)
         rv = th.login(self.client, app.config['USERNAME'], app.config['NEWPASSWORD'])
         print("try to log in with new password")
-        assert b'{}',(app.config['USERNAME'],) in rv.data
+        assert b'enter key sender to your email' in rv.data
 
     @classmethod
     def tearDownClass(cls):
