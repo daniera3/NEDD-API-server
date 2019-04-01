@@ -70,9 +70,9 @@ def UserControler():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data,"GetUsersToDelete")
-    deleteUsers = eval(response.content)['data']
+    deleteUsers = (response)['data']
     response=sent_to_server(data,"GetUsersToReturn")
-    returnUsers = eval(response.content)['data']
+    returnUsers = (response)['data']
     return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers)
 
 
@@ -111,7 +111,7 @@ def AdminRequest():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data,"AdminRequest")
-    response = eval(response.content)['data']
+    response = (response)['data']
     return render_template('status/admin_features/AdminRequest.html', requests=response)
 
 
@@ -183,9 +183,7 @@ def GetPassword(user_name, password):
 
 
 def Sub_login(user_name, password):
-    flash(password, category='error')
     data={'pas':GetPassword(user_name,password),'user':user_name}
-    flash(data, category='error')
     response = sent_to_server(data, 'singin')
     return response
 
@@ -193,6 +191,10 @@ def Sub_login(user_name, password):
 def login(user_name, password):
     response = Sub_login(user_name, password)
     if response['status'] == "success":
+        if user_name=='admin':
+            session['username'] = user_name
+            session['permissions'] = response['permissions'].upper()
+            return index()
         return enterkey(user_name,response['permissions'])
     flash("there was an error please try again", category='error')
     return login_page()
@@ -238,7 +240,7 @@ def register(user, password, permissions,Email):
             return redirect(url_for('register_page'))
         session['username'] = user
         session['permissions'] = permissions.upper()
-        return index() #TODO change to change profile
+        return index()
     flash("can\"t register this user", category='error')
     return register_page()
 

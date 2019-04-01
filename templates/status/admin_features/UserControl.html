@@ -36,6 +36,54 @@
 
                     </td>
                 </tr>
+            <tr>
+                <td>
+                    <label>change permissions</label>
+                </td>
+            </tr>
+            <tr>
+<td>
+        <label>normal users:</label>
+        <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter()">
+       <button type="button" onclick="TOAdmin()" class="btn btn-success">change to admin</button>
+
+                    </br>
+        <select id="normaluser" name="normaluser" width="600px">
+        <option SELECTED value='0'>this all active users:</option>
+        {% for x in NormalUser %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+      </select>
+      <button style="left: auto" type="button" onclick="TOmannger()" class="btn btn-success">change to mananger</button>
+</td>
+</tr>
+            <tr><td>
+
+        <label>managers/perenths:</label>
+        <input placeholder="filter" type="text" id="search4" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
+                                                 </br>
+        <select id="ManangerUser" name="ManangerUser" width="600px">
+        <option SELECTED Rvalue='0'>this all active managers/perenths</option>
+        {% for x in ManangerUser %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+        </select>
+           </td> </tr>
+
+<tr><td>
+        <label>Admins</label>
+        <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
+                                                 </br>
+        <select id="Adminuser" name="Adminuser" width="600px">
+        <option SELECTED Rvalue='0'>this all active admins</option>
+        {% for x in AdminUsers %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+        </select>
+</td>
+            </tr>
         </table>
     </form>
 </div>
