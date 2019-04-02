@@ -1,4 +1,4 @@
 pytest
 Flask
 Flask-Mail
-SQLAlchemy==0.1.0
+SQLAlchemy==0.8.0
