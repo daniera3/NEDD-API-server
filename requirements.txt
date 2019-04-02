@@ -1,7 +1,4 @@
 pytest
 Flask
-Flask-Admin
 Flask-Mail
-Jinja2
-nose
 SQLAlchemy
