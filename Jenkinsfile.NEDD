@@ -20,8 +20,10 @@ pipeline {
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
-                sh "docker image ls"
+		withEnv(["HOME=${env.WORKSPACE}"]) {
+			sh "docker image ls"
 	 	        sh "python3.7 web_unit_test.py"
+			}
             }
         }
         stage('Results') {
