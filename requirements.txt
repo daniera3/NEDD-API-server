@@ -60,11 +60,6 @@ pluggy
 pony
 protobuf
 psutil
-py
-pycparser
-pycrypto
-pycryptodome
-pycups
 pygobject
 PyICU
 pyinotify
