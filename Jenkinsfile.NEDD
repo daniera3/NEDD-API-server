@@ -15,6 +15,7 @@ pipeline {
 		    sh 'pip3 install --user flask'
 		    sh 'pip install --user flask'
 		    sh 'pip3 install --user flask-Mail'
+		    sh 'pip3 install --user pytest'
                 }
             }
         }
