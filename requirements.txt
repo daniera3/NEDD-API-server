@@ -60,7 +60,6 @@ pluggy
 pony
 protobuf
 psutil
-pygobject
 PyICU
 pyinotify
 pymacaroons
