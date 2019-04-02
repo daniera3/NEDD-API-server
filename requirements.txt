@@ -1,15 +1,4 @@
-asn1crypto
-atomicwrites
-attrs
-Babel
-beautifulsoup4
-blinker
-certifi
-cffi
-chardet
-Click
 pytest
-
 Flask
 Flask-Admin
 Flask-BabelEx
@@ -25,9 +14,5 @@ flask-test-requests-client
 Flask-Testing
 Flask-Textile
 Flask-User
-Flask-WTF
-html5lib
-httplib2
-httpretty
 Jinja2
 nose
