@@ -10,21 +10,29 @@ pipeline {
         stage('Requirements'){
             steps{
                 withEnv(["HOME=${env.WORKSPACE}"]) {
-                    // echo 'Installing Requirements...'
+                    //echo 'Installing Requirements...'
                     sh 'pip3 install --user -r requirements.txt'
+		    sh 'pip install --user -r requirements.txt'
                 }
             }
         }
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
-	 	sh "python - m pytest web_unit_test.py"
+	 	sh "python3 - m pytest -v web_unit_test.py"
             }
         }
         stage('Results') {
             steps{
                 echo 'Printing test results...'
                 // junit '**/nosetests.xml'
+            }
+        }
+		stage('Run SITE NEDD'){
+            steps{
+                // echo 'Testing User app...'
+		
+	 	sh "python3 website.py"
             }
         }
     }
