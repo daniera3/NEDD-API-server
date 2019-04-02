@@ -46,7 +46,6 @@ pyinotify
 pymacaroons
 pymongo
 PyMySQL
-PyNaCl
 pyRFC3339
 pytest
 python-apt
