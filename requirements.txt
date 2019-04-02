@@ -4,7 +4,6 @@ attrs
 Babel
 beautifulsoup4
 blinker
-Brlapi
 certifi
 cffi
 chardet
