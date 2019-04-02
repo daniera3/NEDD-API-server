@@ -69,7 +69,6 @@ pyRFC3339
 pytest
 python-apt
 python-debian
-python-xapp
 python-xlib
 pytz
 pyxdg
