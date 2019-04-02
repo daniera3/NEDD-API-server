@@ -50,7 +50,6 @@ mongoengine
 more-itertools
 Naked
 netifaces
-onboard
 PAM
 passlib
 pbr
