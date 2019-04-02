@@ -15,7 +15,6 @@ Flask-Admin
 Flask-BabelEx
 Flask-Login
 Flask-Mail
-flask-mongoengine
 Flask-MySQL
 flask-peewee
 Flask-Principal
