@@ -8,7 +8,6 @@ certifi
 cffi
 chardet
 Click
-command-not-found
 configobj
 crypto
 cryptography
