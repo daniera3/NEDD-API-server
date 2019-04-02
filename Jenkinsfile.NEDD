@@ -21,7 +21,7 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
                 sh "pytest --version"
-	 	sh "python3.7 - m pytest -v web_unit_test.py"
+	 	sh "python3.7 web_unit_test.py"
             }
         }
         stage('Results') {
