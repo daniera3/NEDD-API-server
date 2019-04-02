@@ -11,7 +11,6 @@ pipeline {
             steps{
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     //echo 'Installing Requirements...'
-                    sh 'pip3 install --user uwsgi'
                     sh 'pip3 install --user -r requirements.txt'
                     sh 'pip3 install --user -U pytest'
                 }
