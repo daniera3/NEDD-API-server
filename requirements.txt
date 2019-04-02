@@ -48,7 +48,6 @@ pymongo
 PyMySQL
 pyRFC3339
 pytest
-python-apt
 python-debian
 python-xlib
 pytz
