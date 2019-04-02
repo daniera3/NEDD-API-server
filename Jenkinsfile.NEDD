@@ -18,7 +18,7 @@ pipeline {
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
-	 	sh "pytest -v"
+	 	sh "pytest -v web_unit_test.py"
             }
         }
         stage('Results') {
