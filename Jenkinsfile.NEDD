@@ -18,7 +18,7 @@ pipeline {
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
-	 	sh "python - m pytest web_unit_test.py"
+	 	sh "python3 - m pytest -v web_unit_test.py"
             }
         }
         stage('Results') {
