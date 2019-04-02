@@ -10,7 +10,6 @@ chardet
 Click
 configobj
 crypto
-cryptography
 cupshelpers
 defer
 Flask
