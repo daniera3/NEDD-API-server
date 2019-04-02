@@ -10,9 +10,10 @@ pipeline {
         stage('Requirements'){
             steps{
                 withEnv(["HOME=${env.WORKSPACE}"]) {
-                    // echo 'Installing Requirements...'
+                    echo 'Installing Requirements...'
+		    sh 'pip install --upgrade pip'
                     sh 'pip3 install --user -r requirements.txt'
-		    
+		    sh 'pip3 install --user flask'
 		    sh 'pip install --user flask'
 		    sh 'pip3 install --user flask-Mail'
                 }
@@ -21,7 +22,7 @@ pipeline {
 	stage('Run SITE NEDD'){
             steps{
                 // echo 'Testing User app...'
-		sh 'pip3 install --user flask'
+		
 	 	sh "python3 website.py"
             }
         }
