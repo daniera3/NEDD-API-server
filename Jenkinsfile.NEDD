@@ -18,14 +18,12 @@ pipeline {
 	stage('Run SITE NEDD'){
             steps{
                 // echo 'Testing User app...'
-		sh "./start"
-	 	sh "python3 - m pytest -v web_unit_test.py"
+	 	sh "python3 website.py"
             }
         }
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
-		sh "./start"
 	 	sh "python3 - m pytest -v web_unit_test.py"
             }
         }
