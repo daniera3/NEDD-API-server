@@ -10,7 +10,6 @@ chardet
 Click
 configobj
 crypto
-cupshelpers
 defer
 Flask
 Flask-Admin
