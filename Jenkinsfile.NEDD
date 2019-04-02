@@ -14,6 +14,7 @@ pipeline {
                     sh 'pip3 install --user -r requirements.txt'
                     sh 'pip3 install --user -U pytest'
 		    sh 'pip3 install --user -U requests'
+		    sh 'pip3 install --user -U SQLAlchemy' 
                 }
             }
         }
@@ -29,6 +30,14 @@ pipeline {
             steps{
                 echo 'Printing test results...'
                 // junit '**/nosetests.xml'
+            }
+        }
+	stage('Run site'){
+            steps{
+                // echo 'Testing User app...'
+		withEnv(["HOME=${env.WORKSPACE}"]) {
+	 	        sh "python3.7 website.py"
+			}
             }
         }
     }
