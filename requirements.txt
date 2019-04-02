@@ -48,7 +48,6 @@ MarkupSafe
 mock
 mongoengine
 more-itertools
-mysqlclient
 Naked
 netifaces
 onboard
