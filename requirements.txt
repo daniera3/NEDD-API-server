@@ -8,6 +8,7 @@ certifi
 cffi
 chardet
 Click
+pytest
 Flask
 Flask-Admin
 Flask-BabelEx
