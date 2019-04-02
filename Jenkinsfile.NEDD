@@ -13,8 +13,7 @@ pipeline {
                     //echo 'Installing Requirements...'
                     sh 'pip3 install --user -r requirements.txt'
                     sh 'pip3 install --user -U pytest'
-		    sh 'pip3 install --user -U requests'
-		    sh 'pip3 install --user -U SQLAlchemy' 
+		    sh 'pip3 install --user -U requests' 
                 }
             }
         }
