@@ -61,7 +61,6 @@ pony
 protobuf
 psutil
 py
-pycairo
 pycparser
 pycrypto
 pycryptodome
