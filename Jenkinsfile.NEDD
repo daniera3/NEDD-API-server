@@ -19,6 +19,7 @@ pipeline {
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
+                sh "pytest --version"
 	 	sh "python3.7 - m pytest -v web_unit_test.py"
             }
         }
@@ -26,13 +27,6 @@ pipeline {
             steps{
                 echo 'Printing test results...'
                 // junit '**/nosetests.xml'
-            }
-        }
-		stage('Run SITE NEDD'){
-            steps{
-                // echo 'Testing User app...'
-		
-	 	sh "python3.7 website.py"
             }
         }
     }
