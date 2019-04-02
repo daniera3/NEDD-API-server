@@ -12,7 +12,7 @@ pipeline {
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     //echo 'Installing Requirements...'
                     sh 'pip3 install --user -r requirements.txt'
-		    sh 'pip install --user -r requirements.txt'
+		    sh 'pip install --user -U -r requirements.txt'
                 }
             }
         }

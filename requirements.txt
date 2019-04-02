@@ -24,7 +24,6 @@ Flask-Login
 Flask-Mail
 flask-mongoengine
 Flask-MySQL
-Flask-MySQLdb
 flask-peewee
 Flask-Principal
 Flask-Security
@@ -77,7 +76,6 @@ reportlab
 requests
 requests-unixsocket
 selenium
-sessioninstaller
 setproctitle
 shellescape
 six
@@ -92,7 +90,6 @@ ufw
 unittest2
 urllib3
 usb-creator
-vboxapi
 virtualenv
 webencodings
 Werkzeug
