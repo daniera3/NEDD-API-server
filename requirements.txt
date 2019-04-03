@@ -62,7 +62,6 @@ shellescape
 six
 speaklater
 SQLAlchemy
-system-service
 systemd-python
 textile
 traceback2
