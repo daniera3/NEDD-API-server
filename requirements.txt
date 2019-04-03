@@ -5,7 +5,6 @@ Babel
 beautifulsoup4
 blinker
 certifi
-cffi
 chardet
 Click
 configobj
