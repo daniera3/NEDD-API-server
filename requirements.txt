@@ -67,7 +67,6 @@ textile
 traceback2
 unittest2
 urllib3
-usb-creator
 virtualenv
 webencodings
 Werkzeug
