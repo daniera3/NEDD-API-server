@@ -72,5 +72,4 @@ webencodings
 Werkzeug
 wtf-peewee
 WTForms
-xkit
 nose
