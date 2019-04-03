@@ -28,7 +28,7 @@ pipeline {
             steps{
                 echo 'Printing test results...'
                 withEnv(["HOME=${env.WORKSPACE}"]) {
-                 junit '**/nosetests.xml'
+                 //junit '**/nosetests.xml'
                 }
             }
         }
