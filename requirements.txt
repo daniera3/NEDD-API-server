@@ -65,7 +65,6 @@ speaklater
 SQLAlchemy
 textile
 traceback2
-ubuntu-drivers-common
 ufw
 unittest2
 urllib3
