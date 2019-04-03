@@ -25,7 +25,6 @@ idna
 itsdangerous
 Jinja2
 linecache2
-macaroonbakery
 Mako
 MarkupSafe
 mock
