@@ -62,7 +62,6 @@ shellescape
 six
 speaklater
 SQLAlchemy
-systemd-python
 textile
 traceback2
 ubuntu-drivers-common
