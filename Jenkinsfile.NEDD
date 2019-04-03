@@ -11,7 +11,7 @@ pipeline {
             steps{
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     //echo 'Installing Requirements...'
-                    sh 'pip3.7 install -r requirements.txt --user'
+                    sh 'pip3.7 install -U -r requirements.txt --user'
 		            sh 'pip3 install --user -U requests'
                 }
             }
