@@ -11,6 +11,7 @@ Click
 configobj
 crypto
 Flask
+Flask-admin
 Flask-Mail
 Flask-Security
 Flask-SQLAlchemy
