@@ -43,7 +43,6 @@ pony
 protobuf
 psutil
 pyinotify
-pymacaroons
 pymongo
 PyMySQL
 pyRFC3339
