@@ -21,6 +21,7 @@ pipeline {
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v web_unit_test.py> results.log"
+	 	        sh "py.test --junitxml results.xml web_unit_test.py"
 			}
             }
         }
