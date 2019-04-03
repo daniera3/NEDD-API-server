@@ -65,7 +65,6 @@ speaklater
 SQLAlchemy
 textile
 traceback2
-ufw
 unittest2
 urllib3
 usb-creator
