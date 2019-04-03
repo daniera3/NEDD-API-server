@@ -20,7 +20,7 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 -m pytest -v web_unit_test.py"
+	 	        sh "python3.7 -m pytest -v web_unit_test.py> results.log"
 			}
             }
         }
@@ -28,6 +28,7 @@ pipeline {
             steps{
                 echo 'Printing test results...'
                 withEnv(["HOME=${env.WORKSPACE}"]) {
+                sh "tee results.log"
                  //junit '**/nosetests.xml'
                 }
             }
@@ -36,8 +37,8 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 website.py"
-	 	        sh "fuser -k 5000/tcp"
+	 	        sh "python3.7 website.py &"
+
 			}
             }
         }
