@@ -178,7 +178,7 @@ def GetPassword(user_name, password):
     if not result['data']:
         password = 'a'
     else:
-        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=150000, keylen=None, hashfunc="sha512")
+        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
     return str(password)
 
 
@@ -225,7 +225,6 @@ def enterkey(user,permissions):
 
 
 def register(user, password, permissions,Email):
-    flash(password, category='error')
     salt = password.split('$')[1]
     password = password.split('$')[2]
     data = {'User': user, 'Password': password, 'perm': permissions,'Email':Email}
@@ -251,7 +250,7 @@ def handle_data():
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha512', salt_length=50),request.form['permissions'],request.form['Email'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'admin_answer1':
