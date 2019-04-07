@@ -96,7 +96,6 @@ def DeleteUser():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data, "DeleteUser")
-    response = eval(response.content)
     return response["status"]
 
 
@@ -109,7 +108,6 @@ def userReturn():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data,"ReturnUser")
-    response = eval(response.content)
     return response["status"]
 
 @app.route('/SetPermissions', methods=['POST'])
