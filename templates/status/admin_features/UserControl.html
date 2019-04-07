@@ -58,10 +58,10 @@
       </select>
 </td>
                 <td>
-    <button type="button" onclick="TOAdmin()" class="btn btn-success">change to admin</button>
+    <button type="button" onclick="permissions('Admin','normaluser')" class="btn btn-success">change to admin</button>
 
                     </br>
-      <button style="left: auto" type="button" onclick="TOmannger()" class="btn btn-success">change to mananger</button>
+      <button style="left: auto" type="button" onclick="permissions('Mananger','normaluser')" class="btn btn-success">change to mananger</button>
 </td>
 </tr>
             <tr class="table table-bordered"><td>
@@ -71,14 +71,14 @@
                                                  </br>
         <select id="ManangerUser" name="ManangerUser" width="600px">
         <option SELECTED Rvalue='0'>this all active managers/perenths</option>
-        {% for x in UserMananger %}
+        {% for x in UserManager %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
             </td><td>
-                        <button type="button" onclick="TOAdmin()" class="btn btn-success">change to admin</button>
+                        <button type="button" onclick="permissions('Normal','ManangerUser')" class="btn btn-success">change to normal</button>
                                                  </br>
-                <button style="left: auto" type="button" onclick="TOmannger()" class="btn btn-success">change to mananger</button>
+                <button style="left: auto" type="button" onclick="permissions('Mananger','ManangerUser')" class="btn btn-success">change to mananger</button>
            </td> </tr>
 
 <tr class="table table-bordered"><td>
@@ -92,9 +92,9 @@
         {% endfor %}
         </select>
                 </td><td>
-                        <button type="button" onclick="TOAdmin()" class="btn btn-success">change to admin</button>
+                        <button type="button" onclick="permissions('Admin','Adminuser')" class="btn btn-success">change to admin</button>
                                                  </br>
-     <button style="left: auto" type="button" onclick="TOmannger()" class="btn btn-success">change to mananger</button>
+     <button style="left: auto" type="button" onclick="permissions('Normal','Adminuser')" class="btn btn-success">change to normal</button>
 </td>
             </tr>
         </table>
@@ -118,8 +118,8 @@
     function permissions(Permissions,SelectID) {
         var option = document.getElementById(SelectID).value
         if (option!=0)
-            option={'UserUpdate':option,'Permissions':Permissions}
-        $.post("/userReturn", option, show);
+            option={'UserUpdate':option,'Permissions':Permissions,'type_form':'SetPermissions'}
+        $.post("/handle_data", option, show);
     }
 
 
