@@ -10,6 +10,8 @@ def id_generator(size=7, chars=string.ascii_uppercase + string.digits):
 
 
 def register(client, username, password, type_of_user,Email):
+    username='admin'
+    password='admin'
     return client.post('/handle_data', data=dict(
         Register_New_User=username,
         Register_New_Password=password,
