@@ -178,7 +178,7 @@ def GetPassword(user_name, password):
     if not result['data']:
         password = 'a'
     else:
-        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=50000, keylen=None, hashfunc="sha256")
+        password = pbkdf2_hex(password, result['data'][0]['salt'], iterations=150000, keylen=None, hashfunc="sha256")
     return str(password)
 
 
