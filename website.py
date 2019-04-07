@@ -62,18 +62,29 @@ def register_page():
 
 @app.route('/UserControler')
 def UserControler():
-    header = {"Content-Type": "application/json"}
     data = {}
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    data = json.dumps(data)
-    response=sent_to_server(data,"GetUsersToDelete")
+    response=sent_to_server(json.dumps(data),"GetUsersToDelete")
     deleteUsers = (response)['data']
-    response=sent_to_server(data,"GetUsersToReturn")
+    response=sent_to_server(json.dumps(data),"GetUsersToReturn")
     returnUsers = (response)['data']
-    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers)
+
+    data['Permissions']='Admin'
+    response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
+    admins = (response)['data']
+
+    data['Permissions'] = 'Mananger'
+    response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
+    Manangers = (response)['data']
+
+    data['Permissions'] = 'Normal'
+    response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
+    Normals = (response)['data']
+
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserMananger=Manangers,UserNormal=Normals)
 
 
 @app.route('/DeleteUser', methods=['POST'])
