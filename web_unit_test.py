@@ -76,7 +76,7 @@ class TestRegisterAndChangePassword(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         th.logout(cls.client)
-        #th.delete_from_sql(app.config['USERNAME'])
+        th.delete_from_sql(app.config['USERNAME'])
 
 
 class TestRequestAccesptAndDenide(unittest.TestCase):
