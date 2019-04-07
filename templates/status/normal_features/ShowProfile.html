@@ -1,0 +1,28 @@
+{% if permission == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif permission == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+{% block content %}
+
+<div  class="container " style="font-size:x-large">
+        <div class="row justify-content-md-center" >
+               <div class="col-4">
+                   <h1><strong style="font-size:xx-large;color:red">Show Profile</strong></h1>
+               </br>
+            <p> <strong>{{session['username']}}</strong></p>
+            <span class=" badge badge-info">{{email}}</span>
+            <span class=" badge badge-info">{{Tel}}</span>
+            <span class=" badge badge-info">{{address}}</span>
+
+               </div>
+        </div>
+</div>
+
+
+
+     {% endblock %}

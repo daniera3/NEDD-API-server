@@ -204,7 +204,7 @@ def getprofile(user):
     data = {'User': user}
     response = sent_to_server(data, 'ReturnProfile')
     if 'status' in response:
-        return {'email': '', 'Tel': '', 'adress': ''}
+        return {'email': '', 'Tel': '', 'address': ''}
     return response
 
 
@@ -286,6 +286,20 @@ def logout():
 @app.route('/UpdateProfile')
 def Updateprofile_page():
     return render_template('/status/normal_features/UpdateProfile.html')
+
+@app.route('/Showprofile')
+def Showprofile_page():
+    #{'email': '', 'Tel': '', 'address': ''}
+    if 'username' in session:
+        profile=getprofile(session['username'])
+        email=profile['data'][0]['email']
+        Tel = profile['data'][0]['Tel']
+        address = profile['data'][0]['address']
+
+    else:
+        return index()
+    return render_template('/status/normal_features/ShowProfile.html', email=email,Tel=Tel,address=address)
+
 
 def UpdateProfile(email, tel,address,password):
     if 'username' not in session:
