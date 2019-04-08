@@ -1,0 +1,50 @@
+{% if session['permissions'] == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif session['permissions'] == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+{% block content %}
+<div  class="container ">
+        <div class="row justify-content-md-center" >
+               <div    class="col-6">
+
+                   <h1 style="color:rgb(124,12,146)"><strong> Request Permissions</strong></h1></br></br>
+                   <form method="post" action="{{ url_for('handle_data') }}">
+                   <table class="col-md-offset-12" >
+                       <tr>
+                           <td>
+                               <label> user name : </label>
+                           </td>
+                           <td>
+                               <input type="text"  placeholder="User Name" id="UserName" name="UserName"  required>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td>
+                               <label> Reason for request : </label>
+                           </td>
+                           <td>
+                               <input type="text"  placeholder="Reason for request" id="ReasonForRequest" name="ReasonForRequest" >
+                           </td>
+                       </tr>
+                       <tr>
+                           <td>
+                               <button type="submit" > send request</button>
+                           </td>
+                       </tr>
+                   </table>
+                       <input type="hidden" name="type_form" class="form-control" value="RequestPermissions">
+                   </form>
+               </div>
+        </div>
+</div>
+     {% endblock %}
+
+
+
+{% block scripts %}
+     {% endblock %}

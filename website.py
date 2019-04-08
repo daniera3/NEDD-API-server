@@ -49,7 +49,7 @@ def index():
     if 'permissions' in session:
         if session['permissions'] == 'NORMAL':
             return render_template('status/normal_login.html')
-        if session['permissions'] == 'MANAGER':
+        if session['permissions'] == 'MANGER':
             return render_template('status/parent_login.html')
         if session['permissions'] == 'ADMIN':
             return render_template('status/admin_login.html')
@@ -68,7 +68,6 @@ def UserControler():
     else:
         return render_template('index.html')
     response=sent_to_server(json.dumps(data),"GetUsersToDelete")
-    deleteUsers = (response)['data']
     response=sent_to_server(json.dumps(data),"GetUsersToReturn")
     returnUsers = (response)['data']
 
@@ -76,15 +75,15 @@ def UserControler():
     response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
     admins = (response)['data']
 
-    data['Permissions'] = 'Manager'
+    data['Permissions'] = 'Manger'
     response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
-    Managers = (response)['data']
+    Mangers = (response)['data']
 
     data['Permissions'] = 'Normal'
     response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
     Normals = (response)['data']
-
-    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserManager=Managers,UserNormal=Normals)
+    deleteUsers=admins+Mangers+Normals
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserManger=Mangers,UserNormal=Normals,AllUsers=deleteUsers+returnUsers)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -280,10 +279,21 @@ def handle_data():
         return changePassword(request.form['OldPassword'], request.form['Password'])
     elif request.form['type_form'] == 'UpdateProfile':
         return UpdateProfile(request.form['Email'], request.form['tel'], request.form['address'],request.form['password'])
-
+    elif request.form['type_form'] == 'RequestPermissions':
+        return RequestPermissions(dict(request.form))
     elif request.form['type_form'] == 'SetPermissions':
         return SetPermissions(dict(request.form), "SetPermissions")
     return index()
+
+
+def RequestPermissions(data):
+    if 'username' in session:
+        data['user']=session['username']
+        answer=sent_to_server(json.dumps(data), "RequestPermissions")
+        flash(answer['status'])
+        return RequestPermissions_page()
+    else:
+        return index()
 
 
 def Endlogin(user,Key):
@@ -307,6 +317,8 @@ def logout():
 
 @app.route('/UpdateProfile')
 def Updateprofile_page():
+    if 'username' not in session:
+        return login_page()
     return render_template('/status/normal_features/UpdateProfile.html')
 
 @app.route('/Showprofile')
@@ -341,9 +353,17 @@ def UpdateProfile(email, tel,address,password):
     return Updateprofile_page()
 
 
+@app.route('/RequestPermissions')
+def RequestPermissions_page():
+    if 'username' not in session:
+        return login_page()
+    return render_template('/status/manger_features/requset_pramission.html')
+
 
 @app.route('/changePassword')
 def changePassword_page():
+    if 'username' not in session:
+        return login_page()
     return render_template('/status/normal_features/changePasswords.html', permission=session['permissions'])
 
 
@@ -370,7 +390,7 @@ def free_speaking():
 
 @app.route('/speech_game')
 def speech_game():
-    if session['username']:
+    if 'username' in session:
         return render_template('/status/normal_features/speech_game.html', permission=session['permissions'])
     else:
         flash("must log in", category='error')

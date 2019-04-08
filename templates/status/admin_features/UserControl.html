@@ -36,9 +36,22 @@
         </select>
 
                     </td>
+        <td>
+
+        <label>show detals:</label>
+        <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <button type="button" onclick="ShowProfile()" class="btn btn-info">Return</button>
+                                                 </br>
+        <select id="AllUsers" name="AllUsers" width="600px">
+        <option SELECTED Rvalue='0'>Choose user for return</option>
+        {% for x in AllUsers %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+        </select>
+
+         </td>
                 </tr>
         </table>
-
 
     </br>
         <h1 class="row justify-content-md-center"> change permissions</h1></br>
@@ -47,7 +60,7 @@
             <tr class="table table-bordered">
 <td>
         <label>normal users:</label>
-        <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter()">
+        <input placeholder="filter" type="text" id="search4" name="search" style="margin: 10px;width: 165px;" onkeyup="filter()">
      </br>
 
         <select id="normaluser" name="normaluser" width="600px">
@@ -61,29 +74,29 @@
     <button type="button" onclick="permissions('Admin','normaluser')" class="btn btn-success">change to admin</button>
 
                     </br>
-      <button style="left: auto" type="button" onclick="permissions('Manager','normaluser')" class="btn btn-success">change to manager</button>
+      <button style="left: auto" type="button" onclick="permissions('Manger','normaluser')" class="btn btn-success">change to manger</button>
 </td>
 </tr>
             <tr class="table table-bordered"><td>
 
-        <label>managers/perenths:</label>
-        <input placeholder="filter" type="text" id="search4" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <label>mangers/perenths:</label>
+        <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
                                                  </br>
-        <select id="ManangerUser" name="ManangerUser" width="600px">
-        <option SELECTED Rvalue='0'>this all active managers/perenths</option>
-        {% for x in UserManager %}
+        <select id="ManngerUser" name="ManngerUser" width="600px">
+        <option SELECTED Rvalue='0'>this all active mangers/perenths</option>
+        {% for x in UserManger %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
             </td><td>
-                        <button type="button" onclick="permissions('Normal','ManangerUser')" class="btn btn-success">change to normal</button>
+                        <button type="button" onclick="permissions('Normal','ManngerUser')" class="btn btn-success">change to normal</button>
                                                  </br>
-                <button style="left: auto" type="button" onclick="permissions('Admin','ManangerUser')" class="btn btn-success">change to admin</button>
+                <button style="left: auto" type="button" onclick="permissions('Admin','ManngerUser')" class="btn btn-success">change to admin</button>
            </td> </tr>
 
 <tr class="table table-bordered"><td>
         <label>Admins</label>
-        <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <input placeholder="filter" type="text" id="search6" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
                                                  </br>
         <select id="Adminuser" name="Adminuser" width="600px">
         <option SELECTED Rvalue='0'>this all active admins</option>
@@ -92,7 +105,7 @@
         {% endfor %}
         </select>
                 </td><td>
-                        <button type="button" onclick="permissions('Manager','Adminuser')"  class="btn btn-success">change to manager</button>
+                        <button type="button" onclick="permissions('Manger','Adminuser')"  class="btn btn-success">change to manger</button>
                                                  </br>
      <button style="left: auto" type="button" onclick="permissions('Normal','Adminuser')" class="btn btn-success">change to normal</button>
 </td>
@@ -142,6 +155,55 @@
     function filter2() {
     var keyword = document.getElementById("search2").value;
     var select = document.getElementById("userReturn");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+
+    function filter3() {
+    var keyword = document.getElementById("search3").value;
+    var select = document.getElementById("AllUsers");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+    function filter4() {
+    var keyword = document.getElementById("search4").value;
+    var select = document.getElementById("normaluser");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+    function filter5() {
+    var keyword = document.getElementById("search5").value;
+    var select = document.getElementById("ManngerUser");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+    function filter6() {
+    var keyword = document.getElementById("search6").value;
+    var select = document.getElementById("Adminuser");
     for (var i = 0; i < select.length; i++) {
         var txt = select.options[i].text;
         if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
