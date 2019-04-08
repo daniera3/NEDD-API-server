@@ -62,18 +62,29 @@ def register_page():
 
 @app.route('/UserControler')
 def UserControler():
-    header = {"Content-Type": "application/json"}
     data = {}
     if 'username' in session and session['permissions']=='ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    data = json.dumps(data)
-    response=sent_to_server(data,"GetUsersToDelete")
+    response=sent_to_server(json.dumps(data),"GetUsersToDelete")
     deleteUsers = (response)['data']
-    response=sent_to_server(data,"GetUsersToReturn")
+    response=sent_to_server(json.dumps(data),"GetUsersToReturn")
     returnUsers = (response)['data']
-    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers)
+
+    data['Permissions']='Admin'
+    response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
+    admins = (response)['data']
+
+    data['Permissions'] = 'Manager'
+    response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
+    Managers = (response)['data']
+
+    data['Permissions'] = 'Normal'
+    response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
+    Normals = (response)['data']
+
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserManager=Managers,UserNormal=Normals)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -85,7 +96,6 @@ def DeleteUser():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data, "DeleteUser")
-    response = eval(response.content)
     return response["status"]
 
 
@@ -98,7 +108,16 @@ def userReturn():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data,"ReturnUser")
-    response = eval(response.content)
+    return response["status"]
+
+@app.route('/SetPermissions', methods=['POST'])
+def SetPermissions(data,url):
+    if 'username' in session and session['permissions']=='ADMIN':
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    data = json.dumps(data)
+    response=sent_to_server(data,url)
     return response["status"]
 
 
@@ -261,6 +280,9 @@ def handle_data():
         return changePassword(request.form['OldPassword'], request.form['Password'])
     elif request.form['type_form'] == 'UpdateProfile':
         return UpdateProfile(request.form['Email'], request.form['tel'], request.form['address'],request.form['password'])
+
+    elif request.form['type_form'] == 'SetPermissions':
+        return SetPermissions(dict(request.form), "SetPermissions")
     return index()
 
 
