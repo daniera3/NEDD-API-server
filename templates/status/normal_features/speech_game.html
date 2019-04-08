@@ -7,81 +7,161 @@
 {%endif%}
 
 
+
 {% block content %}
-<div  class="container ">
+
+<div >
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="container ">
         <div class="row justify-content-md-center" >
                <div class="col-6">
+
     <h1>Phrase matcher</h1>
-    <p>Press the button then say the phrase to test the recognition.</p>
+    <p style="font-size:35px;color:blue;">Press the button then say the phrase to test the recognition.</p>
+    <p style="font-size:15px;color:#d923b9;">Your score is between 1 and 10.</p>
+    <a  href="https://www.sela.org.il/%D7%AA%D7%A8%D7%92%D7%95%D7%9D-%D7%95%D7%AA%D7%9E%D7%9C%D7%95%D7%9C-%D7%9E%D7%A8%D7%97%D7%95%D7%A7/%D7%94%D7%95%D7%A8%D7%93%D7%AA-%D7%94%D7%AA%D7%95%D7%9B%D7%A0%D7%94-%D7%9C%D7%AA%D7%A8%D7%92%D7%95%D7%9D-%D7%9E%D7%A8%D7%97%D7%95%D7%A7/">download video chat with sign language translator</a>
+               </br> <select id="userReturn">
+  <option value="">choose language</option>
+  <option value="en-US">english</option>
+  <option value="he-IL">hebrew</option>
+  <option value="ar-IL">arabic</option>
+</select></br>
+                   <button id="mainbutton" class="fa fa-microphone" style="font-size:48px;color:blue;"  >Start new test</button>
 
-    <button id="mainbutton">Start new test</button>
-
-    <div>
+    <div id="text-id" style="font-size:30px">
         <p class="phrase">Phrase...</p>
-        <p class="result">Right or wrong?</p>
-        <p class="output">...diagnostic messages</p>
-    </div>
+        <p class="result"></p>
+        <p class="output" id="mainGame"></p>
+        <div class="row justify-content-md-center">
+        <button id="good" style='font-size:50px;background-color:green;'disabled><i class='far fa-thumbs-up'></i></button>
+        <button id="bad" style='font-size:50px;background-color:red;'disabled><i class='far fa-thumbs-down'></i></button>
+    </div></div>
+
+     <svg preserveAspectRatio="none" id="visualizer" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+
+                <mask id="mask">
+                    <g id="maskGroup">
+                  </g>
+                </mask>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff0a0a;stop-opacity:1" />
+                    <stop offset="5%" style="stop-color:#d923b2;stop-opacity:1">higt</stop>
+                    <stop offset="20%" style="stop-color:#f1ff0a;stop-opacity:1" />
+                    <stop offset="90%" style="stop-color:#d923b9;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:red;stop-opacity:1" >low</stop>
+                </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#gradient)" mask="url(#mask)"></rect>
+        </svg>
                    </div>
             </div>
                    </div>
+</div>
 
 
 
-     {% endblock %}
-
-
-
-{% block scripts %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 <script >
 
+function editDistance(a, b,leng) {
+//if(leng!='en-US')
+//return '';
+  // Create empty edit distance matrix for all possible modifications of
+  // substrings of a to substrings of b.
+  const distanceMatrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
+
+  // Fill the first row of the matrix.
+  // If this is first row then we're transforming empty string to a.
+  // In this case the number of transformations equals to size of a substring.
+  for (let i = 0; i <= a.length; i += 1) {
+    distanceMatrix[0][i] = i;
+  }
+
+  // Fill the first column of the matrix.
+  // If this is first column then we're transforming empty string to b.
+  // In this case the number of transformations equals to size of b substring.
+  for (let j = 0; j <= b.length; j += 1) {
+    distanceMatrix[j][0] = j;
+  }
+
+  for (let j = 1; j <= b.length; j += 1) {
+    for (let i = 1; i <= a.length; i += 1) {
+      const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+      distanceMatrix[j][i] = Math.min(
+        distanceMatrix[j][i - 1] + 1, // deletion
+        distanceMatrix[j - 1][i] + 1, // insertion
+        distanceMatrix[j - 1][i - 1] + indicator, // substitution
+      );
+    }
+  }
+
+  return (1-(distanceMatrix[b.length][a.length]/Math.max(b.length,a.length)))*10;
+}
+
+
         var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
         var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
         var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
-
-        var phrases = [
-            'I love to sing because it\'s fun',
-            'where are you going',
-            'can I call you tomorrow',
-            'why did you talk while I was talking',
-            'she enjoys reading books and playing games',
-            'where are you going',
-            'have a great day',
-            'she sells seashells on the seashore'
+function phrases(leng){
+        var phrases1 = [
+            'i love',
+            'can i call you later',
+            'why did you',
+            'where are you going'
         ];
 
+
+                var phrases2 = [
+            'נמצא מאגר מידע',
+            'נגישות',
+            'מה אני עושה',
+        ];
+         var phrases3 = [
+            'مرحبا',
+
+        ];
+        if (leng=='en-US')
+            return phrases1
+        else if(leng=='he-IL')
+            return phrases2
+        else
+            return phrases3
+
+}
         var phrasePara = document.querySelector('.phrase');
         var resultPara = document.querySelector('.result');
         var diagnosticPara = document.querySelector('.output');
 
         var testBtn = document.querySelector('button');
 
-        function randomPhrase() {
-            var number = Math.floor(Math.random() * phrases.length);
+        function randomPhrase(leng) {
+            var number = Math.floor(Math.random() * phrases(leng).length);
             return number;
         }
 
-        function testSpeech() {
-
-
+        function testSpeech(leng) {
+            document.body.style.backgroundColor = 'white';
             testBtn.disabled = true;
             testBtn.textContent = 'Test in progress';
-
-            var phrase = phrases[randomPhrase()];
+            $("#mainbutton").css('color','purple');
+            var phrase = phrases(leng)[randomPhrase(leng)];
             // To ensure case consistency while checking with the returned output text
-            phrase = phrase.toLowerCase();
+            //phrase = phrase.toLowerCase();
             phrasePara.textContent = phrase;
-            resultPara.textContent = 'Right or wrong?';
+            resultPara.textContent = '';
             resultPara.style.background = 'rgba(0,0,0,0.2)';
-            diagnosticPara.textContent = '...diagnostic messages';
+            diagnosticPara.textContent = 'record';
 
             var grammar = '#JSGF V1.0; grammar phrase; public <phrase> = ' + phrase + ';';
             var recognition = new SpeechRecognition();
             var speechRecognitionList = new SpeechGrammarList();
             speechRecognitionList.addFromString(grammar, 1);
             recognition.grammars = speechRecognitionList;
-            recognition.lang = 'en-US';
+            recognition.lang = leng;
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
@@ -98,14 +178,17 @@
                 // We then return the transcript property of the SpeechRecognitionAlternative object
                 var speechResult = event.results[0][0].transcript.toLowerCase();
                 diagnosticPara.textContent = 'Speech received: ' + speechResult + '.';
+                $("#mainbutton").css('color','black');
                 if (speechResult === phrase) {
-                    resultPara.textContent = 'I heard the correct phrase!';
-                    resultPara.style.background = 'lime';
-                } else {
-                    resultPara.textContent = 'That didn\'t sound right.';
-                    resultPara.style.background = 'red';
-                }
+                    resultPara.textContent = 'I heard the correct phrase! your score is : 10';
+                    $("#mainGame").css("background-color", 'lime');
+                            document.getElementById('good').style.visibility = 'visible';
 
+                } else {
+                    resultPara.textContent = 'That didn\'t sound right. your score is : '+ Math.round(editDistance(((phrase)),((speechResult)),leng));
+                    $("#mainGame").css("background-color", 'red');
+                    document.getElementById('bad').style.visibility = 'visible';
+                }
                 console.log('Confidence: ' + event.results[0][0].confidence);
             }
 
@@ -162,8 +245,19 @@
         }
 
         $(document).ready(function(){
+        document.getElementById('good').style.visibility = 'hidden';
+        document.getElementById('bad').style.visibility = 'hidden';
             $("#mainbutton").click(function(){
-                 testSpeech();
+                    document.getElementById('good').style.visibility = 'hidden';
+        document.getElementById('bad').style.visibility = 'hidden';
+            var leng='en-US';
+            var option = document.getElementById("userReturn").value;
+            if (option!='')
+              leng=option;
+                 testSpeech(leng);
+                  $(this).css('color','purple');
+                    document.body.style.backgroundColor = 'white';
+
             });
         });
 
@@ -171,4 +265,134 @@
     </script>
 
 
+
+
      {% endblock %}
+
+
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script >
+window.onload = function () {
+    "use strict";
+    var paths = document.getElementsByTagName('path');
+    var visualizer = document.getElementById('visualizer');
+    var mask = visualizer.getElementById('mask');
+    var h = document.getElementsByTagName('h1')[0];
+    var path;
+    var report = 0;
+
+    var soundAllowed = function (stream) {
+        //Audio stops listening in FF without // window.persistAudioStream = stream;
+        //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
+        //https://support.mozilla.org/en-US/questions/984179
+        window.persistAudioStream = stream;
+        h.innerHTML = "Thanks";
+        h.setAttribute('style', 'opacity: 0;');
+        var audioContent = new AudioContext();
+        var audioStream = audioContent.createMediaStreamSource( stream );
+        var analyser = audioContent.createAnalyser();
+        audioStream.connect(analyser);
+        analyser.fftSize = 1024;
+
+        var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
+        visualizer.setAttribute('viewBox', '0 0 255 255');
+
+				//Through the frequencyArray has a length longer than 255, there seems to be no
+        //significant data after this point. Not worth visualizing.
+        for (var i = 0 ; i < 255; i++) {
+            path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('stroke-dasharray', '4,1');
+            mask.appendChild(path);
+        }
+        var doDraw = function () {
+            requestAnimationFrame(doDraw);
+            analyser.getByteFrequencyData(frequencyArray);
+          	var adjustedLength;
+            for (var i = 0 ; i < 255; i++) {
+              	adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
+                paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
+            }
+
+        }
+        doDraw();
+    }
+
+    var soundNotAllowed = function (error) {
+        h.innerHTML = "You must allow your microphone.";
+        console.log(error);
+    }
+
+    /*window.navigator = window.navigator || {};
+    /*navigator.getUserMedia =  navigator.getUserMedia       ||
+                              navigator.webkitGetUserMedia ||
+                              navigator.mozGetUserMedia    ||
+                              null;*/
+    navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
+
+};
+
+    </script>
+
+
+     {% endblock %}
+{% block style %}
+
+<style>
+
+div{
+width: 100%;
+height: 100%;
+padding: 0;
+margin: 0;
+
+}
+
+container{
+width:700px;
+}
+
+svg{
+
+border-top-style: dotted;
+background-color:#222;
+display: block;
+width: 100%;
+height: 100%;
+padding: 0;
+margin: 0;
+position:absolute;
+width: 500px;
+height: 500px;
+}
+
+h1{
+width: 100%;
+font-family: sans-serif;
+position:absolute;
+text-align:center;
+color:white;
+font-size: 18px;
+top: 40%;
+opacity: 1;
+transition: opacity 1s ease-in-out;
+-moz-transition: opacity 1s ease-in-out;
+-webkit-transition: opacity 1s ease-in-out;
+}
+
+h1 {
+   display:none;
+  color: #48b1f4;
+  text-decoration:none;
+}
+
+
+path{
+stroke-linecap: square;
+stroke: white;
+stroke-width: 0.5px;
+}
+</style>
+    {% endblock %}
