@@ -1,5 +1,5 @@
 from website import app
-import test_utilites.test_help as th
+import test.test_help as th
 import os
 import tempfile
 import pytest
@@ -41,7 +41,7 @@ class AdminRegister(unittest.TestCase):
 
     def test_admin(self):
         answer = th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
-        assert  answer['status']=='sussess'
+        assert answer['status'] == 'success'
         print(answer)
         rv = th.login(self.client, app.config['USERNAME'], app.config['PASSWORD'])
         assert b'enter key sender to your email' in rv.data
