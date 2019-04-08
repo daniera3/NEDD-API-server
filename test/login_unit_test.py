@@ -38,4 +38,5 @@ class TestLogIn(unittest.TestCase):
         assert result['status'] == "fail"
 
     def tearDown(self):
-        website.sent_to_server(self.data, "Testsingup")
+        data = {'user': self.username}
+        website.sent_to_server(data, "Testsingup")
