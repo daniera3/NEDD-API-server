@@ -29,7 +29,7 @@
         <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
                                                  </br>
         <select id="userReturn" name="userReturn" width="600px">
-        <option SELECTED value='0'>Choose user for return</option>
+        <option SELECTED Rvalue='0'>Choose user for return</option>
         {% for x in UserReturn %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -40,24 +40,10 @@
 
         <label>show detals:</label>
         <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter3()">
-        <button class="btn btn-outline-info" id="myBtn">show profile</button>
-          <div id="myModal"  class="modal  content-section">
-                    <div class="col-md-3 panel panel-default " style="border-radius:18px;">
-                        <div  class="h-100 row align-items-center">
-                            <a class="bg-danger text-white" aria-label="Close" id="cols" style=" background-color: rgba(255,25,100,0.8);"  >close</a>
-                            </br></br>
-
-                            </br>
-            <p> <strong>{{session['username']}}</strong></p>
-            <span class=" badge badge-info">{{email}}</span>
-            <span class=" badge badge-info">{{Tel}}</span>
-            <span class=" badge badge-info">{{address}}</span>
-
-                            </div>
-                    </div>
-          </div>
+        <button type="button" id="getUserProfile" class="btn btn-info">Return</button>
+                                                 </br>
         <select id="AllUsers" name="AllUsers" width="600px">
-        <option SELECTED value='0'>Choose user for return</option>
+        <option SELECTED value="0">Choose user for return</option>
         {% for x in AllUsers %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -65,6 +51,19 @@
 
          </td>
                 </tr>
+            <tr>
+                <td>
+          <div id="myModal"  class="modal  content-section">
+              <a class="bg-danger text-white" aria-label="Close" id="cols" style=" background-color: rgba(255,25,100,0.8);"  >close</a>
+                    <div class="col-md-6 panel panel-default " style="border-radius:18px;font-size:25px;">
+                    </br> <label ><strong id="userNameProfile"></strong></label>
+                    </br>  <label ><strong id="userEmailProfile"></strong></label>
+                    </br> <label ><strong id="userTelProfile"></strong></label>
+                    </br> <label ><strong id="userAddresProfile"></strong></label>
+                    </br></div>
+          </div>
+                </td>
+            </tr>
         </table>
 
     </br>
@@ -97,7 +96,7 @@
         <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter5()">
                                                  </br>
         <select id="ManngerUser" name="ManngerUser" width="600px">
-        <option SELECTED value='0'>this all active mangers/perenths</option>
+        <option SELECTED Rvalue='0'>this all active mangers/perenths</option>
         {% for x in UserManger %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -113,7 +112,7 @@
         <input placeholder="filter" type="text" id="search6" name="search" style="margin: 10px;width: 165px;" onkeyup="filter6()">
                                                  </br>
         <select id="Adminuser" name="Adminuser" width="600px">
-        <option SELECTED value='0'>this all active admins</option>
+        <option SELECTED Rvalue='0'>this all active admins</option>
         {% for x in UserAdmin %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -128,36 +127,21 @@
             </div>
     </form>
 </div>
-{% endblock %}
+    {% endblock %}
 
 {% block scripts %}
-<script>
 
-    // Get the modal
+<script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+// Get the modal
 var modal = document.getElementById('myModal');
 
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
 
 // Get the <span> element that closes the modal
 var span = document.getElementById("cols");
 
 
-    btn.onclick = function() {
-  modal.style.display = "block";
-}
 
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-</script>
-
-
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script>
     function DeleteUser() {
         var option = document.getElementById("user").value
         if (option!=0)
@@ -255,11 +239,38 @@ span.onclick = function() {
         }
     }
 }
+$(document).ready(function(){
+
+  $("#getUserProfile").click(function(){
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "getUserData",
+    user: document.getElementById("AllUsers").value
+  },
+  function(data, status){
+  modal.style.display = "block";
+    data = JSON.parse(data);
+    $('#userNameProfile').html(data['UserName']);
+    $('#userEmailProfile').html(data['email']);
+    $('#userTelProfile').html(data['Tel']);
+    $('#userAddresProfile').html(data['address']);
+  });
+  });
+});
+
+
+
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
 </script>
 {% endblock %}
 
-{% block style %}
 
+{% block style %}
 <style>
 body {font-family: Arial, Helvetica, sans-serif;}
 
@@ -271,10 +282,10 @@ body {font-family: Arial, Helvetica, sans-serif;}
   z-index: 0; /* Sit on top */
   padding-top: -200px; /* Location of the box */
   padding-left:-20px;
-  width: 230px; /* Full width */
-  height: 110px; /* Full height */
-  margin:50px;
-  background-color: rgba(255, 233, 82, 0.5); /* Black w/ opacity */
+  width: 50%; /* Full width */
+  height: 25%; /* Full height */
+  margin:0px;
+  background-color: rgba(1,25,1,0.5); /* Black w/ opacity */
 }
 /* The Modal (background) */
 .modal {
@@ -318,4 +329,6 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 </style>
 
-{% endblock %}
+    {% endblock %}
+
+

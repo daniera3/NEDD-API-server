@@ -1,12 +1,4 @@
 #!/bin/bash
 
-
-sudo pip3.6 install -U -r requirements.txt --user
-
-pip3 install flask --user 
-
-
-pip3 install pytest --user   
-
 export FLASK_ENV=development
 FLASK_APP=website.py flask run

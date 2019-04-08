@@ -25,14 +25,7 @@ pipeline {
 			}
             }
         }
-        stage('Results') {
-            steps{
-                echo 'Printing test results...'
-                withEnv(["HOME=${env.WORKSPACE}"]) {
-                 junit './nosetests.xml'
-                }
-            }
-        }
+
 	stage('Run site'){
             steps{
                 // echo 'Testing User app...'
