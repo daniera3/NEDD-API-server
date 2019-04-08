@@ -7,6 +7,7 @@
 {% block content %}
 <div class="container">
     <form id="Add">
+        <h1 class="row justify-content-md-center"> User countroler</h1></br>
         <table id="RequsetTable" class="table table-bordered">
                 <tr>
                     <td>
@@ -36,55 +37,68 @@
 
                     </td>
                 </tr>
-            <tr>
-                <td>
-                    <label>change permissions</label>
-                </td>
-            </tr>
-            <tr>
+        </table>
+
+
+    </br>
+        <h1 class="row justify-content-md-center"> change permissions</h1></br>
+        <div class="row justify-content-md-center" style="font-size:large">
+        <table>
+            <tr class="table table-bordered">
 <td>
         <label>normal users:</label>
         <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter()">
-       <button type="button" onclick="TOAdmin()" class="btn btn-success">change to admin</button>
+     </br>
 
-                    </br>
         <select id="normaluser" name="normaluser" width="600px">
         <option SELECTED value='0'>this all active users:</option>
-        {% for x in NormalUser %}
+        {% for x in UserNormal %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
       </select>
-      <button style="left: auto" type="button" onclick="TOmannger()" class="btn btn-success">change to mananger</button>
+</td>
+                <td>
+    <button type="button" onclick="permissions('Admin','normaluser')" class="btn btn-success">change to admin</button>
+
+                    </br>
+      <button style="left: auto" type="button" onclick="permissions('Manager','normaluser')" class="btn btn-success">change to manager</button>
 </td>
 </tr>
-            <tr><td>
+            <tr class="table table-bordered"><td>
 
         <label>managers/perenths:</label>
         <input placeholder="filter" type="text" id="search4" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
-        <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
                                                  </br>
         <select id="ManangerUser" name="ManangerUser" width="600px">
         <option SELECTED Rvalue='0'>this all active managers/perenths</option>
-        {% for x in ManangerUser %}
+        {% for x in UserManager %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
+            </td><td>
+                        <button type="button" onclick="permissions('Normal','ManangerUser')" class="btn btn-success">change to normal</button>
+                                                 </br>
+                <button style="left: auto" type="button" onclick="permissions('Admin','ManangerUser')" class="btn btn-success">change to admin</button>
            </td> </tr>
 
-<tr><td>
+<tr class="table table-bordered"><td>
         <label>Admins</label>
         <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
-        <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
                                                  </br>
         <select id="Adminuser" name="Adminuser" width="600px">
         <option SELECTED Rvalue='0'>this all active admins</option>
-        {% for x in AdminUsers %}
+        {% for x in UserAdmin %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
+                </td><td>
+                        <button type="button" onclick="permissions('Manager','Adminuser')"  class="btn btn-success">change to manager</button>
+                                                 </br>
+     <button style="left: auto" type="button" onclick="permissions('Normal','Adminuser')" class="btn btn-success">change to normal</button>
 </td>
             </tr>
         </table>
+            </div>
     </form>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -101,6 +115,14 @@
             option={'ReturnU':option}
         $.post("/userReturn", option, show);
     }
+    function permissions(Permissions,SelectID) {
+        var option = document.getElementById(SelectID).value
+        if (option!=0)
+            option={'UserUpdate':option,'Permissions':Permissions,'type_form':'SetPermissions'}
+        $.post("/handle_data", option, show);
+    }
+
+
     function show(massge) {
         alert(massge);
         location.reload();
