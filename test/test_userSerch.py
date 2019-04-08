@@ -92,3 +92,4 @@ class TestSerchUser(unittest.TestCase):
         result = website.sent_to_server(data, "ReturnUser")
         assert result['status'] == 'success'
         self.test_get_user_to_delete()
+
