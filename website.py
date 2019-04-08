@@ -142,7 +142,6 @@ def GetRequestJson():
         return render_template('index.html')
     data= json.dumps(data)
     response=sent_to_server(data,"AdminRequest")
-    response = eval(response.content)
     return json.dumps(response)
 
 @app.route('/Submit1', methods=['POST'])
@@ -156,11 +155,10 @@ def Submit1():
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data,"AdminAnswers")
-    response = eval(response.content)
     return response["status"]
 
 @app.route('/Submit2', methods=['POST'])
-def Submit2(data):
+def Submit2():
     data=request.form
     data=dict(data)
     data['insert'] = False
@@ -170,7 +168,6 @@ def Submit2(data):
         return render_template('index.html')
     data = json.dumps(data)
     response=sent_to_server(data,"AdminAnswers")
-    response = eval(response.content)
     return response["status"]
 
 
