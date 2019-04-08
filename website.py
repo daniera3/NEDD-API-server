@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, render_template, request, session, url_for, redirect, json, flash
 import requests
 from os import urandom
@@ -21,7 +22,6 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 app = Flask(__name__)
 
-mail = Mail(app)
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -146,10 +146,10 @@ def GetRequestJson():
 
 @app.route('/Submit1', methods=['POST'])
 def Submit1():
-    data=request.form
-    data=dict(data)
+    data = request.form
+    data = dict(data)
     data['insert'] = True
-    if 'username' in session and session['permissions']=='ADMIN':
+    if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
@@ -158,14 +158,14 @@ def Submit1():
 
 @app.route('/Submit2', methods=['POST'])
 def Submit2():
-    data=request.form
-    data=dict(data)
+    data = request.form
+    data = dict(data)
     data['insert'] = False
-    if 'username' in session and session['permissions']=='ADMIN':
+    if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    response=sent_to_server(data,"AdminAnswers")
+    response = sent_to_server(data, "AdminAnswers")
     return response["status"]
 
 
@@ -214,11 +214,12 @@ def login(user_name, password):
 
 
 def getprofile(user):
+
     data = {'User': user}
     response = sent_to_server(data, 'ReturnProfile')
     if 'status' in response:
         return {'email': '', 'Tel': '', 'address': ''}
-    return response
+    return json.dumps(response['data'][0])
 
 
 def enterkey(user,permissions):
@@ -278,6 +279,8 @@ def handle_data():
         return RequestPermissions(dict(request.form))
     elif request.form['type_form'] == 'SetPermissions':
         return SetPermissions(dict(request.form), "SetPermissions")
+    elif request.form['type_form'] == 'getUserData':
+        return getprofile(request.form['user'])
     return index()
 
 
@@ -318,12 +321,11 @@ def Updateprofile_page():
 
 @app.route('/Showprofile')
 def Showprofile_page():
-    #{'email': '', 'Tel': '', 'address': ''}
     if 'username' in session:
-        profile=getprofile(session['username'])
-        email=profile['data'][0]['email']
-        Tel = profile['data'][0]['Tel']
-        address = profile['data'][0]['address']
+        profile=eval(getprofile(session['username']))
+        email=profile['email']
+        Tel = profile['Tel']
+        address = profile['address']
 
     else:
         return index()
@@ -393,4 +395,4 @@ def speech_game():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

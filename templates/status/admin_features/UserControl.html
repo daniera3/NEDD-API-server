@@ -40,10 +40,10 @@
 
         <label>show detals:</label>
         <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter3()">
-        <button type="button" onclick="ShowProfile()" class="btn btn-info">Return</button>
+        <button type="button" id="getUserProfile" class="btn btn-info">Return</button>
                                                  </br>
         <select id="AllUsers" name="AllUsers" width="600px">
-        <option SELECTED Rvalue='0'>Choose user for return</option>
+        <option SELECTED value="0">Choose user for return</option>
         {% for x in AllUsers %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -51,6 +51,19 @@
 
          </td>
                 </tr>
+            <tr>
+                <td>
+          <div id="myModal"  class="modal  content-section">
+              <a class="bg-danger text-white" aria-label="Close" id="cols" style=" background-color: rgba(255,25,100,0.8);"  >close</a>
+                    <div class="col-md-6 panel panel-default " style="border-radius:18px;font-size:25px;">
+                    </br> <label ><strong id="userNameProfile"></strong></label>
+                    </br>  <label ><strong id="userEmailProfile"></strong></label>
+                    </br> <label ><strong id="userTelProfile"></strong></label>
+                    </br> <label ><strong id="userAddresProfile"></strong></label>
+                    </br></div>
+          </div>
+                </td>
+            </tr>
         </table>
 
     </br>
@@ -114,8 +127,21 @@
             </div>
     </form>
 </div>
+    {% endblock %}
+
+{% block scripts %}
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+
+// Get the <span> element that closes the modal
+var span = document.getElementById("cols");
+
+
+
     function DeleteUser() {
         var option = document.getElementById("user").value
         if (option!=0)
@@ -213,5 +239,96 @@
         }
     }
 }
+$(document).ready(function(){
+
+  $("#getUserProfile").click(function(){
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "getUserData",
+    user: document.getElementById("AllUsers").value
+  },
+  function(data, status){
+  modal.style.display = "block";
+    data = JSON.parse(data);
+    $('#userNameProfile').html(data['UserName']);
+    $('#userEmailProfile').html(data['email']);
+    $('#userTelProfile').html(data['Tel']);
+    $('#userAddresProfile').html(data['address']);
+  });
+  });
+});
+
+
+
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
 </script>
 {% endblock %}
+
+
+{% block style %}
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+
+
+.panel{
+
+  position: fixed; /* Stay in place */
+  z-index: 0; /* Sit on top */
+  padding-top: -200px; /* Location of the box */
+  padding-left:-20px;
+  width: 50%; /* Full width */
+  height: 25%; /* Full height */
+  margin:0px;
+  background-color: rgba(1,25,1,0.5); /* Black w/ opacity */
+}
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  padding-left:600px;
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+</style>
+
+    {% endblock %}
+
+

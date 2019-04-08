@@ -41,7 +41,7 @@ class AdminRegister(unittest.TestCase):
 
     def test_admin(self):
         answer = th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
-        assert answer['status'] == 'success'
+        assert  answer['status'] == 'success'
         print(answer)
         rv = th.login(self.client, app.config['USERNAME'], app.config['PASSWORD'])
         assert b'enter key sender to your email' in rv.data
