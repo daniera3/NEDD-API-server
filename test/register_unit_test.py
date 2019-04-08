@@ -3,12 +3,12 @@ import unittest
 import test.test_help as th
 
 
-class TestLogicServer(unittest.TestCase):
+class TestRegister(unittest.TestCase):
 
     key = "NEDD"
     username = th.id_generator()
     password = th.id_generator()
-    email=th.id_generator()+"@"+th.id_generator()
+    email = th.id_generator()+"@"+th.id_generator()
 
     def test_server_responds(self):
         data = {'user': "admin"}
