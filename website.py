@@ -224,8 +224,8 @@ def getprofile(user):
 
 def enterkey(user,permissions):
     Key=random.randint(10000000,100000000)
-    email=getprofile(user)
-    email=email['data'][0]['email']
+    email=eval(getprofile(user))
+    email=email['email']
     header='login key'
     massge="you key for login to NEDD site is:'{0}'".format(Key)
     status=sendmail(header,str(email),massge)
