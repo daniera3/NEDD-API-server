@@ -29,7 +29,7 @@
         <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
                                                  </br>
         <select id="userReturn" name="userReturn" width="600px">
-        <option SELECTED Rvalue='0'>Choose user for return</option>
+        <option SELECTED value='0'>Choose user for return</option>
         {% for x in UserReturn %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -96,7 +96,7 @@
         <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter5()">
                                                  </br>
         <select id="ManngerUser" name="ManngerUser" width="600px">
-        <option SELECTED Rvalue='0'>this all active mangers/perenths</option>
+        <option SELECTED value='0'>this all active mangers/perenths</option>
         {% for x in UserManger %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -112,7 +112,7 @@
         <input placeholder="filter" type="text" id="search6" name="search" style="margin: 10px;width: 165px;" onkeyup="filter6()">
                                                  </br>
         <select id="Adminuser" name="Adminuser" width="600px">
-        <option SELECTED Rvalue='0'>this all active admins</option>
+        <option SELECTED value='0'>this all active admins</option>
         {% for x in UserAdmin %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -144,21 +144,23 @@ var span = document.getElementById("cols");
 
     function DeleteUser() {
         var option = document.getElementById("user").value
-        if (option!=0)
+        if (option!='0'){
             option={'del':option}
-        $.post("/DeleteUser", option, show);
+        $.post("/DeleteUser", option, show);}
     }
     function UserReturn() {
         var option = document.getElementById("userReturn").value
-        if (option!=0)
-            option={'ReturnU':option}
-        $.post("/userReturn", option, show);
+        if (option!='0') {
+            option = {'ReturnU': option}
+            $.post("/userReturn", option, show);
+        }
     }
     function permissions(Permissions,SelectID) {
         var option = document.getElementById(SelectID).value
-        if (option!=0)
-            option={'UserUpdate':option,'Permissions':Permissions,'type_form':'SetPermissions'}
-        $.post("/handle_data", option, show);
+        if (option!='0') {
+            option = {'UserUpdate': option, 'Permissions': Permissions, 'type_form': 'SetPermissions'}
+            $.post("/handle_data", option, show);
+        }
     }
 
 
@@ -242,6 +244,7 @@ var span = document.getElementById("cols");
 $(document).ready(function(){
 
   $("#getUserProfile").click(function(){
+      if (document.getElementById("AllUsers").value!='0')
     $.post("{{ url_for('handle_data') }}",
   {
     type_form: "getUserData",
