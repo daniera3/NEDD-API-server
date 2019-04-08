@@ -54,7 +54,7 @@ class TestSerchUser(unittest.TestCase):
                 assert 1 == 2
         pass
 
-    def test_get_user_not_inside(self):
+    def test_get_user_in_delete(self):
         data = {'User': self.username_admin, 'del': self.username}
         result = website.sent_to_server(data, "DeleteUser")
         assert result['status'] == 'success'
@@ -80,3 +80,15 @@ class TestSerchUser(unittest.TestCase):
                 assert 1 == 2
         pass
 
+    def test_get_delete_and_return(self):
+        data = {'User': self.username_admin, 'del': self.username}
+        result = website.sent_to_server(data, "DeleteUser")
+        assert result['status'] == 'success'
+        result = website.sent_to_server(data, "GetUsersToReturn")
+        for user in result['data']:
+            if user['User'] == self.username:
+                pass
+        data = {'User': self.username_admin, 'ReturnU': self.username}
+        result = website.sent_to_server(data, "ReturnUser")
+        assert result['status'] == 'success'
+        self.test_get_user_to_delete()
