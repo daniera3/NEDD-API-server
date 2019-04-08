@@ -153,7 +153,6 @@ def Submit1():
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    data = json.dumps(data)
     response=sent_to_server(data,"AdminAnswers")
     return response["status"]
 
@@ -166,7 +165,6 @@ def Submit2():
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    data = json.dumps(data)
     response=sent_to_server(data,"AdminAnswers")
     return response["status"]
 
