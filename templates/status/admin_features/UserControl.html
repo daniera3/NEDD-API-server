@@ -29,7 +29,7 @@
         <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
                                                  </br>
         <select id="userReturn" name="userReturn" width="600px">
-        <option SELECTED Rvalue='0'>Choose user for return</option>
+        <option SELECTED value='0'>Choose user for return</option>
         {% for x in UserReturn %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -40,10 +40,24 @@
 
         <label>show detals:</label>
         <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter3()">
-        <button type="button" onclick="ShowProfile()" class="btn btn-info">Return</button>
-                                                 </br>
+        <button class="btn btn-outline-info" id="myBtn">show profile</button>
+          <div id="myModal"  class="modal  content-section">
+                    <div class="col-md-3 panel panel-default " style="border-radius:18px;">
+                        <div  class="h-100 row align-items-center">
+                            <a class="bg-danger text-white" aria-label="Close" id="cols" style=" background-color: rgba(255,25,100,0.8);"  >close</a>
+                            </br></br>
+
+                            </br>
+            <p> <strong>{{session['username']}}</strong></p>
+            <span class=" badge badge-info">{{email}}</span>
+            <span class=" badge badge-info">{{Tel}}</span>
+            <span class=" badge badge-info">{{address}}</span>
+
+                            </div>
+                    </div>
+          </div>
         <select id="AllUsers" name="AllUsers" width="600px">
-        <option SELECTED Rvalue='0'>Choose user for return</option>
+        <option SELECTED value='0'>Choose user for return</option>
         {% for x in AllUsers %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -83,7 +97,7 @@
         <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter5()">
                                                  </br>
         <select id="ManngerUser" name="ManngerUser" width="600px">
-        <option SELECTED Rvalue='0'>this all active mangers/perenths</option>
+        <option SELECTED value='0'>this all active mangers/perenths</option>
         {% for x in UserManger %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -99,7 +113,7 @@
         <input placeholder="filter" type="text" id="search6" name="search" style="margin: 10px;width: 165px;" onkeyup="filter6()">
                                                  </br>
         <select id="Adminuser" name="Adminuser" width="600px">
-        <option SELECTED Rvalue='0'>this all active admins</option>
+        <option SELECTED value='0'>this all active admins</option>
         {% for x in UserAdmin %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
@@ -114,6 +128,34 @@
             </div>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    // Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementById("cols");
+
+
+    btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+</script>
+
+
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     function DeleteUser() {
@@ -214,4 +256,66 @@
     }
 }
 </script>
+{% endblock %}
+
+{% block style %}
+
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+
+
+.panel{
+
+  position: fixed; /* Stay in place */
+  z-index: 0; /* Sit on top */
+  padding-top: -200px; /* Location of the box */
+  padding-left:-20px;
+  width: 230px; /* Full width */
+  height: 110px; /* Full height */
+  margin:50px;
+  background-color: rgba(255, 233, 82, 0.5); /* Black w/ opacity */
+}
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  padding-left:600px;
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+</style>
+
 {% endblock %}
