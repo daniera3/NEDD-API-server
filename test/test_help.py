@@ -1,20 +1,20 @@
 import random
 import string
 import json,requests
+from website import sent_to_server,db_connect,GetPassword
 
-
-key = "NEDD"
 
 
 def id_generator(size=7, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def register(client, username, password, type_of_user):
+def register(client, username, password, type_of_user,Email):
     return client.post('/handle_data', data=dict(
         Register_New_User=username,
         Register_New_Password=password,
         permissions=type_of_user,
+        Email=Email,
         type_form='register'
     ), follow_redirects=True)
 
@@ -28,13 +28,18 @@ def change_password(client, oldpassword, newpassword):
 
 
 def delete_from_sql(username):
-    data = {'user': username}
-    data = json.dumps(data)
-    header = {"Content-Type": "application/json"}
-    requests.post('https://asqwzx1.pythonanywhere.com/Testsingup', auth=('asqwzx1', 'NEDD'), data=data, headers=header)
+    try:
+        data = {'user': username}
+        sent_to_server(data,"Testsingup")
+        conn = db_connect.connect()
+        conn.execute("DELETE FROM Accounts WHERE username = ?;", (username,))
+    except:
+        print("cant delete")
+
 
 
 def login(client, username, password):
+    print(username,password,GetPassword(username,password))
     return client.post('/handle_data', data=dict(
         inputIdMain=username,
         inputPasswordMain=password,
@@ -45,11 +50,8 @@ def login(client, username, password):
 
 def update_permission_in_sql(username, authority):
     data = {'UserUpdate': username, 'Permissions': authority, 'User': 'admin'}
-    data = json.dumps(data)
-    header = {"Content-Type": "application/json"}
-    response = requests.post('https://asqwzx1.pythonanywhere.com/SetPermissions', auth=('asqwzx1', 'NEDD'), data=data,
-                  headers=header)
-    return response
+    return sent_to_server(data, "SetPermissions")
+
 
 
 def logout(client):

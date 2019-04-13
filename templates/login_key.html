@@ -1,0 +1,64 @@
+{% extends 'index.html' %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title> enter key sender to your email </title>
+</head>
+
+<body>
+<div class="caption">
+    <div class="row justify-content-md-center" style="font-size: 30px">
+        <div class="col-6">
+    <form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">
+              {% for message in get_flashed_messages() %}
+             <div style="color:#ff0000" class="flash">{{ message }}</div>
+                {% endfor %}
+        <label style="font-size: 35px;color: #222262"><strong>pls enter key forn your mail</strong></label>
+        </br>
+         <input type="password" placeholder="Confirm key" id="confirm_key" name="key"  required>
+         <button class="btn btn-outline-info" id="myBtn" type="submit" disabled>sing in</button>
+         <input type="hidden" name="type_form" class="form-control" value="Endlogin">
+         <input type="hidden" name="user" class="form-control" value={{User}}>
+
+    </form>
+        </div>
+    </div>
+</div>
+</body>
+
+     {% endblock %}
+{% block scripts %}
+<script>
+// Get the modal
+var confirm_key = document.getElementById('confirm_key');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+
+function validateEmail(){
+  if(confirm_key.value=='' )
+      btn.disabled=true;
+  else
+    btn.disabled=false;
+}
+
+confirm_key.onkeyup = validateEmail;
+</script>
+    {% endblock %}
+{% block style %}
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+.body{
+
+  position: fixed; /* Stay in place */
+  z-index: 0; /* Sit on top */
+  padding-top: -200px; /* Location of the box */
+  padding-left:-20px;
+  width: 230px; /* Full width */
+  height: 110px; /* Full height */
+  margin:50px;
+  background-color: rgba(1,25,100,0.5); /* Black w/ opacity */
+}
+</style>
+    {% endblock %}

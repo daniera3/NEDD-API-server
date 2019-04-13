@@ -6,8 +6,9 @@
           user menu
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="{{ url_for('free_speaking') }}">free speaking</a>
-            <a class="dropdown-item" href="#">speech game</a>
+            <a class="dropdown-item" href="{{ url_for('free_speaking') }}">Free speaking</a>
+            <a class="dropdown-item" href="{{ url_for('speech_game') }}">Speech game</a>
+
         </div>
     </li>
 {% endblock %}
@@ -15,6 +16,8 @@
 
 {% block profile %}
 {{super()}}
+
+
 <div class="dropdown">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         {{ session['username'] }}
@@ -23,6 +26,7 @@
     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
         <li> <a class="dropdown-item" href="{{ url_for('changePassword_page') }}">change password</a></li>
         <li><a class="dropdown-item" href="{{ url_for('Updateprofile_page') }}">update profile </a></li>
+        <li><a class="dropdown-item" href="{{ url_for('Showprofile_page') }}">show profile </a></li>
     </ul>
     <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('logout') }}">logoff</a>
 </div>
