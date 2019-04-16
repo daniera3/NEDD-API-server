@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, render_template, request, session, url_for, redirect, json, flash
 import requests
 from os import urandom
@@ -21,7 +22,6 @@ token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 app = Flask(__name__)
 
-mail = Mail(app)
 
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
@@ -49,7 +49,7 @@ def index():
     if 'permissions' in session:
         if session['permissions'] == 'NORMAL':
             return render_template('status/normal_login.html')
-        if session['permissions'] == 'MANAGER':
+        if session['permissions'] == 'MANGER':
             return render_template('status/parent_login.html')
         if session['permissions'] == 'ADMIN':
             return render_template('status/admin_login.html')
@@ -68,7 +68,6 @@ def UserControler():
     else:
         return render_template('index.html')
     response=sent_to_server(json.dumps(data),"GetUsersToDelete")
-    deleteUsers = (response)['data']
     response=sent_to_server(json.dumps(data),"GetUsersToReturn")
     returnUsers = (response)['data']
 
@@ -76,15 +75,15 @@ def UserControler():
     response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
     admins = (response)['data']
 
-    data['Permissions'] = 'Manager'
+    data['Permissions'] = 'Manger'
     response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
-    Managers = (response)['data']
+    Mangers = (response)['data']
 
     data['Permissions'] = 'Normal'
     response = sent_to_server(json.dumps(data), "GetUsersPerPermissions")
     Normals = (response)['data']
-
-    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserManager=Managers,UserNormal=Normals)
+    deleteUsers=admins+Mangers+Normals
+    return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserManger=Mangers,UserNormal=Normals,AllUsers=deleteUsers+returnUsers)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -143,35 +142,30 @@ def GetRequestJson():
         return render_template('index.html')
     data= json.dumps(data)
     response=sent_to_server(data,"AdminRequest")
-    response = eval(response.content)
     return json.dumps(response)
 
 @app.route('/Submit1', methods=['POST'])
 def Submit1():
-    data=request.form
-    data=dict(data)
+    data = request.form
+    data = dict(data)
     data['insert'] = True
-    if 'username' in session and session['permissions']=='ADMIN':
+    if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    data = json.dumps(data)
     response=sent_to_server(data,"AdminAnswers")
-    response = eval(response.content)
     return response["status"]
 
 @app.route('/Submit2', methods=['POST'])
-def Submit2(data):
-    data=request.form
-    data=dict(data)
+def Submit2():
+    data = request.form
+    data = dict(data)
     data['insert'] = False
-    if 'username' in session and session['permissions']=='ADMIN':
+    if 'username' in session and session['permissions'] == 'ADMIN':
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    data = json.dumps(data)
-    response=sent_to_server(data,"AdminAnswers")
-    response = eval(response.content)
+    response = sent_to_server(data, "AdminAnswers")
     return response["status"]
 
 
@@ -220,17 +214,18 @@ def login(user_name, password):
 
 
 def getprofile(user):
+
     data = {'User': user}
     response = sent_to_server(data, 'ReturnProfile')
     if 'status' in response:
         return {'email': '', 'Tel': '', 'address': ''}
-    return response
+    return json.dumps(response['data'][0])
 
 
 def enterkey(user,permissions):
     Key=random.randint(10000000,100000000)
-    email=getprofile(user)
-    email=email['data'][0]['email']
+    email=eval(getprofile(user))
+    email=email['email']
     header='login key'
     massge="you key for login to NEDD site is:'{0}'".format(Key)
     status=sendmail(header,str(email),massge)
@@ -280,10 +275,23 @@ def handle_data():
         return changePassword(request.form['OldPassword'], request.form['Password'])
     elif request.form['type_form'] == 'UpdateProfile':
         return UpdateProfile(request.form['Email'], request.form['tel'], request.form['address'],request.form['password'])
-
+    elif request.form['type_form'] == 'RequestPermissions':
+        return RequestPermissions(dict(request.form))
     elif request.form['type_form'] == 'SetPermissions':
         return SetPermissions(dict(request.form), "SetPermissions")
+    elif request.form['type_form'] == 'getUserData':
+        return getprofile(request.form['user'])
     return index()
+
+
+def RequestPermissions(data):
+    if 'username' in session:
+        data['user']=session['username']
+        answer=sent_to_server(json.dumps(data), "RequestPermissions")
+        flash(answer['status'])
+        return RequestPermissions_page()
+    else:
+        return index()
 
 
 def Endlogin(user,Key):
@@ -307,16 +315,17 @@ def logout():
 
 @app.route('/UpdateProfile')
 def Updateprofile_page():
+    if 'username' not in session:
+        return login_page()
     return render_template('/status/normal_features/UpdateProfile.html')
 
 @app.route('/Showprofile')
 def Showprofile_page():
-    #{'email': '', 'Tel': '', 'address': ''}
     if 'username' in session:
-        profile=getprofile(session['username'])
-        email=profile['data'][0]['email']
-        Tel = profile['data'][0]['Tel']
-        address = profile['data'][0]['address']
+        profile=eval(getprofile(session['username']))
+        email=profile['email']
+        Tel = profile['Tel']
+        address = profile['address']
 
     else:
         return index()
@@ -341,9 +350,17 @@ def UpdateProfile(email, tel,address,password):
     return Updateprofile_page()
 
 
+@app.route('/RequestPermissions')
+def RequestPermissions_page():
+    if 'username' not in session:
+        return login_page()
+    return render_template('/status/manger_features/requset_pramission.html')
+
 
 @app.route('/changePassword')
 def changePassword_page():
+    if 'username' not in session:
+        return login_page()
     return render_template('/status/normal_features/changePasswords.html', permission=session['permissions'])
 
 
@@ -370,7 +387,7 @@ def free_speaking():
 
 @app.route('/speech_game')
 def speech_game():
-    if session['username']:
+    if 'username' in session:
         return render_template('/status/normal_features/speech_game.html', permission=session['permissions'])
     else:
         flash("must log in", category='error')
@@ -378,4 +395,4 @@ def speech_game():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

@@ -20,19 +20,12 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml web_unit_test.py"
+	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 
 			}
             }
         }
-        stage('Results') {
-            steps{
-                echo 'Printing test results...'
-                withEnv(["HOME=${env.WORKSPACE}"]) {
-                 junit '**/nosetests.xml'
-                }
-            }
-        }
+
 	stage('Run site'){
             steps{
                 // echo 'Testing User app...'

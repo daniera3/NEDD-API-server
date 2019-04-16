@@ -29,16 +29,42 @@
         <button type="button" onclick="UserReturn()" class="btn btn-success">Return</button>
                                                  </br>
         <select id="userReturn" name="userReturn" width="600px">
-        <option SELECTED Rvalue='0'>Choose user for return</option>
+        <option SELECTED value='0'>Choose user for return</option>
         {% for x in UserReturn %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
 
                     </td>
-                </tr>
-        </table>
+        <td>
 
+        <label>show detals:</label>
+        <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter3()">
+        <button type="button" id="getUserProfile" class="btn btn-info">Return</button>
+                                                 </br>
+        <select id="AllUsers" name="AllUsers" width="600px">
+        <option SELECTED value="0">Choose user for return</option>
+        {% for x in AllUsers %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+        </select>
+
+         </td>
+                </tr>
+            <tr>
+                <td>
+          <div id="myModal"  class="modal  content-section">
+              <a class="bg-danger text-white" aria-label="Close" id="cols" style=" background-color: rgba(255,25,100,0.8);font-size: larger;"  >close</a>
+                    <div class="col-md-6 panel panel-default " style="border-radius:18px;font-size:25px;">
+                     <label >name: <strong id="userNameProfile"></strong></label>
+                    </br>  <label >Email: <strong id="userEmailProfile"></strong></label>
+                    </br> <label >Tel: <strong id="userTelProfile"></strong></label>
+                    </br> <label >Addres: <strong id="userAddresProfile"></strong></label>
+                    </br></div>
+          </div>
+                </td>
+            </tr>
+        </table>
 
     </br>
         <h1 class="row justify-content-md-center"> change permissions</h1></br>
@@ -47,7 +73,7 @@
             <tr class="table table-bordered">
 <td>
         <label>normal users:</label>
-        <input placeholder="filter" type="text" id="search3" name="search" style="margin: 10px;width: 165px;" onkeyup="filter()">
+        <input placeholder="filter" type="text" id="search4" name="search" style="margin: 10px;width: 165px;" onkeyup="filter4()">
      </br>
 
         <select id="normaluser" name="normaluser" width="600px">
@@ -61,38 +87,38 @@
     <button type="button" onclick="permissions('Admin','normaluser')" class="btn btn-success">change to admin</button>
 
                     </br>
-      <button style="left: auto" type="button" onclick="permissions('Manager','normaluser')" class="btn btn-success">change to manager</button>
+      <button style="left: auto" type="button" onclick="permissions('Manger','normaluser')" class="btn btn-success">change to manger</button>
 </td>
 </tr>
             <tr class="table table-bordered"><td>
 
-        <label>managers/perenths:</label>
-        <input placeholder="filter" type="text" id="search4" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <label>mangers/perenths:</label>
+        <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter5()">
                                                  </br>
-        <select id="ManangerUser" name="ManangerUser" width="600px">
-        <option SELECTED Rvalue='0'>this all active managers/perenths</option>
-        {% for x in UserManager %}
+        <select id="ManngerUser" name="ManngerUser" width="600px">
+        <option SELECTED value='0'>this all active mangers/perenths</option>
+        {% for x in UserManger %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
             </td><td>
-                        <button type="button" onclick="permissions('Normal','ManangerUser')" class="btn btn-success">change to normal</button>
+                        <button type="button" onclick="permissions('Normal','ManngerUser')" class="btn btn-success">change to normal</button>
                                                  </br>
-                <button style="left: auto" type="button" onclick="permissions('Admin','ManangerUser')" class="btn btn-success">change to admin</button>
+                <button style="left: auto" type="button" onclick="permissions('Admin','ManngerUser')" class="btn btn-success">change to admin</button>
            </td> </tr>
 
 <tr class="table table-bordered"><td>
         <label>Admins</label>
-        <input placeholder="filter" type="text" id="search5" name="search" style="margin: 10px;width: 165px;" onkeyup="filter2()">
+        <input placeholder="filter" type="text" id="search6" name="search" style="margin: 10px;width: 165px;" onkeyup="filter6()">
                                                  </br>
         <select id="Adminuser" name="Adminuser" width="600px">
-        <option SELECTED Rvalue='0'>this all active admins</option>
+        <option SELECTED value='0'>this all active admins</option>
         {% for x in UserAdmin %}
           <option value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
                 </td><td>
-                        <button type="button" onclick="permissions('Manager','Adminuser')"  class="btn btn-success">change to manager</button>
+                        <button type="button" onclick="permissions('Manger','Adminuser')"  class="btn btn-success">change to manger</button>
                                                  </br>
      <button style="left: auto" type="button" onclick="permissions('Normal','Adminuser')" class="btn btn-success">change to normal</button>
 </td>
@@ -101,25 +127,40 @@
             </div>
     </form>
 </div>
+    {% endblock %}
+
+{% block scripts %}
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+
+// Get the <span> element that closes the modal
+var span = document.getElementById("cols");
+
+
+
     function DeleteUser() {
         var option = document.getElementById("user").value
-        if (option!=0)
+        if (option!='0'){
             option={'del':option}
-        $.post("/DeleteUser", option, show);
+        $.post("/DeleteUser", option, show);}
     }
     function UserReturn() {
         var option = document.getElementById("userReturn").value
-        if (option!=0)
-            option={'ReturnU':option}
-        $.post("/userReturn", option, show);
+        if (option!='0') {
+            option = {'ReturnU': option}
+            $.post("/userReturn", option, show);
+        }
     }
     function permissions(Permissions,SelectID) {
         var option = document.getElementById(SelectID).value
-        if (option!=0)
-            option={'UserUpdate':option,'Permissions':Permissions,'type_form':'SetPermissions'}
-        $.post("/handle_data", option, show);
+        if (option!='0') {
+            option = {'UserUpdate': option, 'Permissions': Permissions, 'type_form': 'SetPermissions'}
+            $.post("/handle_data", option, show);
+        }
     }
 
 
@@ -151,5 +192,146 @@
         }
     }
 }
+
+    function filter3() {
+    var keyword = document.getElementById("search3").value;
+    var select = document.getElementById("AllUsers");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+    function filter4() {
+    var keyword = document.getElementById("search4").value;
+    var select = document.getElementById("normaluser");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+    function filter5() {
+    var keyword = document.getElementById("search5").value;
+    var select = document.getElementById("ManngerUser");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+    function filter6() {
+    var keyword = document.getElementById("search6").value;
+    var select = document.getElementById("Adminuser");
+    for (var i = 0; i < select.length; i++) {
+        var txt = select.options[i].text;
+        if (txt.substring(0, keyword.length).toLowerCase() !== keyword.toLowerCase() && keyword.trim() !== "") {
+          $(select.options[i]).attr('disabled', 'disabled').hide();
+        } else {
+          $(select.options[i]).removeAttr('disabled').show();
+        }
+    }
+}
+$(document).ready(function(){
+
+  $("#getUserProfile").click(function(){
+      if (document.getElementById("AllUsers").value!='0')
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "getUserData",
+    user: document.getElementById("AllUsers").value
+  },
+  function(data, status){
+  modal.style.display = "block";
+    data = JSON.parse(data);
+    $('#userNameProfile').html(data['UserName']);
+    $('#userEmailProfile').html(data['email']);
+    $('#userTelProfile').html(data['Tel']);
+    $('#userAddresProfile').html(data['address']);
+  });
+  });
+});
+
+
+
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
 </script>
 {% endblock %}
+
+
+{% block style %}
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+
+
+.panel{
+
+  position: fixed; /* Stay in place */
+  z-index: 0; /* Sit on top */
+  padding-top: -200px; /* Location of the box */
+  padding-left:-20px;
+  width: 50%; /* Full width */
+  height: 25%; /* Full height */
+  margin:0px;
+  background-color: rgba(255, 180, 95, 3); /* Black w/ opacity */
+}
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  padding-left:600px;
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 80%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+</style>
+
+    {% endblock %}
+
+
