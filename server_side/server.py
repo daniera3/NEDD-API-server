@@ -307,7 +307,7 @@ class DeleteUserTast(Resource):
         try:
             conn.execute("DELETE FROM Accounts WHERE User = ?;",(DATA['user'],))
             conn.execute("DELETE FROM LVL WHERE User = ?;",(DATA['user'],))
-            conn.execute("DELETE FROM Profile WHERE UserName = ?;",(DATA['user'],))
+            conn.execute("DELETE FROM Profile WHERE UserName = ;",(DATA['user'],))
             return crypto2.des(str({'status':'success'}),key)
         except:
             return crypto2.des(str({'status':'fail'}),key)
