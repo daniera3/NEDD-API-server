@@ -312,6 +312,7 @@ class DeleteUserTast(Resource):
         except:
             return crypto2.des(str({'status':'fail'}),key)
 
+
 class UpdateProfile(Resource):
     def post(self):
         DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
