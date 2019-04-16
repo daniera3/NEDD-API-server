@@ -400,6 +400,29 @@ class login(Resource):
             return crypto2.des(str({'status':'fail','res':'bug'}),key)
 
 
+class RequestPermissions(Resource):
+    def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+        try:
+            if (SubFunc.CheckAdmin(DATA['user']) or SubFunc.CheckManger(DATA['user'])) and SubFunc.CheckNormal(DATA['UserName']) :
+                conn = db_connect.connect()
+                query = conn.execute("select * from request WHERE requesting=? and user=? ",(DATA['user'],DATA['UserName'],))
+                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                if len(result['data'])<3:
+                    try:
+                        conn.execute("insert into request (requesting, user, reason) values('{0}','{1}','{2}')".format(DATA['user'],DATA['UserName'],DATA['ReasonForRequest']))
+                        return crypto2.des(str({'status':'success seve request'}),key)
+                    except:
+                        return crypto2.des(str({'status':'can\'t save request'}),key)
+                else:
+                    return crypto2.des(str({'status':'too mach request, pls wait for answer from admins '}),key)
+            else:
+                return crypto2.des(str({'status':'incorrect request, not save'}),key)
+        except:
+            return crypto2.des(str({'status':'can\'t find db'}),key)
+
+
+
 api.add_resource(Singin,  '/singin','/singin/<user>/<pas>',methods={'POST','GET'})
 api.add_resource(Test, '/test','/test/<User>/<Date>','/test/<User>',methods={'POST','GET'})
 api.add_resource(STest, '/stest',methods={'POST'})
@@ -417,5 +440,8 @@ api.add_resource(UpdateProfile, '/UpdateProfile',methods={'POST'})
 api.add_resource(ReturnProfile, '/ReturnProfile',methods={'POST'})
 api.add_resource(trylogin, '/trylogin',methods={'POST'})
 api.add_resource(login, '/login',methods={'POST'})
+api.add_resource(GetUsersPerPermissions, '/GetUsersPerPermissions',methods={'POST'})
+api.add_resource(RequestPermissions, '/RequestPermissions',methods={'POST'})
+
 if __name__ == '__main__':
      app.run()
