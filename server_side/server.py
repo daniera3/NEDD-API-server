@@ -29,14 +29,14 @@ class SubFunc():
             else:
                 return False
 
-    def CheckManager(user):
+    def CheckManger(user):
         conn = db_connect.connect()
         query = conn.execute("select * from Accounts WHERE User=? and Active=?""", (str(user),"True",))
         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         if not result['data']:
             return False
         else:
-            if result['data'][0]['Permissions'].upper()=="MANAGER":
+            if result['data'][0]['Permissions'].upper()=="MANGER":
                 return True
             else:
                 return False
@@ -122,7 +122,7 @@ class singup(Resource):
             Name = DATA['User']
             Password = DATA['Password']
             Perm = DATA['perm']
-            if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0:
+            if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0 or Perm not in ["normal","Normal","mannger","Manger"]:
                 return crypto2.des(str({'status':'hacker'}),key)
             query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
@@ -133,7 +133,13 @@ class singup(Resource):
         	    return crypto2.des(str({'status':'success'}),key)
             return crypto2.des(str({'status':'fail'}),key)
         except:
-            return crypto2.des(str({'status':'fail'}),key)
+            try:
+                conn.execute("DELETE FROM Accounts WHERE User = ?;",(DATA['user'],))
+                conn.execute("DELETE FROM LVL WHERE User = ?;",(DATA['user'],))
+                conn.execute("DELETE FROM Profile WHERE UserName = ?;",(DATA['user'],))
+                return crypto2.des(str({'status':'failAndDeleted'}),key)
+            except:
+                return crypto2.des(str({'status':'failAndCrash'}),key)
 
 class ChangePassword(Resource):
     def post(self):
@@ -163,7 +169,7 @@ class AdminAnswersToRequests(Resource):
         conn = db_connect.connect()
         try:
             Name = DATA['User']
-            if SubFunc.CheckAdmin(Name) and SubFunc.CheckManager(DATA['requesting']) and SubFunc.CheckNormal(DATA['user']) :
+            if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(DATA['requesting'])or SubFunc.CheckAdmin(DATA['requesting']))and SubFunc.CheckNormal(DATA['user']) :
                 if DATA['insert']:
                     try:
                         query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
@@ -174,6 +180,7 @@ class AdminAnswersToRequests(Resource):
                         else:
                             conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
                             massge=massge+" and update"
+                        conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(DATA['requesting'],DATA['user'],))
                     except:
                         conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                         return crypto2.des(str({'status':'he can see hes info'}),key)
@@ -202,9 +209,9 @@ class SetPermissions(Resource):
                 if not result['data']:
                     return crypto2.des(str({'status':'fail','reason':'cannot find user'}),key)
                 if 'Permissions' in DATA.keys():
-                    if DATA['Permissions']=='Admin' or DATA['Permissions']=='Manager' or DATA['Permissions']=='Normal':
+                    if DATA['Permissions']=='Admin' or DATA['Permissions']=='Manger' or DATA['Permissions']=='Normal':
                         conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", (DATA['Permissions'],str(Name),))
-                        return crypto2.des(str({'status':'sussess'}),key)
+                        return crypto2.des(str({'status':'success'}),key)
                     else:
                         return crypto2.des(str({'status':'fail'}),key)
                 conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", ('Normal',str(Name),))
@@ -219,7 +226,7 @@ class GetUsersToReturn(Resource):
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
                 query = conn.execute("select User from Accounts WHERE User<>? and Active=? ORDER BY Permissions ASC;", (str(Name),"False",))
-                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor],'status':'success'}
                 return crypto2.des(str(result),key)
             return crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
@@ -233,7 +240,22 @@ class GetUsersToDelete(Resource):
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
                 query = conn.execute("select User from Accounts WHERE User<>? and Active=? ORDER BY Permissions ASC;", (str(Name),"True",))
-                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor],'status':'success'}
+                return crypto2.des(str(result),key)
+            return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+        except:
+            return  crypto2.des(str({'status':'fail'}),key)
+
+class GetUsersPerPermissions(Resource):
+    def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+        conn = db_connect.connect()
+        try:
+            Name = DATA['User']
+            Permissions=DATA['Permissions']
+            if SubFunc.CheckAdmin(Name):
+                query = conn.execute("select User from Accounts WHERE User<>? and Active=? and Permissions=? ORDER BY Permissions ASC;", (str(Name),"True",Permissions,))
+                result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor],'status':'success'}
                 return crypto2.des(str(result),key)
             return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
@@ -285,10 +307,10 @@ class DeleteUserTast(Resource):
         try:
             conn.execute("DELETE FROM Accounts WHERE User = ?;",(DATA['user'],))
             conn.execute("DELETE FROM LVL WHERE User = ?;",(DATA['user'],))
+            conn.execute("DELETE FROM Profile WHERE UserName = ?;",(DATA['user'],))
             return crypto2.des(str({'status':'success'}),key)
         except:
             return crypto2.des(str({'status':'fail'}),key)
-
 
 class UpdateProfile(Resource):
     def post(self):
