@@ -11,6 +11,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
+                <form>
                 {% for user in student %}
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
@@ -21,6 +22,7 @@
                         <span class="input-group-text">{{ user }}</span>
                     </div>
                 {% endfor %}
+                    </form>
                 </div>
             <div class="col-sm">
                 <button id="get_students_stat" type="button" class="btn btn-info">get student statistic</button>
@@ -41,14 +43,25 @@
 <script>
         $(document).ready(function() {
             $("#get_students_stat").click(function(){
-            var favorite = [];
-            $.each($("input[name='student']:checked"), function(){
-                favorite.push($(this).val());
+                var favorite = [];
+                $.each(
+                    $("input[name='student']:checked"), function(){
+                        favorite.push($(this).val());
+                });
+
+
+                $.post("{{ url_for('handle_data') }}",
+                {
+                    type_form: "get_stat",
+                    city: "Duckburg"
+                 },
+                function(data, status){
+                    alert("Data: " + data + "\nStatus: " + status);
+                });
+                alert("done");
             });
-            alert("My favourite sports are: " + favorite.join(", "));
 
         });
 
-    });
     </script>
      {% endblock %}

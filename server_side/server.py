@@ -479,8 +479,34 @@ class getStudents(Resource):
             return  crypto2.des(str({'status':'fail'}),key)
 
 
+class getStudentsStatistics(Resource):
+    def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+        conn = db_connect.connect()
+        try:
+            User = DATA['user']
+            user_Name = DATA['user_serch']
+            if SubFunc.CheckAdmin(user_Name) or SubFunc.CheckManger(user_Name):
+                try:
+                    temp=[]
+                    query = conn.execute("select avg(grade) avrage from SpeechTasks WHERE  user==?", (str(user_Name),))
+                    for user in query.cursor:
+                        avrage=user.avrage
+                    query = conn.execute("select Line,Say,grade,Date from SpeechTasks WHERE  user==?", (str(user_Name),))
+                    for user in query.cursor:
+                        temp+=[user.Line,user.Say,user.grade,user.Date]
+                    result = {'data': temp,'status':'success','avrage':avrage}
+                    return crypto2.des(str(result),key)
+                except:
+                    return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
+                return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+        except:
+            return  crypto2.des(str({'status':'fail'}),key)
+
+
 
 api.add_resource(getStudents,  '/getstudents',methods={'POST','GET'})
+api.add_resource(getStudentsStatistics,  '/getStudentsStatistics',methods={'POST','GET'})
 
 api.add_resource(Singin,  '/singin','/singin/<user>/<pas>',methods={'POST','GET'})
 api.add_resource(Test, '/test','/test/<User>/<Date>','/test/<User>',methods={'POST','GET'})

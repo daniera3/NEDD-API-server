@@ -297,6 +297,8 @@ def handle_data():
         return SaveTest(dict(request.form))
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
+    elif request.form['type_form'] == 'get_stat':
+        return AddWord(dict(request.form))
     return index()
 
 def AddWord(data):

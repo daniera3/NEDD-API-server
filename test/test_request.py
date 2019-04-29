@@ -54,6 +54,15 @@ class TestSerchUser(unittest.TestCase):
         assert result['status'] == 'success'
         assert self.username in result['data']
 
+    def test_get_student_statistic(self):
+        data = {'UserRequsting': self.username_admin}
+        result = website.sent_to_server(data, "getstudents")
+        assert result['status'] == 'success'
+        assert self.username in result['data']
+
+        data = {'user': self.username_admin,'user_serch': self.username}
+        result = website.sent_to_server(data, "getStudentsStatistics")
+        assert result['status'] == 'success'
 
 
 
