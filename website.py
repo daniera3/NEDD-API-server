@@ -60,6 +60,12 @@ def index():
 def register_page():
     return render_template('register.html')
 
+@app.route('/Feedback')
+def Feedback_page():
+    return render_template('/status/normal_features/Feedback.html')
+
+
+
 @app.route('/UserControler')
 def UserControler():
     data = {}

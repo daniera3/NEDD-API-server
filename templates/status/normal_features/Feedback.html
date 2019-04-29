@@ -1,0 +1,71 @@
+{% if permission == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif permission == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+
+{% block content %}
+<form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">
+<div  class="container " style="font-size:x-large">
+        <div class="row justify-content-md-center" >
+               <div class="col-4">
+                   <h1><strong style="font-size:60px;color:purple">Feedback</strong></h1>
+               </br>
+                   <h1 style="font-size:25px;color:green"> Your opinion is important to us </h1>
+
+                   </br><label>choose subject</label>
+                   <select id="userReturn">
+
+  <option value="feedback">feedback</option>
+  <option value="bug">report a bug</option>
+
+
+</select></br>
+<input type="hidden" name="type_form" class="form-control" value="UpdateProfile">
+<textarea id="feedback_id" name="feedback_name" type="text"  > </textarea>
+  </br>
+                   <button class="btn btn-outline-info " id="submit" type="submit">send</button>
+
+               </div>
+        </div>
+</div>
+
+</form>
+
+
+     {% endblock %}
+
+{% block style %}
+{{super()}}
+<style>
+textarea {
+  width: 100%;
+  height: 100%;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+
+}
+</style>
+
+
+ {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
