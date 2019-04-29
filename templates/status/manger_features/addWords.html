@@ -1,6 +1,6 @@
-{% if permission == 'ADMIN' %}
+{% if session['permissions'] == 'ADMIN' %}
     {% extends 'status/admin_login.html' %}
-{% elif permission == 'MANGER' %}
+{% elif session['permissions'] == 'MANGER' %}
     {% extends 'status/parent_login.html' %}
 {% else %}
     {% extends 'status/normal_login.html' %}
@@ -8,14 +8,15 @@
 
 
 
+
 {% block content %}
 <div class="container ">
         <div class="row justify-content-md-center" >
                <div class="col-6">
-
+                <h1 style="color:red"><strong>add words</strong></h1>
                   </br> <label>choose user</label> <select id="trainee" name="trainee" width="600px">
         {% for x in trainee %}
-          <option value= '{{ x.User }}'>{{x.User}}</option>
+          <option style="width: 102%;"   value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
 
@@ -27,7 +28,7 @@
 </select></br>
      <input type="text" id="word" name="word" required>
                    </br>
-       <button type="button" id="click">save</button>
+       <button type="button" id="button">save</button>
 
                </div>
         </div>
@@ -38,9 +39,8 @@
 {{super()}}
 <script>
 $(document).ready(function(){
-
-  $("#click").click(function(){
-      if (document.getElementById("word").value!='')
+  $("#button").click(function(){
+     if (document.getElementById("word").value!=''){
     $.post("{{ url_for('handle_data') }}",
   {
     type_form: "addwords",
@@ -50,7 +50,9 @@ $(document).ready(function(){
   },
  function(status){
    alert(status);
+   word:document.getElementById("word").value='';
   });
+  }
   });
 });
 </script>
