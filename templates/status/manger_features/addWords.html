@@ -1,10 +1,11 @@
-{% if permission == 'ADMIN' %}
+{% if session['permissions'] == 'ADMIN' %}
     {% extends 'status/admin_login.html' %}
-{% elif permission == 'MANGER' %}
+{% elif session['permissions'] == 'MANGER' %}
     {% extends 'status/parent_login.html' %}
 {% else %}
     {% extends 'status/normal_login.html' %}
 {%endif%}
+
 
 
 
@@ -27,7 +28,7 @@
 </select></br>
      <input type="text" id="word" name="word" required>
                    </br>
-       <button type="button" id="click">save</button>
+       <button type="button" id="button">save</button>
 
                </div>
         </div>
@@ -38,9 +39,8 @@
 {{super()}}
 <script>
 $(document).ready(function(){
-
-  $("#click").click(function(){
-      if (document.getElementById("word").value!='')
+  $("#button").click(function(){
+     if (document.getElementById("word").value!=''){
     $.post("{{ url_for('handle_data') }}",
   {
     type_form: "addwords",
@@ -51,6 +51,7 @@ $(document).ready(function(){
  function(status){
    alert(status);
   });
+  }
   });
 });
 </script>
