@@ -458,7 +458,26 @@ class AddWord(Resource):
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
+class getStudents(Resource):
+    def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+        conn = db_connect.connect()
+        try:
+            user_Name = DATA['UserRequsting']
+            if SubFunc.CheckAdmin(user_Name) or SubFunc.CheckManger(user_Name):
+                try:
+                    query = conn.execute("select user from Guider where GuideName==? and active='True';", (str(user_Name),))
+                    result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor],'status':'success'}
+                    return crypto2.des(str(result),key)
+                except:
+                    return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
+                return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+        except:
+            return  crypto2.des(str({'status':'fail'}),key)
 
+
+
+api.add_resource(getStudents,  '/getstudents',methods={'POST','GET'})
 
 api.add_resource(Singin,  '/singin','/singin/<user>/<pas>',methods={'POST','GET'})
 api.add_resource(Test, '/test','/test/<User>/<Date>','/test/<User>',methods={'POST','GET'})
