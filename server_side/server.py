@@ -469,7 +469,7 @@ class getStudents(Resource):
                     temp=[]
                     query = conn.execute("select user from Guider where GuideName==? and active='True';", (str(user_Name),))
                     for user in query.cursor:
-                        temp+=[user]
+                        temp+=user
                     result = {'data': temp,'status':'success'}
                     return crypto2.des(str(result),key)
                 except:

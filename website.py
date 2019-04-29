@@ -423,10 +423,19 @@ def speech_game():
 @app.route('/get_student_result')
 def get_student_result():
     if 'username' in session:
-        return render_template('/status/manger_features/student_statistics.html', permission=session['permissions'])
+        student = get_student()
+        return render_template('/status/manger_features/student_statistics.html',
+                               student=student,
+                               permission=session['permissions'])
     else:
         flash("must log in", category='error')
         return index()
+
+
+def get_student():
+    data={'UserRequsting':session['username']}
+    result = sent_to_server(data,"getstudents")
+    return result['data']
 
 
 if __name__ == '__main__':
