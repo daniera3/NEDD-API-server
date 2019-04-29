@@ -466,8 +466,11 @@ class getStudents(Resource):
             user_Name = DATA['UserRequsting']
             if SubFunc.CheckAdmin(user_Name) or SubFunc.CheckManger(user_Name):
                 try:
+                    temp=[]
                     query = conn.execute("select user from Guider where GuideName==? and active='True';", (str(user_Name),))
-                    result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor],'status':'success'}
+                    for user in query.cursor:
+                        temp+=[user]
+                    result = {'data': temp,'status':'success'}
                     return crypto2.des(str(result),key)
                 except:
                     return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)

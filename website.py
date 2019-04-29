@@ -420,6 +420,14 @@ def speech_game():
         flash("must log in", category='error')
         return index()
 
+@app.route('/get_student_result')
+def get_student_result():
+    if 'username' in session:
+        return render_template('/status/manger_features/student_statistics.html', permission=session['permissions'])
+    else:
+        flash("must log in", category='error')
+        return index()
+
 
 if __name__ == '__main__':
     app.run(debug=True)

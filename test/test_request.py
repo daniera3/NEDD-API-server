@@ -51,10 +51,8 @@ class TestSerchUser(unittest.TestCase):
     def test_get_student_list(self):
         data = {'UserRequsting': self.username_admin}
         result = website.sent_to_server(data, "getstudents")
-        print(result['data'][0])
         assert result['status'] == 'success'
-        print(type(result['data'][0]))
-        assert self.username in result['data'][0].values()
+        assert self.username in result['data']
 
 
 

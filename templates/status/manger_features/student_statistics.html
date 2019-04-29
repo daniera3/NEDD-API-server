@@ -1,0 +1,17 @@
+{% if session['permissions'] == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif session['permissions'] == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+{% block content %}
+    new page is hare
+     {% endblock %}
+
+
+
+{% block scripts %}
+     {% endblock %}
