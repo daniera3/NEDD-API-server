@@ -190,6 +190,17 @@ function phrases(leng){
                     $("#mainGame").css("background-color", 'red');
                     document.getElementById('bad').style.visibility = 'visible';
                 }
+                $.post("{{ url_for('handle_data') }}",
+                {
+    type_form: "SaveTest",
+    say: speechResult,
+    grade:Math.round(editDistance(((phrase)),((speechResult)),leng)),
+    line:phrase
+  },
+  function(status){
+   alert(status);
+  });
+
                 console.log('Confidence: ' + event.results[0][0].confidence);
             }
 
