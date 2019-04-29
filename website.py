@@ -73,7 +73,6 @@ def UserControler():
         data['User'] = session["username"]
     else:
         return render_template('index.html')
-    response=sent_to_server(json.dumps(data),"GetUsersToDelete")
     response=sent_to_server(json.dumps(data),"GetUsersToReturn")
     returnUsers = (response)['data']
 
@@ -90,6 +89,19 @@ def UserControler():
     Normals = (response)['data']
     deleteUsers=admins+Mangers+Normals
     return render_template('/status/admin_features/UserControl.html', UserDelete=deleteUsers, UserReturn=returnUsers,UserAdmin=admins,UserManger=Mangers,UserNormal=Normals,AllUsers=deleteUsers+returnUsers)
+
+
+
+@app.route('/AddWord')
+def Add_word_page():
+    data = {}
+    if 'username' in session and (session['permissions'] == 'ADMIN' or session['permissions'] == 'MANGER'):
+        data['User'] = session["username"]
+    else:
+        return render_template('index.html')
+    response = sent_to_server(json.dumps(data), "trainee")
+    trainee = (response)['data']
+    return render_template('/status/manger_features/addWords.html', trainee=trainee)
 
 
 @app.route('/DeleteUser', methods=['POST'])
@@ -287,13 +299,28 @@ def handle_data():
         return SetPermissions(dict(request.form), "SetPermissions")
     elif request.form['type_form'] == 'getUserData':
         return getprofile(request.form['user'])
+    elif request.form['type_form'] == 'SaveTest':
+        return SaveTest(dict(request.form))
+    elif request.form['type_form'] == 'addwords':
+        return AddWord(dict(request.form))
     return index()
 
+def AddWord(data):
+    if 'username' in session:
+        data['User'] = session['username']
+    answer = sent_to_server(json.dumps(data), "addword")
+    return answer['status']
+
+def SaveTest(data):
+    if 'username' in session:
+        data['user'] = session['username']
+    answer = sent_to_server(json.dumps(data), "stest")
+    return answer['status']
 
 def RequestPermissions(data):
     if 'username' in session:
         data['user']=session['username']
-        answer=sent_to_server(json.dumps(data), "RequestPermissions")
+        answer = sent_to_server(json.dumps(data), "RequestPermissions")
         flash(answer['status'])
         return RequestPermissions_page()
     else:

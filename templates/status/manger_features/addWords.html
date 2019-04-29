@@ -1,0 +1,58 @@
+{% if permission == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif permission == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+
+{% block content %}
+<div class="container ">
+        <div class="row justify-content-md-center" >
+               <div class="col-6">
+
+                  </br> <label>choose user</label> <select id="trainee" name="trainee" width="600px">
+        {% for x in trainee %}
+          <option value= '{{ x.User }}'>{{x.User}}</option>
+        {% endfor %}
+        </select>
+
+</br> <label>choose language</label>
+    <select id="language">
+  <option value="en-US">english</option>
+  <option value="he-IL">hebrew</option>
+  <option value="ar-IL">arabic</option>
+</select></br>
+     <input type="text" id="word" name="word" required>
+                   </br>
+       <button type="button" id="click">save</button>
+
+               </div>
+        </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script>
+$(document).ready(function(){
+
+  $("#click").click(function(){
+      if (document.getElementById("word").value!='')
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "addwords",
+    trainee: document.getElementById("trainee").value,
+    language: document.getElementById("language").value,
+    word:document.getElementById("word").value
+  },
+ function(status){
+   alert(status);
+  });
+  });
+});
+</script>
+
+{% endblock %}
