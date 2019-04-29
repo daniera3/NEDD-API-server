@@ -13,10 +13,10 @@
 <div class="container ">
         <div class="row justify-content-md-center" >
                <div class="col-6">
-
+                <h1 style="color:red"><strong>add words</strong></h1>
                   </br> <label>choose user</label> <select id="trainee" name="trainee" width="600px">
         {% for x in trainee %}
-          <option value= '{{ x.User }}'>{{x.User}}</option>
+          <option style="width: 102%;"   value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
 
@@ -50,6 +50,7 @@ $(document).ready(function(){
   },
  function(status){
    alert(status);
+   word:document.getElementById("word").value='';
   });
   }
   });
