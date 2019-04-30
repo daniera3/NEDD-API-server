@@ -38,9 +38,7 @@ def delete_from_sql(username):
         print("cant delete")
 
 
-
 def login(client, username, password):
-    print(username,password,GetPassword(username,password))
     return client.post('/handle_data', data=dict(
         inputIdMain=username,
         inputPasswordMain=password,
@@ -63,5 +61,6 @@ def sent_to_server_local(client, data, type_request):
     data = json.dumps(temp)
     response = client.post('/'+str(type_request), data=data, follow_redirects=True, headers={"Content-Type": "application/json"} )
     return eval(crypto2.des_dicrypte(eval(response.data), "NEDDNEDD"))
+
 
 

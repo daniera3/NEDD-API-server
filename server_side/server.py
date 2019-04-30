@@ -178,19 +178,22 @@ class AdminAnswersToRequests(Resource):
             if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(DATA['requesting'])or SubFunc.CheckAdmin(DATA['requesting']))and SubFunc.CheckNormal(DATA['user']) :
                 if DATA['insert']:
                     try:
+
                         query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
                         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+
                         if not result['data']:
                             conn.execute("insert into Guider values('{0}','{1}','True')".format(DATA['user'],DATA['requesting']))
                             massge=massge+" and saved"
                         else:
                             conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
                             massge=massge+" and update"
+
                         conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(DATA['requesting'],DATA['user'],))
                     except:
+
                         conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                         return crypto2.des(str({'status':'he can see hes info'}),key)
-                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                 return  crypto2.des(str({'status':massge}),key)
             conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
             return  crypto2.des(str({'status':"bad user Permissions"}),key)

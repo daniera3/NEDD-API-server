@@ -1,12 +1,10 @@
-import website
 import unittest
 import server_side.server as sr
 import test.test_help as th
 import random
 
 
-
-class TestSerchUser(unittest.TestCase):
+class TestSerchUser_server(unittest.TestCase):
     username_admin = None
     password_admin = None
     email_admin = None
@@ -15,6 +13,7 @@ class TestSerchUser(unittest.TestCase):
     email = None
     app = None
     client_server = None
+    client_website = None
 
     def setUp(self):
         self.app = sr.Flask(__name__)
@@ -49,7 +48,7 @@ class TestSerchUser(unittest.TestCase):
                 'requesting': self.username_admin,
                 'user': self.username,
                 'insert': True}
-        th.sent_to_server_local(self.client_server, data, "AdminAnswers")
+        result = th.sent_to_server_local(self.client_server, data, "AdminAnswers")
 
     def tearDown(self):
         data = {'user': self.username}
