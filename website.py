@@ -303,7 +303,19 @@ def handle_data():
         return SaveTest(dict(request.form))
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
+    elif request.form['type_form'] == 'get_stat':
+        return get_student_statistics(request.form["students"])
+    elif request.form['type_form'] == 'getwords':
+        return GetWords(dict(request.form))
+
     return index()
+
+
+def GetWords(data):
+    if 'username' in session:
+        data['User'] = session['username']
+    answer = sent_to_server(json.dumps(data), "GetWord")
+    return json.dumps(answer['data'])
 
 def AddWord(data):
     if 'username' in session:
@@ -425,6 +437,37 @@ def speech_game():
     else:
         flash("must log in", category='error')
         return index()
+
+@app.route('/get_student_result')
+def get_student_result():
+    if 'username' in session:
+        student = get_student()
+        return render_template('/status/manger_features/student_statistics.html',
+                               student=student,
+                               permission=session['permissions'])
+    else:
+        flash("must log in", category='error')
+        return index()
+
+
+def get_student():
+    data={'UserRequsting': session['username']}
+    result = sent_to_server(data, "getstudents")
+    return result['data']
+
+
+def get_student_statistics(students):
+
+    students = json.loads(students)
+    result = ''
+    for user in students:
+        data = {'user_serch': user,
+                'user': session['username']
+                }
+        result = sent_to_server(data, "getStudentsStatistics")
+    # TODO need to build all the data coractly and sent back to the server
+    return str(result['data'])
+
 
 
 if __name__ == '__main__':

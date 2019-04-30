@@ -1,0 +1,67 @@
+{% if session['permissions'] == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif session['permissions'] == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <form>
+                {% for user in student %}
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                <input name="student" type="checkbox" value="{{ user }}" aria-label="Checkbox for following text input">
+                            </div>
+                        </div>
+                        <span class="input-group-text">{{ user }}</span>
+                    </div>
+                {% endfor %}
+                    </form>
+                </div>
+            <div class="col-sm">
+                <button id="get_students_stat" type="button" class="btn btn-info">get student statistic</button>
+            </div>
+            <div class="col-sm">
+                statistic
+            </div>
+        </div>
+    </div>
+
+
+
+     {% endblock %}
+
+
+
+{% block scripts %}
+<script>
+        $(document).ready(function() {
+            $("#get_students_stat").click(function(){
+                var favorite = [];
+                $.each(
+                    $("input[name='student']:checked"), function(){
+                        favorite.push($(this).val());
+                });
+
+
+
+                $.post("{{ url_for('handle_data') }}",
+                {
+                    type_form: "get_stat",
+                    students: JSON.stringify(favorite)
+                 },
+                function(data, status){
+                    alert("Data: " + data + "\nStatus: " + status);
+                });
+            });
+
+        });
+
+    </script>
+     {% endblock %}

@@ -1,6 +1,6 @@
-{% if permission == 'ADMIN' %}
+{% if session['permissions'] == 'ADMIN' %}
     {% extends 'status/admin_login.html' %}
-{% elif permission == 'MANGER' %}
+{% elif session['permissions'] == 'MANGER' %}
     {% extends 'status/parent_login.html' %}
 {% else %}
     {% extends 'status/normal_login.html' %}
@@ -8,8 +8,9 @@
 
 
 
-{% block content %}
 
+{% block content %}
+<label id="massge"></label>
 <div  class="container" >
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -62,12 +63,13 @@
     </br>
 </div>
 
-
-
+      {% endblock %}
+{% block scripts %}
+{{super()}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 <script >
-
+  $(document).ready(function(){
 function editDistance(a, b,leng) {
 //if(leng!='en-US')
 //return '';
@@ -102,12 +104,14 @@ function editDistance(a, b,leng) {
 
   return (1-(distanceMatrix[b.length][a.length]/Math.max(b.length,a.length)))*10;
 }
-
-
-        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
-        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
-function phrases(leng){
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+function Fphrases(leng){
         var phrases1 = [
             'i love',
             'can i call you later',
@@ -133,14 +137,50 @@ function phrases(leng){
             return phrases3
 
 }
+        document.getElementById('good').style.visibility = 'hidden';
+        document.getElementById('bad').style.visibility = 'hidden';
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
         var phrasePara = document.querySelector('.phrase');
         var resultPara = document.querySelector('.result');
         var diagnosticPara = document.querySelector('.output');
-
         var testBtn = document.querySelector('button');
+        $("#mainbutton").click(function(){
+        var phrases={};
+            var leng='en-US';
+            var option = document.getElementById("userReturn").value;
+            if (option!='')
+              leng=option;
+               $.post("{{ url_for('handle_data') }}",
+                        {
+                    type_form: "getwords",
+                    language: leng
+                  },
+                 function(data){
+                   if(isEmpty(data)){
+                   testSpeech(leng);
+                   }
+                     else {
+                    phrases =  JSON.parse(data);
+                    testSpeech(leng);
+                    }
+
+                  });
+                  $(this).css('color','purple');
+                    document.body.style.backgroundColor = 'white';
+
 
         function randomPhrase(leng) {
-            var number = Math.floor(Math.random() * phrases(leng).length);
+            if(isEmpty(phrases))
+            {
+            var number = Math.floor(Math.random() * Fphrases(leng).length);
+             alert("emty");
+            }
+            else
+            {
+            var number = Math.floor(Math.random() * phrases.length);
+            }
             return number;
         }
 
@@ -149,7 +189,13 @@ function phrases(leng){
             testBtn.disabled = true;
             testBtn.textContent = 'Test in progress';
             $("#mainbutton").css('color','purple');
-            var phrase = phrases(leng)[randomPhrase(leng)];
+            if(isEmpty(phrases))
+            {
+            var phrase = Fphrases(leng)[randomPhrase(leng)];
+            }
+            else{
+            var phrase = phrases[randomPhrase(leng)];
+            }
             // To ensure case consistency while checking with the returned output text
             //phrase = phrase.toLowerCase();
             phrasePara.textContent = phrase;
@@ -198,7 +244,7 @@ function phrases(leng){
     line:phrase
   },
   function(status){
-   alert(status);
+  document.getElementById('massge').innerHTML = status;
   });
 
                 console.log('Confidence: ' + event.results[0][0].confidence);
@@ -256,36 +302,11 @@ function phrases(leng){
             }
         }
 
-        $(document).ready(function(){
-        document.getElementById('good').style.visibility = 'hidden';
-        document.getElementById('bad').style.visibility = 'hidden';
-            $("#mainbutton").click(function(){
-                    document.getElementById('good').style.visibility = 'hidden';
-        document.getElementById('bad').style.visibility = 'hidden';
-            var leng='en-US';
-            var option = document.getElementById("userReturn").value;
-            if (option!='')
-              leng=option;
-                 testSpeech(leng);
-                  $(this).css('color','purple');
-                    document.body.style.backgroundColor = 'white';
-
             });
         });
 
 
     </script>
-
-
-
-
-     {% endblock %}
-
-
-
-{% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
 <script >
 window.onload = function () {
     "use strict";
