@@ -2,6 +2,7 @@ import website
 import unittest
 import server_side.server as sr
 import test.test_help as th
+import random
 
 
 
@@ -50,29 +51,42 @@ class TestSerchUser(unittest.TestCase):
                 'insert': True}
         th.sent_to_server_local(self.client_server, data, "AdminAnswers")
 
-
-
-
     def tearDown(self):
         data = {'user': self.username}
-        th.sent_to_server_local(self.client_server, data, "Testsingup")
+        result = th.sent_to_server_local(self.client_server, data, "Testsingup")
+        assert result['status'] == 'success'
         data = {'user': self.username_admin}
-        th.sent_to_server_local(self.client_server, data, "Testsingup")
+        result = th.sent_to_server_local(self.client_server, data, "Testsingup")
+        assert result['status'] == 'success'
 
-    def test_get_student_list(self):
+    def test_server_get_student_list(self):
         data = {'UserRequsting': self.username_admin}
         result = th.sent_to_server_local(self.client_server, data, "getstudents")
-
         assert result['status'] == 'success'
         assert self.username in result['data']
 
-
-
-    def test_get_student_statistic(self):
+    def test_server_get_student_statistic(self):
         data = {'UserRequsting': self.username_admin}
         result = th.sent_to_server_local(self.client_server, data, 'getstudents')
         assert result['status'] == 'success'
         assert self.username in result['data']
+        grade = random.randint(0, 10)
+        data = {'user': self.username,
+                'line': th.id_generator(),
+                'say': th.id_generator(),
+                'grade': grade
+                }
+        for i in range(5):
+            result = th.sent_to_server_local(self.client_server, data, 'stest')
+            assert result['status'] == 'save'
+
+        data = {'user': self.username_admin,
+                'user_search': self.username
+                }
+        result = th.sent_to_server_local(self.client_server, data, 'getStudentsStatistics')
+        assert result['status'] == 'success'
+        assert result['avrage'] == grade
+
 
 
 

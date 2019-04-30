@@ -314,6 +314,9 @@ class DeleteUserTast(Resource):
             conn.execute("DELETE FROM Accounts WHERE User = ?;",(DATA['user'],))
             conn.execute("DELETE FROM LVL WHERE User = ?;",(DATA['user'],))
             conn.execute("DELETE FROM Profile WHERE UserName = ?;",(DATA['user'],))
+            conn.execute("DELETE FROM Guider WHERE user = ?;", (DATA['user'],))
+            conn.execute("DELETE FROM speechTasks WHERE User = ?;", (DATA['user'],))
+            conn.execute("DELETE FROM request WHERE user = ?;", (DATA['user'],))
             return crypto2.des(str({'status':'success'}),key)
         except:
             return crypto2.des(str({'status':'fail'}),key)
@@ -487,18 +490,19 @@ class getStudentsStatistics(Resource):
 
         conn = db_connect.connect()
         try:
-            User = DATA['user']
-            user_Name = DATA['user_serch']
-            if SubFunc.CheckAdmin(user_Name) or SubFunc.CheckManger(user_Name):
+            user = DATA['user']
+            user_name = DATA['user_search']
+            if SubFunc.CheckAdmin(user) or SubFunc.CheckManger(user):
                 try:
-                    temp=[]
-                    query = conn.execute("select avg(grade) avrage from SpeechTasks WHERE  user==?", (str(user_Name),))
+                    temp = []
+                    query = conn.execute("select avg(grade) avrage from SpeechTasks WHERE  user==?", (str(user_name),))
                     for user in query.cursor:
-                        avrage=user.avrage
-                    query = conn.execute("select Line,Say,grade,Date from SpeechTasks WHERE  user==?", (str(user_Name),))
+                        avrage = user[0]
+                    query = conn.execute("select Line,Say,grade,Date from SpeechTasks WHERE  user==?", (str(user_name),))
                     for user in query.cursor:
-                        temp+=[user.Line,user.Say,user.grade,user.Date]
-                    result = {'data': temp,'status':'success','avrage':avrage}
+                        temp += [[user[0], user[1], user[2], user[3]]]
+
+                    result = {'data': temp, 'status': 'success', 'avrage': avrage}
                     return crypto2.des(str(result),key)
                 except:
                     return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
