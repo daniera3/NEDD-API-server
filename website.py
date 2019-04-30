@@ -298,8 +298,18 @@ def handle_data():
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
     elif request.form['type_form'] == 'get_stat':
-        return AddWord(dict(request.form))
+        return AddWord(dict(request.form))#TODO change this for your func
+    elif request.form['type_form'] == 'getwords':
+        return GetWords(dict(request.form))
+
     return index()
+
+
+def GetWords(data):
+    if 'username' in session:
+        data['User'] = session['username']
+    answer = sent_to_server(json.dumps(data), "GetWord")
+    return json.dumps(answer['data'])
 
 def AddWord(data):
     if 'username' in session:

@@ -63,12 +63,13 @@
     </br>
 </div>
 
-
-
+      {% endblock %}
+{% block scripts %}
+{{super()}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 <script >
-
+  $(document).ready(function(){
 function editDistance(a, b,leng) {
 //if(leng!='en-US')
 //return '';
@@ -103,12 +104,14 @@ function editDistance(a, b,leng) {
 
   return (1-(distanceMatrix[b.length][a.length]/Math.max(b.length,a.length)))*10;
 }
-
-
-        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
-        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
-        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
-function phrases(leng){
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+function Fphrases(leng){
         var phrases1 = [
             'i love',
             'can i call you later',
@@ -134,6 +137,12 @@ function phrases(leng){
             return phrases3
 
 }
+
+        var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+        var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+        var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
+
+        var phrases={};
         var phrasePara = document.querySelector('.phrase');
         var resultPara = document.querySelector('.result');
         var diagnosticPara = document.querySelector('.output');
@@ -141,7 +150,10 @@ function phrases(leng){
         var testBtn = document.querySelector('button');
 
         function randomPhrase(leng) {
-            var number = Math.floor(Math.random() * phrases(leng).length);
+            if(isEmpty(phrases))
+            var number = Math.floor(Math.random() * Fphrases(leng).length);
+            else
+            var number = Math.floor(Math.random() * phrases.length);
             return number;
         }
 
@@ -150,7 +162,10 @@ function phrases(leng){
             testBtn.disabled = true;
             testBtn.textContent = 'Test in progress';
             $("#mainbutton").css('color','purple');
-            var phrase = phrases(leng)[randomPhrase(leng)];
+            if(isEmpty(phrases))
+            var phrase = Fphrases(leng)[randomPhrase(leng)];
+            else
+            var phrase = phrases[randomPhrase(leng)];
             // To ensure case consistency while checking with the returned output text
             //phrase = phrase.toLowerCase();
             phrasePara.textContent = phrase;
@@ -256,37 +271,41 @@ function phrases(leng){
                 console.log('SpeechRecognition.onstart');
             }
         }
-
-        $(document).ready(function(){
         document.getElementById('good').style.visibility = 'hidden';
         document.getElementById('bad').style.visibility = 'hidden';
             $("#mainbutton").click(function(){
+
                     document.getElementById('good').style.visibility = 'hidden';
-        document.getElementById('bad').style.visibility = 'hidden';
+                    document.getElementById('bad').style.visibility = 'hidden';
             var leng='en-US';
             var option = document.getElementById("userReturn").value;
             if (option!='')
               leng=option;
+               $.post("{{ url_for('handle_data') }}",
+                        {
+                    type_form: "getwords",
+                    language: leng
+                  },
+                 function(data){
+                    alert(data);
+                   if(isEmpty(data)){
+                   ;
+                   }
+                     else {
+                    phrases = JSON.parse(data);
+                    }
+
+                  });
                  testSpeech(leng);
                   $(this).css('color','purple');
                     document.body.style.backgroundColor = 'white';
+
 
             });
         });
 
 
     </script>
-
-
-
-
-     {% endblock %}
-
-
-
-{% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
 <script >
 window.onload = function () {
     "use strict";
