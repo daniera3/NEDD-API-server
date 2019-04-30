@@ -27,7 +27,7 @@ class TestSerchUser(unittest.TestCase):
                 'Email': self.email_admin}
 
         th.sent_to_server_local(self.client_server, data, "singup")
-        '''
+
         data = {'User': 'admin', 'UserUpdate': self.username_admin, 'Permissions': "Admin"}
         th.sent_to_server_local(self.client_server, data, "SetPermissions")
 
@@ -49,7 +49,7 @@ class TestSerchUser(unittest.TestCase):
                 'user': self.username,
                 'insert': True}
         th.sent_to_server_local(self.client_server, data, "AdminAnswers")
-        '''
+
 
 
 
@@ -59,25 +59,24 @@ class TestSerchUser(unittest.TestCase):
         data = {'user': self.username_admin}
         th.sent_to_server_local(self.client_server, data, "Testsingup")
 
+    def test_get_student_list(self):
+        data = {'UserRequsting': self.username_admin}
+        result = th.sent_to_server_local(self.client_server, data, "getstudents")
 
+        assert result['status'] == 'success'
+        assert self.username in result['data']
 
 
 
     def test_get_student_statistic(self):
         data = {'UserRequsting': self.username_admin}
         result = th.sent_to_server_local(self.client_server, data, 'getstudents')
-
-        assert 1==2
-
-'''
-    def test_get_student_list(self):
-        data = {'UserRequsting': self.username_admin}
-        result = website.sent_to_server(data, "getstudents")
-
-
         assert result['status'] == 'success'
         assert self.username in result['data']
-'''
+
+
+
+
 
 
 

@@ -6,7 +6,7 @@ import crypto2
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 
-db_connect = create_engine('sqlite:///nedd.db')
+db_connect = create_engine('sqlite:///serverDB.db')
 app = Flask(__name__)
 api = Api(app)
 key="NEDDNEDD"
@@ -128,12 +128,9 @@ class singup(Resource):
             Name = DATA['User']
             Password = DATA['Password']
             Perm = DATA['perm']
-
             if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0 or Perm not in ["normal","Normal","mannger","Manger"]:
                 return crypto2.des(str({'status':'hacker'}),key)
-            print(Perm)
-            query = conn.execute("select * from Accounts WHERE User=={0}".format(Name))
-            print("got har:")
+            query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             if not result['data']:
         	    conn.execute("insert into Accounts values('{0}','{1}','{2}','{3}')".format(Name,Password,Perm,'True'))
