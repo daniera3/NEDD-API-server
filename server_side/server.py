@@ -6,7 +6,7 @@ import crypto2
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 
-db_connect = create_engine('sqlite:///nedd.db')
+db_connect = create_engine('sqlite:///serverDB.db')
 app = Flask(__name__)
 api = Api(app)
 key="NEDDNEDD"
@@ -458,6 +458,7 @@ class AddWord(Resource):
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
+
 class getStudents(Resource):
     def post(self):
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
@@ -481,7 +482,9 @@ class getStudents(Resource):
 
 class getStudentsStatistics(Resource):
     def post(self):
+
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+
         conn = db_connect.connect()
         try:
             User = DATA['user']

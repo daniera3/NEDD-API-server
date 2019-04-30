@@ -460,7 +460,7 @@ def get_student_statistics(students):
                 }
         result = sent_to_server(data, "getStudentsStatistics")
     # TODO need to build all the data coractly and sent back to the server
-    return str(result['data'])
+    return str(result['status'])
 
 
 

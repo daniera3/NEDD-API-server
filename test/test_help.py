@@ -2,6 +2,7 @@ import random
 import string
 import json,requests
 from website import sent_to_server,db_connect,GetPassword
+import server_side.crypto2 as crypto2
 
 
 
@@ -53,7 +54,14 @@ def update_permission_in_sql(username, authority):
     return sent_to_server(data, "SetPermissions")
 
 
-
 def logout(client):
     return client.get('/logout', follow_redirects=True)
+
+
+def sent_to_server_local(client, data, type_request):
+    temp = {"data": crypto2.des(str(data), "NEDDNEDD")}
+    data = json.dumps(temp)
+    response = client.post('/'+str(type_request), data=data, follow_redirects=True, headers={"Content-Type": "application/json"} )
+    return eval(crypto2.des_dicrypte(eval(response.data), "NEDDNEDD"))
+
 
