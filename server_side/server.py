@@ -128,9 +128,12 @@ class singup(Resource):
             Name = DATA['User']
             Password = DATA['Password']
             Perm = DATA['perm']
+
             if len(Name)<=1 or len(Password)<6 or Name.count("select")!=0 or Perm not in ["normal","Normal","mannger","Manger"]:
                 return crypto2.des(str({'status':'hacker'}),key)
-            query = conn.execute("select * from Accounts WHERE User=?", (str(Name),))
+            print(Perm)
+            query = conn.execute("select * from Accounts WHERE User=={0}".format(Name))
+            print("got har:")
             result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
             if not result['data']:
         	    conn.execute("insert into Accounts values('{0}','{1}','{2}','{3}')".format(Name,Password,Perm,'True'))
@@ -458,6 +461,7 @@ class AddWord(Resource):
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
+
 class getStudents(Resource):
     def post(self):
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
@@ -481,7 +485,9 @@ class getStudents(Resource):
 
 class getStudentsStatistics(Resource):
     def post(self):
+
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+
         conn = db_connect.connect()
         try:
             User = DATA['user']
