@@ -10,7 +10,7 @@
 
 
 {% block content %}
-
+<label id="massge"></label>
 <div  class="container" >
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -137,23 +137,50 @@ function Fphrases(leng){
             return phrases3
 
 }
-
+        document.getElementById('good').style.visibility = 'hidden';
+        document.getElementById('bad').style.visibility = 'hidden';
         var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
         var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
         var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent;
-
-        var phrases={};
         var phrasePara = document.querySelector('.phrase');
         var resultPara = document.querySelector('.result');
         var diagnosticPara = document.querySelector('.output');
-
         var testBtn = document.querySelector('button');
+        $("#mainbutton").click(function(){
+        var phrases={};
+            var leng='en-US';
+            var option = document.getElementById("userReturn").value;
+            if (option!='')
+              leng=option;
+               $.post("{{ url_for('handle_data') }}",
+                        {
+                    type_form: "getwords",
+                    language: leng
+                  },
+                 function(data){
+                   if(isEmpty(data)){
+                   testSpeech(leng);
+                   }
+                     else {
+                    phrases =  JSON.parse(data);
+                    testSpeech(leng);
+                    }
+
+                  });
+                  $(this).css('color','purple');
+                    document.body.style.backgroundColor = 'white';
+
 
         function randomPhrase(leng) {
             if(isEmpty(phrases))
+            {
             var number = Math.floor(Math.random() * Fphrases(leng).length);
+             alert("emty");
+            }
             else
+            {
             var number = Math.floor(Math.random() * phrases.length);
+            }
             return number;
         }
 
@@ -163,9 +190,12 @@ function Fphrases(leng){
             testBtn.textContent = 'Test in progress';
             $("#mainbutton").css('color','purple');
             if(isEmpty(phrases))
+            {
             var phrase = Fphrases(leng)[randomPhrase(leng)];
-            else
+            }
+            else{
             var phrase = phrases[randomPhrase(leng)];
+            }
             // To ensure case consistency while checking with the returned output text
             //phrase = phrase.toLowerCase();
             phrasePara.textContent = phrase;
@@ -214,7 +244,7 @@ function Fphrases(leng){
     line:phrase
   },
   function(status){
-   alert(status);
+  document.getElementById('massge').innerHTML = status;
   });
 
                 console.log('Confidence: ' + event.results[0][0].confidence);
@@ -271,35 +301,6 @@ function Fphrases(leng){
                 console.log('SpeechRecognition.onstart');
             }
         }
-        document.getElementById('good').style.visibility = 'hidden';
-        document.getElementById('bad').style.visibility = 'hidden';
-            $("#mainbutton").click(function(){
-
-                    document.getElementById('good').style.visibility = 'hidden';
-                    document.getElementById('bad').style.visibility = 'hidden';
-            var leng='en-US';
-            var option = document.getElementById("userReturn").value;
-            if (option!='')
-              leng=option;
-               $.post("{{ url_for('handle_data') }}",
-                        {
-                    type_form: "getwords",
-                    language: leng
-                  },
-                 function(data){
-                    alert(data);
-                   if(isEmpty(data)){
-                   ;
-                   }
-                     else {
-                    phrases = JSON.parse(data);
-                    }
-
-                  });
-                 testSpeech(leng);
-                  $(this).css('color','purple');
-                    document.body.style.backgroundColor = 'white';
-
 
             });
         });
