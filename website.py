@@ -298,7 +298,7 @@ def handle_data():
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
     elif request.form['type_form'] == 'get_stat':
-        return AddWord(dict(request.form))#TODO change this for your func
+        return get_student_statistics(request.form["students"])
     elif request.form['type_form'] == 'getwords':
         return GetWords(dict(request.form))
 
@@ -445,9 +445,23 @@ def get_student_result():
 
 
 def get_student():
-    data={'UserRequsting':session['username']}
-    result = sent_to_server(data,"getstudents")
+    data={'UserRequsting': session['username']}
+    result = sent_to_server(data, "getstudents")
     return result['data']
+
+
+def get_student_statistics(students):
+
+    students = json.loads(students)
+    result = ''
+    for user in students:
+        data = {'user_serch': user,
+                'user': session['username']
+                }
+        result = sent_to_server(data, "getStudentsStatistics")
+    # TODO need to build all the data coractly and sent back to the server
+    return str(result['data'])
+
 
 
 if __name__ == '__main__':

@@ -50,15 +50,15 @@
                 });
 
 
+
                 $.post("{{ url_for('handle_data') }}",
                 {
                     type_form: "get_stat",
-                    city: "Duckburg"
+                    students: JSON.stringify(favorite)
                  },
                 function(data, status){
                     alert("Data: " + data + "\nStatus: " + status);
                 });
-                alert("done");
             });
 
         });
