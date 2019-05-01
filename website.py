@@ -448,6 +448,20 @@ def get_student_result():
         return index()
 
 
+@app.route('/get_my_result')
+def get_my_result():
+    if 'username' in session:
+        temp = json.load(get_student_statistics([session['username']]))
+
+        return render_template('/status/normal_features/my_statistics.html',
+                               avrg=temp[2],
+                               results=temp[1],
+                               permission=session['permissions'])
+    else:
+        flash("must log in", category='error')
+        return index()
+
+
 def get_student():
     data = {'UserRequsting': session['username']}
     result = sent_to_server(data, "getstudents")
