@@ -2,6 +2,8 @@ import website
 import unittest
 import test.test_help as th
 from werkzeug.security import generate_password_hash
+import json
+import random
 
 
 class TestStatisticWebsite(unittest.TestCase):
@@ -66,6 +68,7 @@ class TestStatisticWebsite(unittest.TestCase):
 
     def tearDown(self):
         print("start tear down")
+        th.logout(self.client_website)
         data = {'user': self.username}
         result = website.sent_to_server(data, "Testsingup")
         assert result['status'] == 'success'
@@ -82,4 +85,34 @@ class TestStatisticWebsite(unittest.TestCase):
 
         self.assertIn(bytes(self.username_admin, "utf-8"), result.data)
         print("login successfully")
+        result = self.client_website.get('/get_student_result')
+        self.assertIn(bytes(self.username, "utf-8"), result.data)
+        self.assertNotIn(b'must log in', result.data)
+        print("the student is in the parent page")
+
+        grade = random.randint(0, 10)
+        data = {'user': self.username,
+                'line': th.id_generator(),
+                'say': th.id_generator(),
+                'grade': grade
+                }
+        for i in range(5):
+            result = th.sent_to_server(data, 'stest')
+            assert result['status'] == 'save'
+        print("saved some statistics")
+
+
+        result=self.client_website.post('/handle_data', data=dict(
+                                        type_form='get_stat',
+                                        students=json.dumps([self.username])
+                                        )
+                                        , follow_redirects=True)
+
+        result = eval(result.data)
+        print(result)
+        self.assertEqual(result[0][0],self.username,"user is not corract")
+        self.assertEqual(result[0][2], grade, "grade is not corract")
+        print("result from server is corract")
+
+       
 

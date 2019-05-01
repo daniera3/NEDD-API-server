@@ -300,6 +300,7 @@ def handle_data():
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
     elif request.form['type_form'] == 'get_stat':
+
         return get_student_statistics(request.form["students"])
     elif request.form['type_form'] == 'getwords':
         return GetWords(dict(request.form))
@@ -455,13 +456,16 @@ def get_student():
 
 def get_student_statistics(students):
     students = json.loads(students)
-    result = ''
     for user in students:
-        data = {'user_serch': user,
+        data = {'user_search': user,
                 'user': session['username']
                 }
         result = sent_to_server(data, "getStudentsStatistics")
-    return str(result['status'])
+        if result['status'] != 'success':
+            return index()
+        temp = [user, result['data'], result['avrage']]
+        temp2 = [temp]
+    return json.dumps(temp2)
 
 
 
