@@ -1,0 +1,96 @@
+{% if session['permissions'] == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif session['permissions'] == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+{% block content %}
+<meta id="my-data" data-name="my_stat" data-other="{{ data|safe }}">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-sm">
+
+                <spam class="badge badge-primary">
+                                    {{ user|safe }} : stastics
+                </spam>
+                <br>
+                    my avrage : {{ avarage|safe }}
+                <div class="col-sm" id="static_result">
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+
+     {% endblock %}
+
+
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
+
+<script>
+    $(document).ready(function() {
+
+        var data= {{ data|safe }} ;
+        var arrayLength = data.length;
+
+        for (var i = 0; i < arrayLength; i++) {
+            var elementsToAdd = document.createElement('canvas');
+            var results=[];
+            for (var j = 0; j < arrayLength; j++) {
+                results.push(data[j][2])
+            }
+            var dataSet=[]
+            for (var j = 0; j < 11; j++) {
+                dataSet.push(0);
+                    for(var k=0;k<results.length;k++){
+                        if (results[k]==j)
+                            dataSet[j]++;
+                    }
+            }
+        var ctx = elementsToAdd.getContext('2d');
+        var chart = new Chart(ctx, {
+                                    // The type of chart we want to create
+                                    type: "doughnut",
+
+                                    // The data for our dataset
+                                    data: {
+                                    backgroundColor:'rgb(255, 0, 0)',
+                                        labels: [0,1,2,3,4,5,6,7,8,9,10],
+                                        datasets: [{
+                                            label: "statistics"+data[i][0],
+                                            backgroundColor: ['rgb(255, 0, 0)','rgb(255, 51, 51)',
+                                                              'rgb(255, 153, 153)','rgb(255, 190, 190)',
+                                                                'rgb(255, 178, 102)','rgb(255, 255, 0)',
+                                                                'rgb(255, 255, 153)','rgb(204, 255, 153)',
+                                                                'rgb(153, 255, 51)','rgb(128, 255, 0)','rgb(0, 255, 0)',],
+                                            borderColor: 'rgb(255, 99, 132)',
+                                            data: dataSet
+                                        }]
+                                    },
+
+                            // Configuration options go here
+                                    options: {}
+                                });
+
+
+
+        }
+                                var para = document.createElement("canter");
+
+
+                                document.getElementById("static_result").append(elementsToAdd);
+    });
+
+    </script>
+     {% endblock %}

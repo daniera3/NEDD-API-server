@@ -451,11 +451,18 @@ def get_student_result():
 @app.route('/get_my_result')
 def get_my_result():
     if 'username' in session:
-        temp = json.load(get_student_statistics([session['username']]))
-
+        session['username']
+        data = {'user_search': session['username'],
+                'user': session['username']
+                }
+        result = sent_to_server(data, "getStudentsStatistics")
+        if result['status'] != 'success':
+            return index()
         return render_template('/status/normal_features/my_statistics.html',
-                               avrg=temp[2],
-                               results=temp[1],
+                               user=session['username'],
+                               avarage=result['avrage'],
+
+                               data=json.dumps(result['data']),
                                permission=session['permissions'])
     else:
         flash("must log in", category='error')
@@ -469,6 +476,7 @@ def get_student():
 
 
 def get_student_statistics(students):
+    temp2 = []
     students = json.loads(students)
     for user in students:
         data = {'user_search': user,
@@ -478,7 +486,7 @@ def get_student_statistics(students):
         if result['status'] != 'success':
             return index()
         temp = [user, result['data'], result['avrage']]
-        temp2 = [temp]
+        temp2 += [temp]
     return json.dumps(temp2)
 
 

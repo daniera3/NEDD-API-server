@@ -114,5 +114,6 @@ class TestStatisticWebsite(unittest.TestCase):
         self.assertEqual(result[0][2], grade, "grade is not corract")
         print("result from server is corract")
 
+
        
 

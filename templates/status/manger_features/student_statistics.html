@@ -45,6 +45,7 @@
 <script>
         $(document).ready(function() {
             $("#get_students_stat").click(function(){
+                 document.getElementById("static_result").innerHTML="";
                 var favorite = [];
                 $.each(
                     $("input[name='student']:checked"), function(){
@@ -65,7 +66,6 @@
                     else{
                         data=JSON.parse(data);
                         var arrayLength = data.length;
-;
                           for (var i = 0; i < arrayLength; i++) {
                                 var elementsToAdd = document.createElement('canvas');
 

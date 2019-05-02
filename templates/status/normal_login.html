@@ -8,7 +8,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{{ url_for('free_speaking') }}">Free speaking</a>
             <a class="dropdown-item" href="{{ url_for('speech_game') }}">Speech game</a>
-
+           <a class="dropdown-item" href="{{ url_for('get_my_result') }}">show my statistics </a>
         </div>
     </li>
 {% endblock %}
@@ -27,6 +27,7 @@
         <li> <a class="dropdown-item" href="{{ url_for('changePassword_page') }}">change password</a></li>
         <li><a class="dropdown-item" href="{{ url_for('Updateprofile_page') }}">update profile </a></li>
         <li><a class="dropdown-item" href="{{ url_for('Showprofile_page') }}">show profile </a></li>
+
     </ul>
     <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('logout') }}">logoff</a>
 </div>
