@@ -9,7 +9,7 @@
 
 
 {% block content %}
-<form class="pure-form" method="post"  action="{{ url_for('handle_data') }}">
+
 <div  class="container " style="font-size:x-large">
         <div class="row justify-content-md-center" >
                <div class="col-4">
@@ -18,23 +18,22 @@
                    <h1 style="font-size:25px;color:green"> Your opinion is important to us </h1>
 
                    </br><label>choose subject</label>
-                   <select id="userReturn">
+                   <select name="select" id="select">
 
   <option value="feedback">feedback</option>
   <option value="bug">report a bug</option>
 
 
 </select></br>
-<input type="hidden" name="type_form" class="form-control" value="UpdateProfile">
 <textarea id="feedback_id" name="feedback_name" type="text"  > </textarea>
   </br>
-                   <button class="btn btn-outline-info " id="submit" type="submit">send</button>
+                   <button class="btn btn-outline-info " id="submit" type="button">send</button>
 
                </div>
         </div>
 </div>
 
-</form>
+
 
 
      {% endblock %}
@@ -59,7 +58,28 @@ textarea {
 
 
 
+{% block scripts %}
+{{super()}}
+<script>
+$(document).ready(function(){
+  $("#submit").click(function(){
+     if (document.getElementById("feedback_id").value!=''){
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "feedback",
+    select: document.getElementById("select").value,
+    text: document.getElementById("feedback_id").value
+  },
+ function(status){
+   alert(status);
+   document.getElementById("feedback_id").value='';
+  });
+  }
+  });
+});
+</script>
 
+{% endblock %}
 
 
 
