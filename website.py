@@ -221,8 +221,8 @@ def Sub_login(user_name, password):
 
 def login(user_name, password):
     response = Sub_login(user_name, password)
-    if response['status'] == "success":
-        if user_name=='admin':
+    if response['status'] == "success" :
+        if user_name == 'admin' or app.config['TESTING'] == True:
             session['username'] = user_name
             session['permissions'] = response['permissions'].upper()
             return index()
@@ -269,6 +269,8 @@ def register(user, password, permissions,Email):
             data = {'user': user}
             sent_to_server(data, "Testsingup")
             return redirect(url_for('register_page'))
+        if app.config['TESTING'] == True:
+            return True
         session['username'] = user
         session['permissions'] = permissions.upper()
         return index()
@@ -304,6 +306,7 @@ def handle_data():
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
     elif request.form['type_form'] == 'get_stat':
+
         return get_student_statistics(request.form["students"])
     elif request.form['type_form'] == 'getwords':
         return GetWords(dict(request.form))
@@ -438,6 +441,7 @@ def speech_game():
         flash("must log in", category='error')
         return index()
 
+
 @app.route('/get_student_result')
 def get_student_result():
     if 'username' in session:
@@ -450,23 +454,38 @@ def get_student_result():
         return index()
 
 
+@app.route('/get_my_result')
+def get_my_result():
+    if 'username' in session:
+        temp = json.load(get_student_statistics([session['username']]))
+
+        return render_template('/status/normal_features/my_statistics.html',
+                               avrg=temp[2],
+                               results=temp[1],
+                               permission=session['permissions'])
+    else:
+        flash("must log in", category='error')
+        return index()
+
+
 def get_student():
-    data={'UserRequsting': session['username']}
+    data = {'UserRequsting': session['username']}
     result = sent_to_server(data, "getstudents")
     return result['data']
 
 
 def get_student_statistics(students):
-
     students = json.loads(students)
-    result = ''
     for user in students:
-        data = {'user_serch': user,
+        data = {'user_search': user,
                 'user': session['username']
                 }
         result = sent_to_server(data, "getStudentsStatistics")
-    # TODO need to build all the data coractly and sent back to the server
-    return str(result['data'])
+        if result['status'] != 'success':
+            return index()
+        temp = [user, result['data'], result['avrage']]
+        temp2 = [temp]
+    return json.dumps(temp2)
 
 
 

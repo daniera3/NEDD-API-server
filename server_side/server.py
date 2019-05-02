@@ -6,7 +6,7 @@ import crypto2
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 
-db_connect = create_engine('sqlite:///nedd.db')
+db_connect = create_engine('sqlite:///serverDB.db')
 app = Flask(__name__)
 api = Api(app)
 key="NEDDNEDD"
@@ -178,19 +178,22 @@ class AdminAnswersToRequests(Resource):
             if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(DATA['requesting'])or SubFunc.CheckAdmin(DATA['requesting']))and SubFunc.CheckNormal(DATA['user']) :
                 if DATA['insert']:
                     try:
+
                         query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
                         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+
                         if not result['data']:
                             conn.execute("insert into Guider values('{0}','{1}','True')".format(DATA['user'],DATA['requesting']))
                             massge=massge+" and saved"
                         else:
                             conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
                             massge=massge+" and update"
+
                         conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(DATA['requesting'],DATA['user'],))
                     except:
+
                         conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                         return crypto2.des(str({'status':'he can see hes info'}),key)
-                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                 return  crypto2.des(str({'status':massge}),key)
             conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
             return  crypto2.des(str({'status':"bad user Permissions"}),key)
@@ -314,6 +317,9 @@ class DeleteUserTast(Resource):
             conn.execute("DELETE FROM Accounts WHERE User = ?;",(DATA['user'],))
             conn.execute("DELETE FROM LVL WHERE User = ?;",(DATA['user'],))
             conn.execute("DELETE FROM Profile WHERE UserName = ?;",(DATA['user'],))
+            conn.execute("DELETE FROM Guider WHERE user = ?;", (DATA['user'],))
+            conn.execute("DELETE FROM speechTasks WHERE User = ?;", (DATA['user'],))
+            conn.execute("DELETE FROM request WHERE user = ?;", (DATA['user'],))
             return crypto2.des(str({'status':'success'}),key)
         except:
             return crypto2.des(str({'status':'fail'}),key)
@@ -458,6 +464,7 @@ class AddWord(Resource):
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
+
 class getStudents(Resource):
     def post(self):
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
@@ -481,21 +488,24 @@ class getStudents(Resource):
 
 class getStudentsStatistics(Resource):
     def post(self):
+
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+
         conn = db_connect.connect()
         try:
-            User = DATA['user']
-            user_Name = DATA['user_serch']
-            if SubFunc.CheckAdmin(user_Name) or SubFunc.CheckManger(user_Name):
+            user = DATA['user']
+            user_name = DATA['user_search']
+            if SubFunc.CheckAdmin(user) or SubFunc.CheckManger(user):
                 try:
-                    temp=[]
-                    query = conn.execute("select avg(grade) avrage from SpeechTasks WHERE  user==?", (str(user_Name),))
+                    temp = []
+                    query = conn.execute("select avg(grade) avrage from SpeechTasks WHERE  user==?", (str(user_name),))
                     for user in query.cursor:
-                        avrage=user.avrage
-                    query = conn.execute("select Line,Say,grade,Date from SpeechTasks WHERE  user==?", (str(user_Name),))
+                        avrage = user[0]
+                    query = conn.execute("select Line,Say,grade,Date from SpeechTasks WHERE  user==?", (str(user_name),))
                     for user in query.cursor:
-                        temp+=[user.Line,user.Say,user.grade,user.Date]
-                    result = {'data': temp,'status':'success','avrage':avrage}
+                        temp += [[user[0], user[1], user[2], user[3]]]
+
+                    result = {'data': temp, 'status': 'success', 'avrage': avrage}
                     return crypto2.des(str(result),key)
                 except:
                     return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)

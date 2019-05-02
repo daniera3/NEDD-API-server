@@ -10,7 +10,6 @@ import unittest
 @pytest.fixture
 def client():
     db_fd, app.config['DATABASE'] = tempfile.mkstemp()
-    app.config['TESTING'] = True
     client = app.test_client()
 
     yield client
