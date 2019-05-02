@@ -1,0 +1,91 @@
+{% if permission == 'ADMIN' %}
+    {% extends 'status/admin_login.html' %}
+{% elif permission == 'MANGER' %}
+    {% extends 'status/parent_login.html' %}
+{% else %}
+    {% extends 'status/normal_login.html' %}
+{%endif%}
+
+
+
+{% block content %}
+
+<div  class="container " style="font-size:x-large">
+        <div class="row justify-content-md-center" >
+               <div class="col-4">
+                   <h1><strong style="font-size:60px;color:purple">Feedback</strong></h1>
+               </br>
+                   <h1 style="font-size:25px;color:green"> Your opinion is important to us </h1>
+
+                   </br><label>choose subject</label>
+                   <select name="select" id="select">
+
+  <option value="feedback">feedback</option>
+  <option value="bug">report a bug</option>
+
+
+</select></br>
+<textarea id="feedback_id" name="feedback_name" type="text"  > </textarea>
+  </br>
+                   <button class="btn btn-outline-info " id="submit" type="button">send</button>
+
+               </div>
+        </div>
+</div>
+
+
+
+
+     {% endblock %}
+
+{% block style %}
+{{super()}}
+<style>
+textarea {
+  width: 100%;
+  height: 100%;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+
+}
+</style>
+
+
+ {% endblock %}
+
+
+
+{% block scripts %}
+{{super()}}
+<script>
+$(document).ready(function(){
+  $("#submit").click(function(){
+     if (document.getElementById("feedback_id").value!=''){
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "feedback",
+    select: document.getElementById("select").value,
+    text: document.getElementById("feedback_id").value
+  },
+ function(status){
+   alert(status);
+   document.getElementById("feedback_id").value='';
+  });
+  }
+  });
+});
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

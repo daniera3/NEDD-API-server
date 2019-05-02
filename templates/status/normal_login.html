@@ -15,9 +15,16 @@
 
 
 {% block profile %}
+
+
+
 {{super()}}
 
+<ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('Feedback_page') }}">Report <span class="sr-only">(current)</span></a>
 
+            </li>
 <div class="dropdown">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         {{ session['username'] }}
@@ -31,6 +38,7 @@
     </ul>
     <a class="btn btn-outline-success my-2 my-sm-0"  href="{{ url_for('logout') }}">logoff</a>
 </div>
+</ul>
 
 {% endblock %}
 

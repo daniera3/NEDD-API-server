@@ -60,6 +60,12 @@ def index():
 def register_page():
     return render_template('register.html')
 
+@app.route('/Feedback')
+def Feedback_page():
+    return render_template('/status/normal_features/Feedback.html')
+
+
+
 @app.route('/UserControler')
 def UserControler():
     data = {}
@@ -300,8 +306,9 @@ def handle_data():
     elif request.form['type_form'] == 'addwords':
         return AddWord(dict(request.form))
     elif request.form['type_form'] == 'get_stat':
-
         return get_student_statistics(request.form["students"])
+    elif request.form['type_form'] == 'feedback':
+         return sendmail(request.form['select'],'neddproject@gmail.com',request.form['text'])
     elif request.form['type_form'] == 'getwords':
         return GetWords(dict(request.form))
 
