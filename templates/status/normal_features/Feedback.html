@@ -1,10 +1,11 @@
-{% if permission == 'ADMIN' %}
+{% if session['permissions'] == 'ADMIN' %}
     {% extends 'status/admin_login.html' %}
-{% elif permission == 'MANGER' %}
+{% elif session['permissions'] == 'MANGER' %}
     {% extends 'status/parent_login.html' %}
 {% else %}
     {% extends 'status/normal_login.html' %}
 {%endif%}
+
 
 
 
@@ -35,7 +36,6 @@
 
 
 
-
      {% endblock %}
 
 {% block style %}
@@ -61,6 +61,7 @@ textarea {
 {% block scripts %}
 {{super()}}
 <script>
+ document.getElementById("feedback_id").value='';
 $(document).ready(function(){
   $("#submit").click(function(){
      if (document.getElementById("feedback_id").value!=''){
@@ -74,6 +75,8 @@ $(document).ready(function(){
    alert(status);
    document.getElementById("feedback_id").value='';
   });
+  }
+  else{alert("Message can't be empty");
   }
   });
 });

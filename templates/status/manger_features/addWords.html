@@ -14,13 +14,13 @@
         <div class="row justify-content-md-center" >
                <div class="col-6">
                 <h1 style="color:red"><strong>add words</strong></h1>
-                  </br> <label>choose user</label> <select id="trainee" name="trainee" width="600px">
+                  </br> <label>choose user</label> &nbsp; <select id="trainee" name="trainee" width="600px">
         {% for x in trainee %}
           <option style="width: 102%;"   value= '{{ x.User }}'>{{x.User}}</option>
         {% endfor %}
         </select>
 
-</br> <label>choose language</label>
+</br> <label>choose language</label>&nbsp;
     <select id="language">
   <option value="en-US">english</option>
   <option value="he-IL">hebrew</option>
@@ -29,16 +29,24 @@
      <input type="text" id="word" name="word" required>
                    </br>
        <button type="button" id="button">save</button>
-
+                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <input type="button" value = "delete all" id="delete"></input>
                </div>
         </div>
 </div>
+
+
+
 {% endblock %}
 
 {% block scripts %}
 {{super()}}
 <script>
+
+
+document.getElementById("word").value='';
 $(document).ready(function(){
+
   $("#button").click(function(){
      if (document.getElementById("word").value!=''){
     $.post("{{ url_for('handle_data') }}",
@@ -54,6 +62,24 @@ $(document).ready(function(){
   });
   }
   });
+
+
+    $("#delete").click(function(){
+    var retVal = confirm("Do you want to continue ?");
+     if (retVal == true ){
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "deleteAll",
+    trainee: document.getElementById("trainee").value,
+    language: document.getElementById("language").value
+  },
+ function(status){
+   alert(status);
+   document.getElementById("word").value='';
+  });
+  }
+  });
+
 });
 </script>
 
