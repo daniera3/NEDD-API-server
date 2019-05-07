@@ -514,6 +514,18 @@ class getStudentsStatistics(Resource):
             return  crypto2.des(str({'status':'fail'}),key)
 
 
+class restartUserStatistics(Resource):
+    def post(self):
+        try:
+            DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
+            conn = db_connect.connect()
+            conn.execute("DELETE FROM SpeechTasks WHERE User = ?;",(DATA['User'],))
+            return crypto2.des(str({'status':'success'}),key)
+        except:
+            return crypto2.des(str({'status':'fail'}),key)
+
+
+
 
 api.add_resource(getStudents,  '/getstudents',methods={'POST','GET'})
 api.add_resource(getStudentsStatistics,  '/getStudentsStatistics',methods={'POST','GET'})
@@ -539,6 +551,6 @@ api.add_resource(GetUsersPerPermissions, '/GetUsersPerPermissions',methods={'POS
 api.add_resource(RequestPermissions, '/RequestPermissions',methods={'POST'})
 api.add_resource(ReturnTrainee, '/trainee',methods={'POST'})
 api.add_resource(AddWord, '/addword',methods={'POST'})
-
+api.add_resource(restartUserStatistics, '/restartStatistics',methods={'POST'})
 if __name__ == '__main__':
      app.run()

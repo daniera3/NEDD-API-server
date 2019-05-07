@@ -23,7 +23,9 @@
 
 
                 </div>
-
+                 <button type="button" class="btn btn-default btn-lg" id="restart-statistics">
+                     Restart my statistics
+                 </button>
             </div>
 
         </div>
@@ -93,4 +95,21 @@
     });
 
     </script>
+<script>
+
+$(document).ready(function(){
+  $("#restart-statistics").click(function(){
+
+    $.post("{{ url_for('handle_data') }}",
+  {
+    type_form: "restart-statistics"
+  },
+ function(status){
+location.reload();
+  });
+
+  });
+});
+
+</script>
      {% endblock %}

@@ -311,8 +311,17 @@ def handle_data():
          return sendmail(request.form['select'],'neddproject@gmail.com',request.form['text'])
     elif request.form['type_form'] == 'getwords':
         return GetWords(dict(request.form))
-
+    elif request.form['type_form'] == 'restart-statistics':
+        return restartUserStatistics()
     return index()
+
+def restartUserStatistics():
+    if 'username' in session:
+        data['User'] = session['username']
+    answer = sent_to_server(json.dumps(data), "restartStatistics")
+    return json.dumps(answer['data'])
+
+
 
 
 def GetWords(data):
