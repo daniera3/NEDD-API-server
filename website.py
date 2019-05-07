@@ -316,6 +316,7 @@ def handle_data():
     return index()
 
 def restartUserStatistics():
+    data = {}
     if 'username' in session:
         data['User'] = session['username']
     answer = sent_to_server(json.dumps(data), "restartStatistics")
