@@ -23,7 +23,7 @@
 
 
                 </div>
-                 <button type="button" class="btn btn-default btn-lg" id="restart-statistics">
+                 <button type="button" class="btn btn-default btn-lg" id="restartstatistics">
                      Restart my statistics
                  </button>
             </div>
@@ -38,6 +38,7 @@
 
 
 {% block scripts %}
+{{super()}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
 
 <script>
@@ -98,16 +99,15 @@
 <script>
 
 $(document).ready(function(){
-  $("#restart-statistics").click(function(){
-
+  $("#restartstatistics").click(function(){
     $.post("{{ url_for('handle_data') }}",
   {
-    type_form: "restart-statistics"
+    type_form: "restartStatistics"
   },
  function(status){
-location.reload();
+   alert(status);
+   location.reload();
   });
-
   });
 });
 
