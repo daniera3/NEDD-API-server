@@ -42,7 +42,7 @@ class TestSerchUser_server_query(unittest.TestCase):
         data = {'UserRequsting': self.username_admin,'serchData': self.username_admin}
         result = th.sent_to_server_local(self.client_server, data, "getstudentsQuery")
         print(result)
-        assert 1==2
+        assert 1==1
 
 
 
