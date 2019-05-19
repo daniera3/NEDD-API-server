@@ -39,8 +39,18 @@ pipeline {
      post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
-            junit '**/nosetests.xml'
-	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
+	step([$class: 'CoberturaPublisher',
+                                   autoUpdateHealth: false,
+                                   autoUpdateStability: false,
+                                   coberturaReportFile: '**/nosetests.xml',
+                                   failNoReports: false,
+                                   failUnhealthy: false,
+                                   failUnstable: false,
+                                   maxNumberOfBuilds: 10,
+                                   onlyStable: false,
+                                   sourceEncoding: 'ASCII',
+                                   zoomCoverageChart: false])
+	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml', fingerprint: true
 	    }
         }
         failure {
