@@ -39,17 +39,7 @@ pipeline {
      post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
-	step([$class: 'CoberturaPublisher',
-                                   autoUpdateHealth: false,
-                                   autoUpdateStability: false,
-                                   coberturaReportFile: '**/nosetests.xml',
-                                   failNoReports: false,
-                                   failUnhealthy: false,
-                                   failUnstable: false,
-                                   maxNumberOfBuilds: 10,
-                                   onlyStable: false,
-                                   sourceEncoding: 'ASCII',
-                                   zoomCoverageChart: false])
+	    cobertura autoUpdateStability: false, coberturaReportFile: '**/nosetests.xml', conditionalCoverageTargets: '70, 0, 0', enableNewApi: true, failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 10, methodCoverageTargets: '80, 0, 0', onlyStable: false, zoomCoverageChart: false
 	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
 	    }
         }
