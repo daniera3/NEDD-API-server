@@ -16,6 +16,43 @@ pipeline {
                 }
             }
         }
+	stage('Static code metrics') {
+            steps {
+	     withEnv(["HOME=${env.WORKSPACE}"]) {
+                echo "Raw metrics"
+                sh  '''
+                        radon raw --json HOME > raw_report.json
+                        radon cc --json HOME > cc_report.json
+                        radon mi --json HOME > mi_report.json
+                        sloccount --duplicates --wide HOME > sloccount.sc
+                    '''
+                echo "Test coverage"
+                sh  '''
+                        coverage run ./iris.py 
+                        python -m coverage xml -o ./coverage.xml
+                    '''
+                echo "Style check"
+                sh  ''' 
+                        pylint HOME || true
+                    '''
+		}
+            }
+            post{
+                always{
+                    step([$class: 'CoberturaPublisher',
+                                   autoUpdateHealth: false,
+                                   autoUpdateStability: false,
+                                   coberturaReportFile: './coverage.xml',
+                                   failNoReports: false,
+                                   failUnhealthy: false,
+                                   failUnstable: false,
+                                   maxNumberOfBuilds: 10,
+                                   onlyStable: false,
+                                   sourceEncoding: 'ASCII',
+                                   zoomCoverageChart: false])
+                }
+            }
+        }
         stage('Run Tests'){
             steps{
                 // echo 'Testing User app...'
@@ -23,19 +60,10 @@ pipeline {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 			}
             }
-	    }
+	  }
        
     
-	stage('Run site'){
-            steps{
-                // echo 'Testing User app...'
-		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 website.py &"
-
-			}
-            }
-        }
-    }
+    }//close pipline
      post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
