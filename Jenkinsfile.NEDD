@@ -16,7 +16,7 @@ pipeline {
                 }
             }
         }
-        stage('Run Tests'){
+        stage('Run Tests linux'){
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
@@ -24,7 +24,7 @@ pipeline {
 			}
             }
 	  }
-	  stage('Run Tests'){
+	  stage('Run Tests windows'){
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
