@@ -26,10 +26,10 @@ pipeline {
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 	 	        sh '''
-	 	        coverage  run -m py.test
-                coverage report -m
-                coverage html
-                coverage xml --junitxml=coverage.xml
+	 	        python3.7 -m coverage  run -m py.test
+                python3.7 -m coverage report -m
+                python3.7 -m coverage html
+                python3.7 -m coverage xml --junitxml=coverage.xml
 	 	        '''
 			}
             }
