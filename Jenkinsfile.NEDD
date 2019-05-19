@@ -67,9 +67,15 @@ pipeline {
                 always {
                     
 		    withEnv(["HOME=${env.WORKSPACE}"]) {
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*whl', fingerprint: true)
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*whl')
 		    }
                 }
+            }
+        }
+	stage("Deploy to PyPI") {
+            }
+            steps {
+                sh "twine upload dist/*"
             }
         }
        
