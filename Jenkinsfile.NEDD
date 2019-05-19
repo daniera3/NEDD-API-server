@@ -19,13 +19,6 @@ pipeline {
 	stage('Static code metrics') {
             steps {
 	     withEnv(["HOME=${env.WORKSPACE}"]) {
-                echo "Raw metrics"
-                sh  '''
-                        radon raw --json HOME > raw_report.json
-                        radon cc --json HOME > cc_report.json
-                        radon mi --json HOME > mi_report.json
-                        sloccount --duplicates --wide HOME > sloccount.sc
-                    '''
                 echo "Test coverage"
                 sh  '''
                         coverage run ./iris.py 
