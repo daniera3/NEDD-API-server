@@ -27,7 +27,7 @@ pipeline {
 		'''
                 echo "Style check"
                 sh  ''' 
-                        pylint ./ || true
+                       pylint --disable=C ./ || true
                     '''
 		}
             }
