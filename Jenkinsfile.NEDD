@@ -24,32 +24,6 @@ pipeline {
 			}
             }
 	  }
-	  stage('Build package') {
-            when {
-                expression {
-                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                }
-            }
-            steps {
-	    withEnv(["HOME=${env.WORKSPACE}"]) {
-                sh  ' python3 website.py bdist_wheel &  '
-		}
-            }
-            post {
-                always {
-                    
-		    withEnv(["HOME=${env.WORKSPACE}"]) {
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*whl', fingerprint: true, onlyIfSuccessful: true
-		    }
-                }
-            }
-        }
-	stage("Deploy to PyPI") {
-
-            steps {
-                sh "twine upload dist/*"
-            }
-        }
         }
             post {
         always {
