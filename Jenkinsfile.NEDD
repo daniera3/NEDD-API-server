@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Git') {
             steps{
-                // echo 'Getting the code from GitHub...'
+                // echo 'Getting the code from GitHub....'
                 git 'https://github.com/daniera3/NEDD-API-server.git'
             }
         }
@@ -19,6 +19,7 @@ pipeline {
 		    sh 'pip3 install --user -U coverage'
                 }
             }
+
         }
         stage('Run Tests linux'){
             steps{
@@ -55,7 +56,7 @@ pipeline {
 	    }
         }
         failure {
-            emailext body: 'test', recipientProviders: [brokenTestsSuspects()], subject: 'The Pipeline failed :(', to: 'danirabinovich123@gmail.com'
+            emailext body: 'test', recipientProviders: [brokenTestsSuspects()], subject: 'The Pipeline failed :(...', to: 'danirabinovich123@gmail.com'
 
         }
     }
