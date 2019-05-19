@@ -23,16 +23,9 @@ pipeline {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 			}
             }
-        
- post {
-        always {
-            junit '**/target/nosetests.xml'
-        }
-        failure {
-            mail to: danirabinovich123@gmail.com, subject: 'The Pipeline failed :('
-        }
-    }
-    }
+	    }
+       
+    
 	stage('Run site'){
             steps{
                 // echo 'Testing User app...'
@@ -41,6 +34,14 @@ pipeline {
 
 			}
             }
+        }
+    }
+     post {
+        always {
+            junit '**/target/nosetests.xml'
+        }
+        failure {
+            mail to: danirabinovich123@gmail.com, subject: 'The Pipeline failed :('
         }
     }
 }
