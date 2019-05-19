@@ -29,7 +29,7 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        bat "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
+	 	        bat "python3.7 -m pytest -v "
 			}
             }
 }
