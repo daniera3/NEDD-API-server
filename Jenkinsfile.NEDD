@@ -32,7 +32,7 @@ pipeline {
             junit '**/target/nosetests.xml'
         }
         failure {
-            mail to: team@example.com, subject: 'The Pipeline failed :('
+            mail to: danirabinovich123@gmail.com, subject: 'The Pipeline failed :('
         }
     }
 	stage('Run site'){
