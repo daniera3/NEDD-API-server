@@ -67,7 +67,7 @@ pipeline {
                 always {
                     
 		    withEnv(["HOME=${env.WORKSPACE}"]) {
-                    archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*whl')
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*whl', fingerprint: true, onlyIfSuccessful: true
 		    }
                 }
             }
