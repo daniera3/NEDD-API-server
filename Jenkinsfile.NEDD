@@ -40,18 +40,17 @@ pipeline {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
 	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
-	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/coverage.xml'
                     step([$class: 'CoberturaPublisher',
-                                   autoUpdateHealth: false,
-                                   autoUpdateStability: false,
+                                   autoUpdateHealth: true,
+                                   autoUpdateStability: true,
                                    coberturaReportFile: '**/coverage.xml',
-                                   failNoReports: false,
-                                   failUnhealthy: false,
-                                   failUnstable: false,
+                                   failNoReports: true,
+                                   failUnhealthy: true,
+                                   failUnstable: true,
                                    maxNumberOfBuilds: 10,
-                                   onlyStable: false,
+                                   onlyStable: true,
                                    sourceEncoding: 'ASCII',
-                                   zoomCoverageChart: false])
+                                   zoomCoverageChart: true])
 	    }
         }
         failure {
