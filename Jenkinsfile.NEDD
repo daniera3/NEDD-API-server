@@ -27,7 +27,7 @@ pipeline {
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 	 	        sh '''
-	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee pylint.log
+	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee ./pylint.log
 	 	        python3.7 -m coverage  run -m py.test
                 python3.7 -m coverage report -m
                 python3.7 -m coverage html
@@ -59,7 +59,8 @@ pipeline {
 
                                    checksPublishResults(
     tasks: true,
-    pylint: [pattern: '**/target/pylint.log'],
+    pylint: [pattern: '**/pylint.log'],
+    aggregation: [thresholds: [fail: [all: 999, low: 99, normal: 9, high: 0]]],
     cpd: [archive: false],
     archive: true
 )
