@@ -21,7 +21,7 @@ pipeline {
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
-			 junit './*.xml'
+			 junit './nosetests.xml'
 			  sh 'make publish'
 			}
             }
