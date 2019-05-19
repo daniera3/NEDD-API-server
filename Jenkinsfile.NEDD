@@ -42,7 +42,7 @@ pipeline {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
 	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
-	    checksPublishResults archive: true, pylint: [pattern: '**/target/pylint.log']
+
                     step([$class: 'CoberturaPublisher',
                                    autoUpdateHealth: true,
                                    autoUpdateStability: true,
@@ -54,6 +54,15 @@ pipeline {
                                    onlyStable: true,
                                    sourceEncoding: 'ASCII',
                                    zoomCoverageChart: true])
+
+                                   checksPublishResults archive: true,
+
+                                   checksPublishResults(
+    tasks: true,
+    pylint: [pattern: '**/target/pylint.log'],
+    cpd: [archive: false],
+    archive: true
+)
 	    }
         }
         failure {
