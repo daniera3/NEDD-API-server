@@ -24,15 +24,16 @@ pipeline {
 			}
             }
 	  }
-	  stage('Run Tests windows'){
-	        agent {label 'windos'}
+	  node('windos') {
+     stage('Run Tests windos'){
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        bat "python3.7 -m pytest -v  --junitxml=./nosetests2.xml"
+	 	        bat "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 			}
             }
-	  }
+}
+        }
         }
             post {
         always {
