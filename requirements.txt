@@ -25,4 +25,3 @@ WTForms
 nose
 flask_restful
 coverage
-pylint
