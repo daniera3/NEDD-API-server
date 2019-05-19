@@ -42,7 +42,7 @@ pipeline {
 	    }
         }
         failure {
-            mail to: 'danirabinovich123@gmail.com', subject: 'The Pipeline failed :(',body:'test'
+            emailext body: 'test', recipientProviders: [brokenTestsSuspects()], subject: 'The Pipeline failed :(', to: 'danirabinovich123@gmail.com'
 
         }
     }
