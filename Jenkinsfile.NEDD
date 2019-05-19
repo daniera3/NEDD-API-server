@@ -30,7 +30,7 @@ pipeline {
 	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee pylint.log
 	 	        python3.7 -m coverage  run -m py.test
                 python3.7 -m coverage report -m
-                //python3.7 -m coverage html
+                python3.7 -m coverage html
                 python3.7 -m coverage xml -o coverage.xml
 	 	        '''
 			}
