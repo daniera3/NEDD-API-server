@@ -13,34 +13,6 @@ pipeline {
                     //echo 'Installing Requirements...'
                     sh 'pip3.7 install -U -r requirements.txt --user'
 		    sh 'pip3 install --user -U requests'
-		    sh 'pip3 install --user -U coverage'
-                }
-            }
-        }
-	stage('Static code metrics') {
-            steps {
-	     withEnv(["HOME=${env.WORKSPACE}"]) {
-                echo "Test coverage"
-                sh  '''
-		python3 -m coverage xml ./coverage.xml
-		'''
-            }
-	    }
-            post{
-                always{
-		withEnv(["HOME=${env.WORKSPACE}"]) {
-                    step([$class: 'CoberturaPublisher',
-                                   autoUpdateHealth: false,
-                                   autoUpdateStability: false,
-                                   coberturaReportFile: './coverage.xml',
-                                   failNoReports: false,
-                                   failUnhealthy: false,
-                                   failUnstable: false,
-                                   maxNumberOfBuilds: 10,
-                                   onlyStable: false,
-                                   sourceEncoding: 'ASCII',
-                                   zoomCoverageChart: false])
-				   }
                 }
             }
         }
@@ -77,6 +49,7 @@ pipeline {
             steps {
                 sh "twine upload dist/*"
             }
+        }
         }
             post {
         always {
