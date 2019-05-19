@@ -27,7 +27,14 @@ pipeline {
 			}
             }
         }
-
+ post {
+        always {
+            junit '**/target/nosetests.xml'
+        }
+        failure {
+            mail to: team@example.com, subject: 'The Pipeline failed :('
+        }
+    }
 	stage('Run site'){
             steps{
                 // echo 'Testing User app...'
