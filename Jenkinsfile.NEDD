@@ -25,6 +25,7 @@ pipeline {
             }
 	  }
 	  stage('Run Tests windows'){
+	        agent {label 'windos'}
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
