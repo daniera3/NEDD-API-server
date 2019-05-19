@@ -92,7 +92,7 @@ def UserControler():
 
 
 
-@app.route('/AddWord')
+@app.route('/Word')
 def Add_word_page():
     data = {}
     if 'username' in session and (session['permissions'] == 'ADMIN' or session['permissions'] == 'MANGER'):
@@ -314,7 +314,28 @@ def handle_data():
     elif request.form['type_form'] == 'get_user_query':
         return get_student_query(request.form['students'])
 
+    elif request.form['type_form'] == 'restartStatistics':
+        return restartUserStatistics()
+    elif request.form['type_form'] == 'deleteAll':
+        return deleteDict(dict(request.form))
     return index()
+
+
+
+
+def deleteDict(data):
+    if 'username' in session:
+        data['User'] = session['username']
+    answer = sent_to_server(json.dumps(data), "deleteDict")
+    return answer['status']
+
+
+def restartUserStatistics():
+    data = {}
+    if 'username' in session:
+        data['User'] = session['username']
+    answer = sent_to_server(json.dumps(data), "restartStatistics")
+    return answer['status']
 
 
 def GetWords(data):

@@ -456,13 +456,29 @@ class AddWord(Resource):
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name) or SubFunc.CheckManger(Name):
                 try:
-                    conn.execute("insert into '{2}' (user, reason) values('{0}','{1}')".format(DATA['trainee'],DATA['word'],DATA['language']))
+                    conn.execute("insert into '{2}' (user, word) values('{0}','{1}')".format(DATA['trainee'],DATA['word'],DATA['language']))
                 except:
                     return  crypto2.des(str({'status':'that word already exists'}),key)
                 return crypto2.des(str({'status':'success'}),key)
             return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
             return  crypto2.des(str({'status':'fail'}),key)
+
+
+class deleteWords(Resource):
+    def post(self):
+        try:
+            DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+            conn = db_connect.connect()
+            Name = DATA['User']
+            if SubFunc.CheckAdmin(Name) or SubFunc.CheckManger(Name):
+                return crypto2.des(str({'status':"DELETE FROM '{0}' WHERE user = '{1}';".format(DATA['language'],DATA['trainee'])}),key)
+                conn.execute("DELETE FROM ? WHERE user = ?;", (DATA['language'],DATA['trainee'],))
+                return crypto2.des(str({'status':'success'}),key)
+            return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+        except:
+            return  crypto2.des(str({'status':'fail'}),key)
+
 
 
 class getStudents(Resource):
@@ -484,28 +500,6 @@ class getStudents(Resource):
                 return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
             return  crypto2.des(str({'status':'fail'}),key)
-
-
-class getStudentsQuery(Resource):
-    def post(self):
-        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
-        conn = db_connect.connect()
-        try:
-            user_Name = DATA['UserRequsting']
-            if SubFunc.CheckAdmin(user_Name) :
-                try:
-                    temp=[]
-                    query = conn.execute("select User from Accounts where User=={}% ".format(DATA['serchData']))
-                    for user in query.cursor:
-                        temp += user
-                    result = {'data': temp, 'status': 'success'}
-                    return crypto2.des(str(result), key)
-                except:
-                    return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
-                return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
-        except:
-            return  crypto2.des(str({'status':'fail'}),key)
-
 
 
 class getStudentsStatistics(Resource):
@@ -536,7 +530,19 @@ class getStudentsStatistics(Resource):
             return  crypto2.des(str({'status':'fail'}),key)
 
 
-api.add_resource(getStudentsQuery,  '/getstudentsQuery',methods={'GET'})
+class restartUserStatistics(Resource):
+    def post(self):
+        try:
+            DATA=eval(crypto2.des_dicrypte(request.json['data'], key))
+            conn = db_connect.connect()
+            conn.execute("DELETE FROM SpeechTasks WHERE User = ?;",(DATA['User'],))
+            return crypto2.des(str({'status':'success'}),key)
+        except:
+            return crypto2.des(str({'status':'fail'}),key)
+
+
+
+
 api.add_resource(getStudents,  '/getstudents',methods={'POST','GET'})
 api.add_resource(getStudentsStatistics,  '/getStudentsStatistics',methods={'POST','GET'})
 
@@ -561,6 +567,8 @@ api.add_resource(GetUsersPerPermissions, '/GetUsersPerPermissions',methods={'POS
 api.add_resource(RequestPermissions, '/RequestPermissions',methods={'POST'})
 api.add_resource(ReturnTrainee, '/trainee',methods={'POST'})
 api.add_resource(AddWord, '/addword',methods={'POST'})
+api.add_resource(restartUserStatistics, '/restartStatistics',methods={'POST'})
+api.add_resource(deleteWords, '/deleteDict',methods={'POST'})
 
 if __name__ == '__main__':
      app.run()
