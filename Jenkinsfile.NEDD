@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker { image 'python:3-alpine' } }
+    agent { docker { image 'python:3' } }
     stages {
         stage('Git') {
             steps{
@@ -29,7 +29,7 @@ pipeline {
 	 	        python3.7 -m coverage  run -m py.test
                 python3.7 -m coverage report -m
                 python3.7 -m coverage html
-                python3.7 -m coverage xml --junitxml=coverage.xml
+                python3.7 -m coverage xml -o coverage.xml
 	 	        '''
 			}
             }
