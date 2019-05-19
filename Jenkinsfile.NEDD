@@ -78,10 +78,7 @@ pipeline {
                 sh "twine upload dist/*"
             }
         }
-       
-    
-    }//close pipline
-     post {
+            post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
 	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
@@ -89,7 +86,10 @@ pipeline {
         }
         failure {
             mail to: 'danirabinovich123@gmail.com', subject: 'The Pipeline failed :(',body:'test'
-	
+
         }
     }
 }
+    
+    }//close pipline
+
