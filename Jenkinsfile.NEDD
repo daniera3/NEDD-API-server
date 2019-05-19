@@ -42,6 +42,7 @@ pipeline {
         }
         failure {
            // mail to: danirabinovich123@gmail.com, subject: 'The Pipeline failed :('
+	   sh'hi'
         }
     }
 }
