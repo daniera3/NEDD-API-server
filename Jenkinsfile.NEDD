@@ -21,12 +21,12 @@ pipeline {
 	     withEnv(["HOME=${env.WORKSPACE}"]) {
                 echo "Test coverage"
                 sh  '''
-                        coverage run ./iris.py 
+                        coverage run ./website.py
                         python -m coverage xml -o ./coverage.xml
                     '''
                 echo "Style check"
                 sh  ''' 
-                        pylint HOME || true
+                        pylint ./ || true
                     '''
 		}
             }
