@@ -20,7 +20,7 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
+	 	        sh "python3.7 -m pytest -cov -v  --junitxml=./nosetests.xml"
 			}
             }
 	    }
@@ -41,6 +41,8 @@ pipeline {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
 	    cobertura autoUpdateStability: false, coberturaReportFile: '**/nosetests.xml', conditionalCoverageTargets: '70, 0, 0', enableNewApi: true, failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 10, methodCoverageTargets: '80, 0, 0', onlyStable: false, zoomCoverageChart: false
 	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
+	    pylint irisvmpy || true
+	     mail to: 'danirabinovich123@gmail.com', subject: 'The Pipeline failed :(',body:'test'
 	    }
         }
         failure {
