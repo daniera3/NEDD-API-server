@@ -24,6 +24,14 @@ pipeline {
 			}
             }
 	  }
+	  stage('Run Tests'){
+            steps{
+                // echo 'Testing User app...'
+		withEnv(["HOME=${env.WORKSPACE}"]) {
+	 	        bat "python3.7 -m pytest -v  --junitxml=./nosetests2.xml"
+			}
+            }
+	  }
         }
             post {
         always {
