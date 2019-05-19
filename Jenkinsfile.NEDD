@@ -22,7 +22,7 @@ pipeline {
 	     withEnv(["HOME=${env.WORKSPACE}"]) {
                 echo "Test coverage"
                 sh  '''
-		python3 -m coverage run /website.py
+		python3 -m coverage run ./website.py
 		python3 -m coverage xml ./coverage.xml
 		'''
                 echo "Style check"
