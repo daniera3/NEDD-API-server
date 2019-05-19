@@ -20,7 +20,7 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 -m pytest -c -v  --junitxml=./nosetests.xml"
+	 	        sh "python3.7 -m pytest -cov  --junitxml=./nosetests.xml"
 			}
             }
 	    }
