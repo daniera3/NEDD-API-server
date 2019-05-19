@@ -201,7 +201,6 @@ def sent_to_server(data, type_request):
                              headers=header)
     return eval(crypto2.des_dicrypte(str(eval(response.content)), key))
 
-
 def GetPassword(user_name, password):
     conn = db_connect.connect()
     query = conn.execute("select * from Accounts WHERE username=?", (user_name,))
