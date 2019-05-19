@@ -23,15 +23,33 @@ pipeline {
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
-	 	        sh "py.test –cov= tests/"
+	 	        sh '''
+	 	        coverage  run -m py.test
+                coverage report -m
+                coverage html
+                coverage xml -o coverage.xml
+	 	        '''
 			}
             }
 	  }
         }
+
             post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
 	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
+	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/coverage.xml'
+                    step([$class: 'CoberturaPublisher',
+                                   autoUpdateHealth: false,
+                                   autoUpdateStability: false,
+                                   coberturaReportFile: '**/coverage.xml',
+                                   failNoReports: false,
+                                   failUnhealthy: false,
+                                   failUnstable: false,
+                                   maxNumberOfBuilds: 10,
+                                   onlyStable: false,
+                                   sourceEncoding: 'ASCII',
+                                   zoomCoverageChart: false])
 	    }
         }
         failure {
