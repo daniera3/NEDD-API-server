@@ -29,7 +29,7 @@ pipeline {
 	 	        coverage  run -m py.test
                 coverage report -m
                 coverage html
-                coverage xml -o coverage.xml
+                coverage xml --junitxml=coverage.xml
 	 	        '''
 			}
             }
