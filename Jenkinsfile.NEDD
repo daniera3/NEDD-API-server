@@ -20,7 +20,7 @@ pipeline {
             steps {
 	     withEnv(["HOME=${env.WORKSPACE}"]) {
                 echo "Test coverage"
-                sh  'python3 -m coverage xml -o ./coverage.xml'
+                sh  'python3 -m coverage xml xml ./coverage.xml'
                 echo "Style check"
                 sh  ''' 
                         pylint ./ || true
