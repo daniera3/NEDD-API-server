@@ -57,8 +57,10 @@ def logout(client):
 
 
 def sent_to_server_local(client, data, type_request):
+    print(data)
     temp = {"data": crypto2.des(str(data), "NEDDNEDD")}
     data = json.dumps(temp)
+
     response = client.post('/'+str(type_request), data=data, follow_redirects=True, headers={"Content-Type": "application/json"} )
     return eval(crypto2.des_dicrypte(eval(response.data), "NEDDNEDD"))
 

@@ -311,6 +311,8 @@ def handle_data():
          return sendmail(request.form['select'],'neddproject@gmail.com',request.form['text'])
     elif request.form['type_form'] == 'getwords':
         return GetWords(dict(request.form))
+    elif request.form['type_form'] == 'get_user_query':
+        return get_student_query(request.form['students'])
 
     return index()
 
@@ -481,6 +483,13 @@ def get_student():
     result = sent_to_server(data, "getstudents")
     return result['data']
 
+def get_student_query(student):
+    data = {'UserRequsting': session['username'],
+            'serchData': student}
+    result = sent_to_server(data, "getstudentsQuery")
+    print(result)
+    return student
+
 
 def get_student_statistics(students):
     temp2 = []
@@ -495,6 +504,10 @@ def get_student_statistics(students):
         temp = [user, result['data'], result['avrage']]
         temp2 += [temp]
     return json.dumps(temp2)
+
+@app.route('/admin_stat')
+def admin_stat():
+    return render_template('/status/admin_features/admin_statstics.html')
 
 
 
