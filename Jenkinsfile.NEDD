@@ -26,8 +26,9 @@ pipeline {
 	  }
 
      stage('Run Tests windos'){
-      node('windos') {
+
             steps{
+            node('windos') {
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        bat "python3.7 -m pytest -v "
