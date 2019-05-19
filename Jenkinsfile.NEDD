@@ -50,7 +50,7 @@ pipeline {
                                    onlyStable: false,
                                    sourceEncoding: 'ASCII',
                                    zoomCoverageChart: false])
-	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml', fingerprint: true
+	    junit allowEmptyResults: true, keepLongStdio: true, fingerprint: true, testResults: '**/nosetests.xml'
 	    }
         }
         failure {
