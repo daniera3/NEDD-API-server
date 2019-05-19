@@ -38,7 +38,9 @@ pipeline {
     }
      post {
         always {
-            junit '**/target/nosetests.xml'
+	withEnv(["HOME=${env.WORKSPACE}"]) {
+            junit '**/nosetests.xml'
+	    }
         }
         failure {
            // mail to: danirabinovich123@gmail.com, subject: 'The Pipeline failed :('
