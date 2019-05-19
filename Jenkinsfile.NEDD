@@ -25,6 +25,7 @@ pipeline {
 		python3 -m coverage xml ./coverage.xml run ./website.py
 		'''
             }
+	    }
             post{
                 always{
 		withEnv(["HOME=${env.WORKSPACE}"]) {
@@ -51,6 +52,26 @@ pipeline {
 			}
             }
 	  }
+	  stage('Build package') {
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+	    withEnv(["HOME=${env.WORKSPACE}"]) {
+                sh  ' python website.py bdist_wheel  '
+		}
+            }
+            post {
+                always {
+                    
+		    withEnv(["HOME=${env.WORKSPACE}"]) {
+                    archiveArtifacts allowEmptyArchive: true, artifacts: 'dist/*whl', fingerprint: true)
+		    }
+                }
+            }
+        }
        
     
     }//close pipline
