@@ -24,3 +24,4 @@ virtualenv
 WTForms
 nose
 flask_restful
+coverage
