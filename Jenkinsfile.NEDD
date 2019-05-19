@@ -55,8 +55,6 @@ pipeline {
                                    sourceEncoding: 'ASCII',
                                    zoomCoverageChart: true])
 
-                                   checksPublishResults archive: true,
-
                                    checksPublishResults(
     tasks: true,
     pylint: [pattern: '**/pylint.log'],
@@ -71,7 +69,55 @@ pipeline {
 
         }
     }
+   }//close pipline
 
 
-    }//close pipline
+
+
+
+    pipeline {
+    agent none
+    stages {
+        stage('Build') {
+            agent any
+            steps {
+                checkout scm
+                 git 'https://github.com/daniera3/NEDD-API-server.git'
+                 sh 'pip3.7 install -U -r requirements.txt --user'
+                stash includes: '**/website.py', name: 'app'
+            }
+        }
+        stage('Test on Linux') {
+            agent {
+                label 'linux'
+            }
+            steps {
+                unstash 'app'
+                sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
+            }
+            post {
+                always {
+                    junit '**/*.xml'
+                }
+            }
+        }
+        stage('Test on Windows') {
+            agent {
+                label 'windows'
+            }
+            steps {
+                unstash 'app'
+               bat "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
+            }
+            post {
+                always {
+                    junit '**/*.xml'
+                }
+            }
+        }
+    }
+}
+
+
+
 
