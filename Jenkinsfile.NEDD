@@ -24,8 +24,9 @@ pipeline {
 			}
             }
 	  }
-	  node('windos') {
+
      stage('Run Tests windos'){
+      node('windos') {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
