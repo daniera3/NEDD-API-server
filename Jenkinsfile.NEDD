@@ -17,8 +17,7 @@ pipeline {
 		    sh 'pip3 install --user -U pytest-xdist'
 		    sh 'pip3 install --user -U pytest-xdist'
 		    sh 'pip3 install --user -U coverage'
-		    sh 'pip3 install --user -U flake8'
-
+            sh 'pip3 install --user -U flake8'
                 }
             }
 
@@ -27,10 +26,10 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 -m pytest -v  --junitxml=./tests.xml"
+	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 	 	        sh '''
-	 	        python3.7 -m flake8 -f parseable |tee ./flake8.log || true
-	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee ./pylite.out||true
+                python3.7 -m flake8 | tee  flake8.log||true
+	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee  pylint.log||true
 	 	        python3.7 -m coverage  run -m py.test
                 python3.7 -m coverage report -m
                 python3.7 -m coverage html
@@ -39,25 +38,12 @@ pipeline {
 			}
             }
 	  }
-	      stage('RUBY') {
-
-    agent { docker { image 'ruby:2.6.1' } }
-      steps {
-          withEnv(["HOME=${env.WORKSPACE}"]) {
-        sh 'gem install bundler -v 2.0.1'
-        sh 'bundle install'
-        sh 'rake ci:all'
-      }
-     }
-     }
-
-
         }
 
             post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
-	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/tests.xml'
+
         junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
                     step([$class: 'CoberturaPublisher',
                                    autoUpdateHealth: true,
@@ -70,7 +56,6 @@ pipeline {
                                    onlyStable: true,
                                    sourceEncoding: 'ASCII',
                                    zoomCoverageChart: true])
-         junit '**/TEST-AppTest.xml'
 
 
 	    }
