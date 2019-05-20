@@ -26,3 +26,4 @@ nose
 flask_restful
 coverage
 pylint
+nosetests
