@@ -35,15 +35,8 @@ pipeline {
                 python3.7 -m coverage html
                 python3.7 -m coverage xml -o coverage.xml
 	 	        '''
-	 	        step([$class: 'WarningsPublisher',
-                  parserConfigurations: [
-                  [
-                    parserName: 'pylint',
-                    pattern: './pylint.log'
-                  ]],
-                  unstableTotalAll: '0',
-                  usePreviousBuildAsReference: true
-                ])
+
+	 	        step([$class: 'WarningsPublisher', canComputeNew: false, canResolveRelativePaths: false, defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', parserConfigurations: [[parserName: 'pylint',pattern: 'pylint.log']], unHealthy: ''])
 			}
             }
 	  }
