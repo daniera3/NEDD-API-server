@@ -1,9 +1,9 @@
 pipeline {
-    agent { docker { image 'python:3-alpine' } }
+    agent { docker { image 'python:3' } }
     stages {
         stage('Git') {
             steps{
-                // echo 'Getting the code from GitHub...'
+                // echo 'Getting the code from GitHub....'
                 git 'https://github.com/daniera3/NEDD-API-server.git'
             }
         }
@@ -12,28 +12,57 @@ pipeline {
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     //echo 'Installing Requirements...'
                     sh 'pip3.7 install -U -r requirements.txt --user'
-		            sh 'pip3 install --user -U requests'
+		    sh 'pip3 install --user -U requests'
+		    sh 'pip3 install --user -U pytest-cov'
+		    sh 'pip3 install --user -U pytest-xdist'
+		    sh 'pip3 install --user -U pytest-xdist'
+		    sh 'pip3 install --user -U coverage'
+		    sh 'pip3 install --user -U pylint'
                 }
             }
+
         }
-        stage('Run Tests'){
+        stage('Run Tests linux'){
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
+	 	        sh '''
+	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee  pylint.log||true
+	 	        python3.7 -m coverage  run -m py.test
+                python3.7 -m coverage report -m
+                python3.7 -m coverage html
+                python3.7 -m coverage xml -o coverage.xml
+	 	        '''
 
-			}
+	 	      }
             }
+	  }
         }
 
-	stage('Run site'){
-            steps{
-                // echo 'Testing User app...'
-		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 website.py &"
+            post {
+        always {
+	withEnv(["HOME=${env.WORKSPACE}"]) {
 
-			}
-            }
+        junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
+                    step([$class: 'CoberturaPublisher',
+                                   autoUpdateHealth: true,
+                                   autoUpdateStability: true,
+                                   coberturaReportFile: '**/coverage.xml',
+                                   failNoReports: true,
+                                   failUnhealthy: true,
+                                   failUnstable: true,
+                                   maxNumberOfBuilds: 10,
+                                   onlyStable: true,
+                                   sourceEncoding: 'ASCII',
+                                   zoomCoverageChart: true])
+
+
+	    }
+        }
+        failure {
+            emailext body: 'test', recipientProviders: [brokenTestsSuspects()], subject: 'The Pipeline failed :(...', to: 'danirabinovich123@gmail.com'
+
         }
     }
-}
+   }//close pipline

@@ -24,3 +24,5 @@ virtualenv
 WTForms
 nose
 flask_restful
+pylint
+coverage
