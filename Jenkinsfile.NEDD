@@ -55,13 +55,7 @@ pipeline {
                                    sourceEncoding: 'ASCII',
                                    zoomCoverageChart: true])
 
-                                   checksPublishResults(
-    tasks: true,
-    pylint: [pattern: '**/pylint.log'],
-    aggregation: [thresholds: [fail: [all: 999, low: 99, normal: 9, high: 0]]],
-    cpd: [archive: false],
-    archive: true
-)
+
 	    }
         }
         failure {
