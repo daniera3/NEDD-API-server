@@ -66,9 +66,10 @@ pipeline {
         }
     }
     stage('RUBY') {
-    withEnv(["HOME=${env.WORKSPACE}"]) {
+
     agent { docker { image 'ruby:2.6.1' } }
       steps {
+          withEnv(["HOME=${env.WORKSPACE}"]) {
         sh 'gem install bundler -v 2.0.1'
         sh 'bundle install'
         sh 'rake ci:all'
