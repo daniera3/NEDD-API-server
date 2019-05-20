@@ -49,11 +49,11 @@ pipeline {
                                    autoUpdateHealth: true,
                                    autoUpdateStability: true,
                                    coberturaReportFile: '**/coverage.xml',
-                                   failNoReports: true,
-                                   failUnhealthy: true,
-                                   failUnstable: true,
+                                   failNoReports: flase,
+                                   failUnhealthy: flase,
+                                   failUnstable: flase,
                                    maxNumberOfBuilds: 10,
-                                   onlyStable: true,
+                                   onlyStable: flase,
                                    sourceEncoding: 'ASCII',
                                    zoomCoverageChart: true])
 
