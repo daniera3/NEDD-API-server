@@ -17,7 +17,6 @@ pipeline {
 		    sh 'pip3 install --user -U pytest-xdist'
 		    sh 'pip3 install --user -U pytest-xdist'
 		    sh 'pip3 install --user -U coverage'
-            sh 'pip3 install --user -U flake8'
                 }
             }
 
@@ -28,13 +27,22 @@ pipeline {
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests.xml"
 	 	        sh '''
-                python3.7 -m flake8 | tee  flake8.log||true
 	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee  pylint.log||true
+	 	        ls -l
 	 	        python3.7 -m coverage  run -m py.test
                 python3.7 -m coverage report -m
                 python3.7 -m coverage html
                 python3.7 -m coverage xml -o coverage.xml
 	 	        '''
+	 	        step([$class: 'WarningsPublisher',
+                  parserConfigurations: [
+                  [
+                    parserName: 'pylint',
+                    pattern: './pylint.log'
+                  ]],
+                  unstableTotalAll: '0',
+                  usePreviousBuildAsReference: true
+                ])
 			}
             }
 	  }
