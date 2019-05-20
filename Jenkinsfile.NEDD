@@ -26,7 +26,7 @@ pipeline {
             steps{
                 // echo 'Testing User app...'
 		withEnv(["HOME=${env.WORKSPACE}"]) {
-	 	        sh "python3.7 -m pytest -v  --junitxml=./nosetests2.xml"
+	 	        sh "python3.7 -m pytest -v  --junitxml=./tests.xml"
 	 	        sh '''
 	 	        nosetests --with-xunit --all-modules --traverse-namespace --with-coverage --cover-package=website --cover-inclusive
 	 	        python3.7 -m pylint -f parseable -d I0011,R0801 website | tee ./pylint.log
@@ -43,7 +43,7 @@ pipeline {
             post {
         always {
 	withEnv(["HOME=${env.WORKSPACE}"]) {
-	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests2.xml'
+	    junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/tests.xml'
         junit allowEmptyResults: true, keepLongStdio: true, testResults: '**/nosetests.xml'
                     step([$class: 'CoberturaPublisher',
                                    autoUpdateHealth: true,
