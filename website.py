@@ -506,10 +506,9 @@ def get_student():
 
 def get_student_query(student):
     data = {'UserRequsting': session['username'],
-            'serchData': student}
+            'serchData': eval(student)}
     result = sent_to_server(data, "getstudentsQuery")
-    print(result)
-    return student
+    return json.dumps(result)
 
 
 def get_student_statistics(students):
@@ -528,7 +527,7 @@ def get_student_statistics(students):
 
 @app.route('/admin_stat')
 def admin_stat():
-    return render_template('/status/admin_features/admin_statstics.html')
+    return render_template('/status/admin_features/admin_statstics.html',)
 
 
 

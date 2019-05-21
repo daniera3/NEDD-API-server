@@ -46,7 +46,10 @@
                     type_form: "get_user_query",
                     students: JSON.stringify($(this).val())
                  },
-                function(data, status){
+                function(data){
+                $( "#studentQuery" ).autocomplete({
+      source: data['data']
+    });
 
                 });
         });
