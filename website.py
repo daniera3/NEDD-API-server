@@ -508,7 +508,9 @@ def get_student_query(student):
     data = {'UserRequsting': session['username'],
             'serchData': eval(student)}
     result = sent_to_server(data, "getstudentsQuery")
-    return json.dumps(result)
+    x=json.dumps(result)
+    print(x)
+    return x
 
 
 def get_student_statistics(students):

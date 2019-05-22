@@ -35,20 +35,25 @@
 
 {% block scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.js"></script>
-
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script>
         $(document).ready(function() {
 
         $("#studentQuery").on("change paste keyup", function() {
-            if($(this).val().length>2)
+            if($(this).val().length>1)
                $.post("{{ url_for('handle_data') }}",
                 {
                     type_form: "get_user_query",
                     students: JSON.stringify($(this).val())
                  },
                 function(data){
+                data=JSON.parse(data)
+                var availableTags =data["data"];
                 $( "#studentQuery" ).autocomplete({
-      source: data['data']
+      source: availableTags
     });
 
                 });
@@ -59,10 +64,8 @@
             $("#get_students_stat").click(function(){
                  document.getElementById("static_result").innerHTML="";
                 var favorite = [];
-                $.each(
-                    $("input[name='student']:checked"), function(){
-                        favorite.push($(this).val());
-                });
+                        favorite.push($("#studentQuery").val());
+
 
 
 
