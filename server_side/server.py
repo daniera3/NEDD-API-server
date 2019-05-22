@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint, g, redirect, render_template, session, url_for
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine
-from json import dumps
+import json
 import crypto2
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
@@ -36,7 +36,7 @@ class SubFunc():
         if not result['data']:
             return False
         else:
-            if result['data'][0]['Permissions'].upper()=="MANGER":
+            if result['data'][0]['Permissions'].upper()=="MANGER" or result['data'][0]['Permissions'].upper()=="ADMIN":
                 return True
             else:
                 return False
@@ -48,7 +48,7 @@ class SubFunc():
         if not result['data']:
             return False
         else:
-            if result['data'][0]['Permissions'].upper()=="NORMAL":
+            if result['data'][0]['Permissions'].upper()=="NORMAL" or result['data'][0]['Permissions'].upper()=="MANGER" or result['data'][0]['Permissions'].upper()=="ADMIN":
                 return True
             else:
                 return False
@@ -178,20 +178,16 @@ class AdminAnswersToRequests(Resource):
             if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(DATA['requesting'])or SubFunc.CheckAdmin(DATA['requesting']))and SubFunc.CheckNormal(DATA['user']) :
                 if DATA['insert']:
                     try:
-
                         query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
                         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-
                         if not result['data']:
                             conn.execute("insert into Guider values('{0}','{1}','True')".format(DATA['user'],DATA['requesting']))
                             massge=massge+" and saved"
                         else:
                             conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
                             massge=massge+" and update"
-
                         conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(DATA['requesting'],DATA['user'],))
                     except:
-
                         conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
                         return crypto2.des(str({'status':'he can see hes info'}),key)
                 return  crypto2.des(str({'status':massge}),key)
@@ -464,23 +460,6 @@ class AddWord(Resource):
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
-
-class deleteWords(Resource):
-    def post(self):
-        try:
-            DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
-            conn = db_connect.connect()
-            Name = DATA['User']
-            if SubFunc.CheckAdmin(Name) or SubFunc.CheckManger(Name):
-                return crypto2.des(str({'status':"DELETE FROM '{0}' WHERE user = '{1}';".format(DATA['language'],DATA['trainee'])}),key)
-                conn.execute("DELETE FROM ? WHERE user = ?;", (DATA['language'],DATA['trainee'],))
-                return crypto2.des(str({'status':'success'}),key)
-            return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
-        except:
-            return  crypto2.des(str({'status':'fail'}),key)
-
-
-
 class getStudents(Resource):
     def post(self):
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
@@ -501,7 +480,6 @@ class getStudents(Resource):
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
-
 class getStudentsStatistics(Resource):
     def post(self):
 
@@ -519,15 +497,36 @@ class getStudentsStatistics(Resource):
                         avrage = user[0]
                     query = conn.execute("select Line,Say,grade,Date from SpeechTasks WHERE  user==?", (str(user_name),))
                     for user in query.cursor:
-                        temp += [[user[0], user[1], user[2], user[3]]]
+                        temp += [[user[0].encode('utf-8'), user[1].encode('utf-8'), user[2], user[3]]]
 
                     result = {'data': temp, 'status': 'success', 'avrage': avrage}
-                    return crypto2.des(str(result),key)
+                    return  crypto2.des(str(result),key)
                 except:
                     return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
                 return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
             return  crypto2.des(str({'status':'fail'}),key)
+
+class GetWord(Resource):
+    def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+        try:
+            conn = db_connect.connect()
+            Name = DATA['User']
+            try:
+                query = conn.execute("select word from '{1}' WHERE user='{0}'".format(Name,DATA['language']))
+                result =  {'data': [ i[0].encode('utf-8') for i in query.cursor]}
+                if not result['data']:
+                    try:
+                        query = conn.execute("select DISTINCT word from '{0}'".format(DATA['language']))
+                        result = {'data': [ i[0].encode('utf-8') for i in query.cursor]}
+                    except:
+                        return  crypto2.des(str({'status':'bug2','data':{}}),key)
+                return str(crypto2.des(str(result),key))
+            except:
+                return  crypto2.des(str({'status':'bug1','data':{}}),key)
+        except:
+            return  crypto2.des(str({'status':'fail','data':{}}),key)
 
 
 class restartUserStatistics(Resource):
@@ -540,9 +539,45 @@ class restartUserStatistics(Resource):
         except:
             return crypto2.des(str({'status':'fail'}),key)
 
+class getStudentsQuery(Resource):
+    def post(self):
+        DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+        conn = db_connect.connect()
+        try:
+            user_Name = DATA['UserRequsting']
+            if SubFunc.CheckAdmin(user_Name) :
+                try:
+                    temp=[]
+                    query = conn.execute("select User from Accounts where User like '{0}' ".format('%'+DATA['serchData']+'%'))
+                    for user in query.cursor:
+                        temp += [user[0]]
+
+                    result = {'data': temp, 'status': 'success'}
+                    if not result['data']:
+                        x=['not find']
+                        result = {'data':x, 'status': 'success'}
+                    return crypto2.des(str(result), key)
+                except:
+                    return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
+                return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+        except:
+            return  crypto2.des(str({'status':'fail'}),key)
+
+class deleteWords(Resource):
+    def post(self):
+        try:
+            DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
+            conn = db_connect.connect()
+            Name = DATA['User']
+            if SubFunc.CheckAdmin(Name) or SubFunc.CheckManger(Name):
+                conn.execute("DELETE FROM '{0}' WHERE user = '{1}';".format(DATA['language'],DATA['trainee']))
+                return crypto2.des(str({'status':'success'}),key)
+            return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+        except:
+            return  crypto2.des(str({'status':'fail'}),key)
 
 
-
+api.add_resource(getStudentsQuery,  '/getstudentsQuery',methods={'POST','GET'})
 api.add_resource(getStudents,  '/getstudents',methods={'POST','GET'})
 api.add_resource(getStudentsStatistics,  '/getStudentsStatistics',methods={'POST','GET'})
 
@@ -567,8 +602,8 @@ api.add_resource(GetUsersPerPermissions, '/GetUsersPerPermissions',methods={'POS
 api.add_resource(RequestPermissions, '/RequestPermissions',methods={'POST'})
 api.add_resource(ReturnTrainee, '/trainee',methods={'POST'})
 api.add_resource(AddWord, '/addword',methods={'POST'})
+api.add_resource(GetWord, '/GetWord',methods={'POST'})
 api.add_resource(restartUserStatistics, '/restartStatistics',methods={'POST'})
 api.add_resource(deleteWords, '/deleteDict',methods={'POST'})
-
 if __name__ == '__main__':
      app.run()
