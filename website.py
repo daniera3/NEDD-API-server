@@ -284,7 +284,7 @@ def handle_data():
     if request.form['type_form'] == 'login':
         return login(request.form['inputIdMain'], request.form['inputPasswordMain'])
     elif request.form['type_form'] == 'register':
-        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha256', salt_length=50),request.form['permissions'],request.form['Email'])
+        return register(request.form['Register_New_User'], generate_password_hash(request.form['Register_New_Password'],method='pbkdf2:sha256:150000', salt_length=50),request.form['permissions'],request.form['Email'])
     elif request.form['type_form'] == 'admin_answer':
         return Submit2(request.form)
     elif request.form['type_form'] == 'admin_answer1':
