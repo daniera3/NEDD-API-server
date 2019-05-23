@@ -509,7 +509,6 @@ def get_student_query(student):
             'serchData': eval(student)}
     result = sent_to_server(data, "getstudentsQuery")
     x=json.dumps(result)
-    print(x)
     return x
 
 
