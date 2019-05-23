@@ -551,11 +551,15 @@ class GetWord(Resource):
             conn = db_connect.connect()
             Name = DATA['User']
             try:
-                query = conn.execute("select word from '{1}' WHERE user='{0}'".format(Name,DATA['language']))
+                if type(DATA['language'])==type("help"):
+                    language=DATA['language']
+                else:
+                    language=DATA['language'][0]
+                query = conn.execute("select word from '{1}' WHERE user='{0}'".format(Name,language))
                 result =  {'data': [ i[0].encode('utf-8') for i in query.cursor]}
                 if not result['data']:
                     try:
-                        query = conn.execute("select DISTINCT word from '{0}'".format(DATA['language']))
+                        query = conn.execute("select DISTINCT word from '{0}'".format(language))
                         result = {'data': [ i[0].encode('utf-8') for i in query.cursor]}
                     except:
                         return  crypto2.des(str({'status':'bug2','data':{}}),key)
