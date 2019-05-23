@@ -87,13 +87,18 @@ class STest(Resource):
             if not result['data']:
                 return  crypto2.des(str({'status':'fail'}),key)
             Date = datetime.datetime.now().strftime("%Y-%m-%d")
-            line=DATA['line']
-            say=DATA['say']
-            grade=DATA['grade']
+            if type(DATA['line']) == type("help"):
+                line=DATA['line']
+                say=DATA['say']
+                grade=DATA['grade']
+            else:
+                line=DATA['line'][0]
+                say=DATA['say'][0]
+                grade=DATA['grade'][0]
             try:
                 conn.execute("insert into SpeechTasks values(NULL,'{0}','{1}','{2}','{3}','{4}')".format(User,line,say,grade,Date))
             except:
-                return crypto2.des(str({'status':'bug save'}),key)
+                return crypto2.des(str({'status':'bug save','send':DATA}),key)
 
             return crypto2.des(str({'status':'save'}),key)
         except:
@@ -175,27 +180,37 @@ class AdminAnswersToRequests(Resource):
         conn = db_connect.connect()
         try:
             Name = DATA['User']
-            if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(DATA['requesting'])or SubFunc.CheckAdmin(DATA['requesting']))and SubFunc.CheckNormal(DATA['user']) :
+            if type(DATA['requesting'])==type("help"):
+                requesting=DATA['requesting']
+                user=DATA['user']
+                IDrequest=DATA['IDrequest']
+            else:
+                requesting=DATA['requesting'][0]
+                user=DATA['user'][0]
+                IDrequest=DATA['IDrequest'][0]
+            if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(requesting)or SubFunc.CheckAdmin(requesting))and SubFunc.CheckNormal(user) :
                 if DATA['insert']:
                     try:
-                        query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
+                        query = conn.execute("select * from Guider where User=? AND GuideName=?",(user,requesting,))
                         result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                         if not result['data']:
-                            conn.execute("insert into Guider values('{0}','{1}','True')".format(DATA['user'],DATA['requesting']))
+                            conn.execute("insert into Guider values('{0}','{1}','True')".format(user,requesting))
                             massge=massge+" and saved"
                         else:
-                            conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
+                            conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",user,requesting,))
                             massge=massge+" and update"
-                        conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(DATA['requesting'],DATA['user'],))
+                        conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(requesting,user,))
                     except:
-                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
                         return crypto2.des(str({'status':'he can see hes info'}),key)
+                else:
+                    conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
                 return  crypto2.des(str({'status':massge}),key)
-            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
             return  crypto2.des(str({'status':"bad user Permissions"}),key)
         except:
             try:
-                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
             except:
                 return crypto2.des(str({'status':'sorry some thing happend send report bug'}),key)
             return crypto2.des(str({'status':'fail'}),key)
@@ -208,14 +223,21 @@ class SetPermissions(Resource):
         conn = db_connect.connect()
         Name = DATA['User']
         if SubFunc.CheckAdmin(Name):
-                Name = DATA['UserUpdate']
+                if type(DATA['UserUpdate'])==type("help"):
+                    Name = DATA['UserUpdate']
+                    Permissions=DATA['Permissions']
+                else:
+                    Name = DATA['UserUpdate'][0]
+                    Permissions=DATA['Permissions'][0]
+
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),'True',))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
                     return crypto2.des(str({'status':'fail','reason':'cannot find user'}),key)
                 if 'Permissions' in DATA.keys():
-                    if DATA['Permissions']=='Admin' or DATA['Permissions']=='Manger' or DATA['Permissions']=='Normal':
-                        conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", (DATA['Permissions'],str(Name),))
+                    if Permissions=='Admin' or Permissions=='Manger' or Permissions=='Normal':
+                        if Name !='admin':
+                            conn.execute(" UPDATE Accounts SET Permissions =? WHERE User=?", (Permissions,str(Name),))
                         return crypto2.des(str({'status':'success'}),key)
                     else:
                         return crypto2.des(str({'status':'fail'}),key)
@@ -276,7 +298,10 @@ class ReturnUser(Resource):
         try:
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
-                Name = DATA['ReturnU']
+                if type(DATA['ReturnU']) == type("help"):
+                    Name = DATA['ReturnU']
+                else:
+                    Name = DATA['ReturnU'][0]
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),"False",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
@@ -294,7 +319,10 @@ class DeleteUser(Resource):
         try:
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name):
-                Name = DATA['del']
+                if type(DATA['del']) == type("help"):
+                    Name = DATA['del']
+                else:
+                    Name = DATA['del'][0]
                 query = conn.execute("select * from Accounts WHERE User=? and Active=?", (str(Name),"True",))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if not result['data']:
@@ -412,20 +440,26 @@ class RequestPermissions(Resource):
     def post(self):
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         try:
-            if (SubFunc.CheckAdmin(DATA['user']) or SubFunc.CheckManger(DATA['user'])) and SubFunc.CheckNormal(DATA['UserName']) :
+            if type(DATA['UserName']) == type("help"):
+                UserName=DATA['UserName']
+                ReasonForRequest=DATA['ReasonForRequest']
+            else:
+                ReasonForRequest=DATA['ReasonForRequest'][0]
+                UserName=DATA['UserName'][0]
+            if (SubFunc.CheckAdmin(DATA['user']) or SubFunc.CheckManger(DATA['user'])) and SubFunc.CheckNormal(UserName) :
                 conn = db_connect.connect()
-                query = conn.execute("select * from request WHERE requesting=? and user=? ",(DATA['user'],DATA['UserName'],))
+                query = conn.execute("select * from request WHERE requesting=? and user=? ",(DATA['user'],UserName,))
                 result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
                 if len(result['data'])<3:
                     try:
-                        conn.execute("insert into request (requesting, user, reason) values('{0}','{1}','{2}')".format(DATA['user'],DATA['UserName'],DATA['ReasonForRequest']))
+                        conn.execute("insert into request (requesting, user, reason) values('{0}','{1}','{2}')".format(DATA['user'],UserName,ReasonForRequest))
                         return crypto2.des(str({'status':'success seve request'}),key)
                     except:
                         return crypto2.des(str({'status':'can\'t save request'}),key)
                 else:
                     return crypto2.des(str({'status':'too mach request, pls wait for answer from admins '}),key)
             else:
-                return crypto2.des(str({'status':'incorrect request, not save'}),key)
+                return crypto2.des(str({'status':'incorrect request, not save','data':DATA}),key)
         except:
             return crypto2.des(str({'status':'can\'t find db'}),key)
 
@@ -452,7 +486,10 @@ class AddWord(Resource):
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name) or SubFunc.CheckManger(Name):
                 try:
-                    conn.execute("insert into '{2}' (user, word) values('{0}','{1}')".format(DATA['trainee'],DATA['word'],DATA['language']))
+                    if type(DATA['trainee'])==type("help"):
+                        conn.execute("insert into '{2}' (user, word) values('{0}','{1}')".format(DATA['trainee'],DATA['word'],DATA['language']))
+                    else:
+                        conn.execute("insert into '{2}' (user, word) values('{0}','{1}')".format(DATA['trainee'][0],DATA['word'][0],DATA['language'][0]))
                 except:
                     return  crypto2.des(str({'status':'that word already exists'}),key)
                 return crypto2.des(str({'status':'success'}),key)
@@ -570,7 +607,10 @@ class deleteWords(Resource):
             conn = db_connect.connect()
             Name = DATA['User']
             if SubFunc.CheckAdmin(Name) or SubFunc.CheckManger(Name):
-                conn.execute("DELETE FROM '{0}' WHERE user = '{1}';".format(DATA['language'],DATA['trainee']))
+                if type(DATA['language'])==type("help"):
+                    conn.execute("DELETE FROM '{0}' WHERE user = '{1}';".format(DATA['language'],DATA['trainee']))
+                else:
+                    conn.execute("DELETE FROM '{0}' WHERE user = '{1}';".format(DATA['language'][0],DATA['trainee'][0]))
                 return crypto2.des(str({'status':'success'}),key)
             return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
