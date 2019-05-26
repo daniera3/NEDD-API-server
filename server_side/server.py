@@ -178,9 +178,37 @@ class AdminAnswersToRequests(Resource):
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
         massge="deleted this request"
         conn = db_connect.connect()
+        Name = DATA['User']
         try:
-            Name = DATA['User']
-            if type(DATA['requesting'])==type("help"):
+            try:
+                if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(DATA['requesting'])or SubFunc.CheckAdmin(DATA['requesting'])) and SubFunc.CheckNormal(DATA['user']) :
+                    if DATA['insert']:
+                        try:
+                            query = conn.execute("select * from Guider where User=? AND GuideName=?",(DATA['user'],DATA['requesting'],))
+                            result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                            if not result['data']:
+                                conn.execute("insert into Guider values('{0}','{1}','True')".format(DATA['user'],DATA['requesting']))
+                                massge=massge+" and saved"
+                            else:
+                                conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",DATA['user'],DATA['requesting'],))
+                                massge=massge+" and update"
+                            conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(DATA['requesting'],DATA['user'],))
+                        except:
+                            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+                            return crypto2.des(str({'status':'he can see hes info'}),key)
+                    else:
+                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+                    return  crypto2.des(str({'status':massge}),key)
+                conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+                return  crypto2.des(str({'status':"bad user Permissions"}),key)
+            except:
+                try:
+                    conn.execute("DELETE FROM request WHERE IDrequest = ?;",(DATA['IDrequest'],))
+                except:
+                    return crypto2.des(str({'status':'1sorry some thing happend send report bug'}),key)
+                return crypto2.des(str({'status':'fail'}),key)
+        except:
+            if type(DATA['IDrequest'])==type("help"):
                 requesting=DATA['requesting']
                 user=DATA['user']
                 IDrequest=DATA['IDrequest']
@@ -188,32 +216,33 @@ class AdminAnswersToRequests(Resource):
                 requesting=DATA['requesting'][0]
                 user=DATA['user'][0]
                 IDrequest=DATA['IDrequest'][0]
-            if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(requesting)or SubFunc.CheckAdmin(requesting))and SubFunc.CheckNormal(user) :
-                if DATA['insert']:
-                    try:
-                        query = conn.execute("select * from Guider where User=? AND GuideName=?",(user,requesting,))
-                        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
-                        if not result['data']:
-                            conn.execute("insert into Guider values('{0}','{1}','True')".format(user,requesting))
-                            massge=massge+" and saved"
-                        else:
-                            conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",user,requesting,))
-                            massge=massge+" and update"
-                        conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(requesting,user,))
-                    except:
-                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
-                        return crypto2.des(str({'status':'he can see hes info'}),key)
-                else:
-                    conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
-                return  crypto2.des(str({'status':massge}),key)
-            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
-            return  crypto2.des(str({'status':"bad user Permissions"}),key)
-        except:
             try:
+                if SubFunc.CheckAdmin(Name) and (SubFunc.CheckManger(requesting)or SubFunc.CheckAdmin(requesting)) and SubFunc.CheckNormal(user) :
+                    if DATA['insert']:
+                        try:
+                            query = conn.execute("select * from Guider where User=? AND GuideName=?",(user,requesting,))
+                            result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
+                            if not result['data']:
+                                conn.execute("insert into Guider values('{0}','{1}','True')".format(user,requesting))
+                                massge=massge+" and saved"
+                            else:
+                                conn.execute(" UPDATE Guider SET Active =? where User=? AND GuideName=?",("True",user,requesting,))
+                                massge=massge+" and update"
+                            conn.execute("DELETE FROM request WHERE requesting = ? and user=?;",(requesting,user,))
+                        except:
+                            conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
+                            return crypto2.des(str({'status':'he can see hes info'}),key)
+                    else:
+                        conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
+                    return  crypto2.des(str({'status':massge}),key)
                 conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
+                return  crypto2.des(str({'status':"bad user Permissions"}),key)
             except:
-                return crypto2.des(str({'status':'sorry some thing happend send report bug'}),key)
-            return crypto2.des(str({'status':'fail'}),key)
+                try:
+                    conn.execute("DELETE FROM request WHERE IDrequest = ?;",(IDrequest,))
+                except:
+                    return crypto2.des(str({'status':'sorry some thing happend send report bug'}),key)
+                return crypto2.des(str({'status':'fail'}),key)
 
 
 class SetPermissions(Resource):

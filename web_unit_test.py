@@ -36,7 +36,7 @@ class AdminRegister(unittest.TestCase):
     def setUpClass(cls):
         app.config['USERNAME'] = th.id_generator()
         app.config['PASSWORD'] = th.id_generator()
-        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"dani@gmail.com")
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"danidani@gmail.com")
 
     def test_admin(self):
         answer = th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
@@ -62,7 +62,7 @@ class TestRegisterAndChangePassword(unittest.TestCase):
         app.config['NEWPASSWORD'] = th.id_generator()
 
     def test_change_password(self):
-        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal', "dani@gmail.com")
+        rv = th.register(self.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal', "danidain@gmail.com")
         print("register new user")
         assert b'{}',(app.config['USERNAME'],) in rv.data
 
@@ -85,7 +85,7 @@ class TestRequestAccesptAndDenide(unittest.TestCase):
     def setUpClass(cls):
         app.config['USERNAME'] = th.id_generator()
         app.config['PASSWORD'] = th.id_generator()
-        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"dani@gmail.com")
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"danidani@gmail.com")
         th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
 
     @pytest.mark.run(order=1)
@@ -106,7 +106,7 @@ class TestLogIn(unittest.TestCase):
         app.config['USERNAME'] = th.id_generator()
         app.config['PASSWORD'] = th.id_generator()
 
-        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"dani@gmail.com")
+        th.register(cls.client, app.config['USERNAME'], app.config['PASSWORD'], 'normal',"danidani@gmail.com")
         th.update_permission_in_sql(app.config['USERNAME'], 'Admin')
 
     @pytest.mark.run(order=1)
