@@ -490,6 +490,9 @@ def get_my_result():
         result = sent_to_server(data, "getStudentsStatistics")
         if result['status'] != 'success':
             return index()
+        for i in range(len(result['data'])):
+            result['data'][i][0] = ""
+            result['data'][i][1] = ""
         return render_template('/status/normal_features/my_statistics.html',
                                user=session['username'],
                                avarage=result['avrage'],
@@ -525,7 +528,7 @@ def get_student_statistics(students):
         result = sent_to_server(data, "getStudentsStatistics")
         if result['status'] != 'success':
             return index()
-        temp = [user, result['data'], result['avrage']]
+        temp = [user, " ", result['avrage']]
         temp2 += [temp]
     return json.dumps(temp2)
 
