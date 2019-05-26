@@ -199,7 +199,8 @@ def sent_to_server(data, type_request):
     response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
                              data=data,
                              headers=header)
-    return eval(crypto2.des_dicrypte(str(eval(response.content)), key))
+    msg =eval(crypto2.des_dicrypte(str(eval(response.content)), key))
+    return msg
 
 
 def GetPassword(user_name, password):
@@ -221,7 +222,7 @@ def Sub_login(user_name, password):
 
 def login(user_name, password):
     response = Sub_login(user_name, password)
-    if response['status'] == "success" :
+    if response['status'] == "success":
         if user_name == 'admin' or app.config['TESTING'] == True:
             session['username'] = user_name
             session['permissions'] = response['permissions'].upper()
@@ -257,6 +258,7 @@ def enterkey(user,permissions):
 
 
 def register(user, password, permissions,Email):
+
     salt = password.split('$')[1]
     password = password.split('$')[2]
     data = {'User': user, 'Password': password, 'perm': permissions,'Email':Email}
@@ -509,6 +511,7 @@ def get_student_query(student):
             'serchData': eval(student)}
     result = sent_to_server(data, "getstudentsQuery")
     x=json.dumps(result)
+    print(x)
     return x
 
 
@@ -534,3 +537,4 @@ def admin_stat():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
