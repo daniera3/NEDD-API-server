@@ -548,14 +548,12 @@ class getStudents(Resource):
 
 class getStudentsStatistics(Resource):
     def post(self):
-
         DATA=eval(crypto2.des_dicrypte((request.json['data']), key))
-
         conn = db_connect.connect()
         try:
             user = DATA['user']
             user_name = DATA['user_search']
-            if SubFunc.CheckAdmin(user) or SubFunc.CheckManger(user):
+            if SubFunc.CheckAdmin(user) or SubFunc.CheckManger(user) or user==user_name:
                 try:
                     temp = []
                     query = conn.execute("select avg(grade) avrage from SpeechTasks WHERE  user==?", (str(user_name),))
@@ -569,7 +567,7 @@ class getStudentsStatistics(Resource):
                     return  crypto2.des(str(result),key)
                 except:
                     return  crypto2.des(str({'status':'fail','code':'sqlfail'}),key)
-                return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
+            return  crypto2.des(str({'status':'haven\'t Permissions'}),key)
         except:
             return  crypto2.des(str({'status':'fail'}),key)
 
