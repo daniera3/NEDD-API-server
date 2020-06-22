@@ -16,27 +16,31 @@ key = "NEDDNEDD"
 #db in site for salt
 db_connect = create_engine('sqlite:///nedd.db')
 
-my_domain = 'asqwzx1.pythonanywhere.com/'
+my_domain = 'https://nedd.pythonanywhere.com/'
 username = 'asqwzx1'
+S_username = 'asqwzx1'
+S_password = 'NEDD'
 token = '973c7adaa1a72b549a6120af137ba68137ec2351'
 
 app = Flask(__name__)
 
 
-app.config['MAIL_SERVER']='smtp.gmail.com'
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'neddproject@gmail.com'
-app.config['MAIL_PASSWORD'] = 'nedd123456'
-app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = 'nedd.sce@gmail.com'
+app.config['MAIL_PASSWORD'] = 'nedd123456'
+
 mail = Mail(app)
+
 
 app.secret_key = urandom(16)
 
 
 def sendmail(header, email, massge):
     try:
-        msg = Message(header, sender = 'neddproject@gmail.com', recipients = [email])
+        msg = Message(header, sender = 'nedd', recipients = [email])
         msg.body = massge
         mail.send(msg)
         return "send"
@@ -196,7 +200,7 @@ def sent_to_server(data, type_request):
     temp = {"data": crypto2.des(str(data), key)}
     data = json.dumps(temp)
     header = {"Content-Type": "application/json"}
-    response = requests.post('https://asqwzx1.pythonanywhere.com/'+type_request, auth=('asqwzx1', 'NEDD'),
+    response = requests.post(my_domain+type_request, auth=(S_username, S_password),
                              data=data,
                              headers=header)
     msg =eval(crypto2.des_dicrypte(str(eval(response.content)), key))
@@ -222,11 +226,7 @@ def Sub_login(user_name, password):
 
 def login(user_name, password):
     response = Sub_login(user_name, password)
-    if response['status'] == "success":
-        if user_name == 'admin' or app.config['TESTING'] == True:
-            session['username'] = user_name
-            session['permissions'] = response['permissions'].upper()
-            return index()
+    if response['status'] == "success" :
         return enterkey(user_name,response['permissions'])
     flash("there was an error please try again", category='error')
     return login_page()
@@ -371,7 +371,7 @@ def RequestPermissions(data):
 def Endlogin(user,Key):
     data={'user':user,'Key':Key}
     response=sent_to_server(data,'login')
-    if response["status"] == "success" or Key=='' :
+    if response["status"] == "success":
         session['username']=user
         session['permissions']=response['permissions'].upper()
         return index()
@@ -483,16 +483,12 @@ def get_student_result():
 @app.route('/get_my_result')
 def get_my_result():
     if 'username' in session:
-        session['username']
         data = {'user_search': session['username'],
                 'user': session['username']
                 }
         result = sent_to_server(data, "getStudentsStatistics")
         if result['status'] != 'success':
             return index()
-        for i in range(len(result['data'])):
-            result['data'][i][0] = ""
-            result['data'][i][1] = ""
         return render_template('/status/normal_features/my_statistics.html',
                                user=session['username'],
                                avarage=result['avrage'],
@@ -528,7 +524,7 @@ def get_student_statistics(students):
         result = sent_to_server(data, "getStudentsStatistics")
         if result['status'] != 'success':
             return index()
-        temp = [user, " ", result['avrage']]
+        temp = [user, result['data'], result['avrage']]
         temp2 += [temp]
     return json.dumps(temp2)
 
@@ -540,4 +536,3 @@ def admin_stat():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
